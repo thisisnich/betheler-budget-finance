@@ -6,14 +6,49 @@ import { cn } from '@/lib/utils';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MobileMenu } from './MobileMenu';
 
 export function Navigation() {
   const pathname = usePathname();
   const authState = useAuthState();
   const isAuthenticated = authState?.state === 'authenticated';
 
-  // Get session ID from local storage
-  const sessionId = typeof window !== 'undefined' ? localStorage.getItem('sessionId') : null;
+  // Create navigation items array to reuse in both desktop and mobile menus
+  const navItems = [
+    {
+      href: '/',
+      label: 'Home',
+      isActive: pathname === '/',
+    },
+    ...(isAuthenticated
+      ? [
+          {
+            href: '/app',
+            label: 'App',
+            isActive: pathname.startsWith('/app'),
+          },
+          {
+            href: '/transactions',
+            label: 'Transactions',
+            isActive: pathname.startsWith('/transactions'),
+          },
+          {
+            href: '/profile',
+            label: 'Profile',
+            isActive: pathname.startsWith('/profile'),
+          },
+        ]
+      : []),
+  ];
+
+  // Login button to reuse in both desktop and mobile views
+  const loginButton = (
+    <Link href="/login" className="w-full">
+      <Button size="sm" variant="outline" className="w-full">
+        Login
+      </Button>
+    </Link>
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -83,7 +118,7 @@ export function Navigation() {
               </Link>
             )}
           </div>
-        </nav>
+        </div>
       </div>
     </header>
   );
