@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Next Convex App',
-  description: 'A Next.js app with Convex backend',
+  title: 'Bethel ER Budget & Finance',
+  description: 'Budgeting and financial management application for Bethel ER',
 };
 
 export default function RootLayout({

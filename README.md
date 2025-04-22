@@ -1,6 +1,6 @@
-# NextJS Convex Starter App
+# Bethel ER Budget & Finance
 
-This is a starter application using NextJS and Convex, managed with NX for monorepo capabilities.
+This is a budgeting and financial management application for Bethel ER, built using NextJS and Convex, managed with NX for monorepo capabilities.
 
 ## Getting Started
 ### Pre-requisites
