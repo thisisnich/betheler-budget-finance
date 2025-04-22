@@ -48,6 +48,17 @@ export function Navigation() {
                   App
                 </Link>
                 <Link
+                  href="/transactions"
+                  className={cn(
+                    'transition-colors hover:text-foreground/80',
+                    pathname.startsWith('/transactions')
+                      ? 'text-foreground font-medium'
+                      : 'text-foreground/60'
+                  )}
+                >
+                  Transactions
+                </Link>
+                <Link
                   href="/profile"
                   className={cn(
                     'transition-colors hover:text-foreground/80',

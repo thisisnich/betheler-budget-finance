@@ -183,13 +183,93 @@ betheler-budget-finance/
       <section id="v1.0">
         <meta name="version" content="1.0" />
         <h1>📍 Version 1.0</h1>
-        <section feature="feature-name">
+        <section feature="transaction-management">
+          <h3>Transaction Management</h3>
+          <p>
+            Implementation of transaction management functionality including
+            creating, viewing, and deleting transactions.
+          </p>
           <ul>
             <li>
-              <!-- 
-              Insert Task List Here
-            --></li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Complete the transaction creation mutation in
+                  services/backend/convex/transactions.ts
+                </li>
+                <li>
+                  [x] Implement listTransactions query to fetch transactions for
+                  the past month in services/backend/convex/transactions.ts
+                </li>
+                <li>
+                  [x] Implement deleteTransaction mutation in
+                  services/backend/convex/transactions.ts
+                </li>
+                <li>
+                  [x] Create transaction type definitions in
+                  services/backend/convex/_generated/dataModel.d.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create TransactionForm component in
+                  apps/webapp/src/components/TransactionForm.tsx
+                </li>
+                <li>
+                  [x] Create TransactionList component in
+                  apps/webapp/src/components/TransactionList.tsx
+                </li>
+                <li>
+                  [x] Create TransactionItem component in
+                  apps/webapp/src/components/TransactionItem.tsx
+                </li>
+                <li>
+                  [x] Implement transaction delete confirmation dialog in
+                  apps/webapp/src/components/DeleteTransactionDialog.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Page Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create transactions page at
+                  apps/webapp/src/app/transactions/page.tsx
+                </li>
+                <li>
+                  [x] Add navigation link to transactions in the main layout
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Additional Components</strong>
+              <ul>
+                <li>
+                  [x] Create CategorySelect component for transaction categories
+                  in apps/webapp/src/components/CategorySelect.tsx
+                </li>
+                <li>
+                  [x] Create DateTimePicker component in
+                  apps/webapp/src/components/DateTimePicker.tsx
+                </li>
+                <li>
+                  [x] Create currency input/formatter in
+                  apps/webapp/src/lib/formatCurrency.ts
+                </li>
+              </ul>
+            </li>
           </ul>
+          <p>
+            <strong>Implementation Notes:</strong> The transaction functionality
+            will be built using Convex for the backend and React with Shadcn UI
+            components for the frontend. We'll implement proper authentication
+            checks following the pattern in the existing transactions.ts file.
+            The transaction schema is already defined in schema.ts with fields
+            for userId, amount, category, datetime, and description.
+          </p>
         </section>
       </section>
     </section>
