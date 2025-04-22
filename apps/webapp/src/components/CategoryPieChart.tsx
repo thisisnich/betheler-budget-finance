@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { cn } from '@/lib/utils';
 
 // Register required Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -38,16 +39,42 @@ interface CategoryPieChartProps {
   className?: string;
 }
 
-export function CategoryPieChart({ data, totalSpent, className }: CategoryPieChartProps) {
+export function CategoryPieChart({
+  data,
+  totalSpent,
+  className,
+}: CategoryPieChartProps) {
   // Sort data by amount descending
   const sortedData = [...data].sort((a, b) => b.amount - a.amount);
 
+  // State to track window width for responsive legend positioning
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Effect to detect screen size
+  useEffect(() => {
+    // Function to check if viewport is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is the md breakpoint in Tailwind
+    };
+
+    // Set initial value
+    checkMobile();
+
+    // Add listener for window resize
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const chartData = {
-    labels: sortedData.map(item => item.category),
+    labels: sortedData.map((item) => item.category),
     datasets: [
       {
-        data: sortedData.map(item => Math.abs(item.amount)),
-        backgroundColor: sortedData.map((_, index) => CATEGORY_COLORS[index % CATEGORY_COLORS.length]),
+        data: sortedData.map((item) => Math.abs(item.amount)),
+        backgroundColor: sortedData.map(
+          (_, index) => CATEGORY_COLORS[index % CATEGORY_COLORS.length]
+        ),
         borderWidth: 1,
       },
     ],
@@ -56,27 +83,38 @@ export function CategoryPieChart({ data, totalSpent, className }: CategoryPieCha
   const options = {
     plugins: {
       legend: {
-        position: 'right' as const,
+        position: isMobile ? ('bottom' as const) : ('right' as const),
         labels: {
+          boxWidth: isMobile ? 12 : 20, // Smaller color boxes on mobile
+          padding: isMobile ? 10 : 20, // Less padding on mobile
+          font: {
+            size: isMobile ? 10 : 12, // Smaller font on mobile
+          },
           generateLabels: (chart: any) => {
             const datasets = chart.data.datasets;
             return chart.data.labels.map((label: string, i: number) => {
               const meta = chart.getDatasetMeta(0);
               const style = meta.controller.getStyle(i);
               const percentage = sortedData[i].percentage.toFixed(1);
-              const value = formatCurrency(Math.abs(sortedData[i].amount));
-              
+
+              // On mobile, only show category and percentage to save space
+              const text = isMobile
+                ? `${label}: ${percentage}%`
+                : `${label}: ${formatCurrency(
+                    Math.abs(sortedData[i].amount)
+                  )} (${percentage}%)`;
+
               return {
-                text: `${label}: ${value} (${percentage}%)`,
+                text,
                 fillStyle: style.backgroundColor,
                 strokeStyle: style.borderColor,
                 lineWidth: style.borderWidth,
                 hidden: !chart.getDataVisibility(i),
-                index: i
+                index: i,
               };
             });
-          }
-        }
+          },
+        },
       },
       tooltip: {
         callbacks: {
@@ -84,24 +122,44 @@ export function CategoryPieChart({ data, totalSpent, className }: CategoryPieCha
             const index = context.dataIndex;
             const value = Math.abs(sortedData[index].amount);
             const percentage = sortedData[index].percentage.toFixed(1);
-            return `${sortedData[index].category}: ${formatCurrency(value)} (${percentage}%)`;
-          }
-        }
-      }
+            return `${sortedData[index].category}: ${formatCurrency(
+              value
+            )} (${percentage}%)`;
+          },
+        },
+      },
     },
     responsive: true,
     maintainAspectRatio: false,
   };
 
+  // Adjust chart height based on screen size and number of categories
+  const getChartHeight = () => {
+    if (isMobile) {
+      // On mobile with legend at bottom, adjust height based on number of categories
+      const categoryCount = sortedData.length;
+      const minHeight = 200; // Minimum height of chart area
+      const legendHeight = Math.ceil(categoryCount / 2) * 24; // Estimate legend height
+      return minHeight + legendHeight;
+    }
+    // Default height for desktop
+    return 240;
+  };
+
   return (
-    <div className={`${className} h-80 w-full`}>
-      <h3 className="text-lg font-medium mb-2">Spending by Category</h3>
-      <p className="text-sm text-muted-foreground mb-4">
+    <div className={cn('w-full', className)}>
+      <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
+        Spending by Category
+      </h3>
+      <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-4">
         Total: {formatCurrency(Math.abs(totalSpent))}
       </p>
-      <div className="h-64">
+      <div
+        style={{ height: `${getChartHeight()}px` }}
+        className="max-h-[400px]"
+      >
         <Pie data={chartData} options={options} />
       </div>
     </div>
   );
-} 
+}

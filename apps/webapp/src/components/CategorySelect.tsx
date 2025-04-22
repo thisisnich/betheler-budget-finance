@@ -1,28 +1,29 @@
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { cn } from '@/lib/utils';
 
 // Common transaction categories
 const TRANSACTION_CATEGORIES = [
-  "Food",
-  "Transportation",
-  "Housing",
-  "Utilities",
-  "Entertainment",
-  "Healthcare",
-  "Shopping",
-  "Education",
-  "Travel",
-  "Groceries",
-  "Personal",
-  "Gifts",
-  "Investments",
-  "Income",
-  "Other"
+  'Food',
+  'Transportation',
+  'Housing',
+  'Utilities',
+  'Entertainment',
+  'Healthcare',
+  'Shopping',
+  'Education',
+  'Travel',
+  'Groceries',
+  'Personal',
+  'Gifts',
+  'Investments',
+  'Income',
+  'Other',
 ];
 
 interface CategorySelectProps {
@@ -31,19 +32,27 @@ interface CategorySelectProps {
   className?: string;
 }
 
-export function CategorySelect({ value, onChange, className }: CategorySelectProps) {
+export function CategorySelect({
+  value,
+  onChange,
+  className,
+}: CategorySelectProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={className}>
+      <SelectTrigger className={cn('w-full', className)}>
         <SelectValue placeholder="Select category" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" className="max-h-[300px]" sideOffset={4}>
         {TRANSACTION_CATEGORIES.map((category) => (
-          <SelectItem key={category} value={category}>
+          <SelectItem
+            key={category}
+            value={category}
+            className="py-2.5 cursor-pointer"
+          >
             {category}
           </SelectItem>
         ))}
       </SelectContent>
     </Select>
   );
-} 
+}

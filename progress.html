@@ -338,6 +338,268 @@ betheler-budget-finance/
           </p>
         </section>
       </section>
+
+      <section id="mobile-responsiveness">
+        <h2>Mobile Responsiveness</h2>
+        <meta name="importance" content="high" />
+        <p>
+          Implementation of proper mobile responsive design throughout the
+          application to enhance usability on smaller screens.
+        </p>
+        <ul>
+          <li>
+            <strong>Analysis and Setup</strong>
+            <ul>
+              <li>
+                [x] Review and document current mobile UI issues across key
+                screens in apps/webapp/src/app/transactions/page.tsx and other
+                main pages
+              </li>
+              <li>
+                [x] Update viewport and basic responsive settings in
+                apps/webapp/src/app/layout.tsx
+              </li>
+              <li>
+                [x] Create responsive container helpers in
+                apps/webapp/src/lib/utils.ts or a new dedicated file
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Navigation Improvements</strong>
+            <ul>
+              <li>
+                [x] Implement responsive mobile navigation with hamburger menu
+                in apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Create mobile menu component in
+                apps/webapp/src/components/MobileMenu.tsx
+              </li>
+              <li>
+                [x] Update styles for UserMenu component in
+                apps/webapp/src/components/UserMenu.tsx for better mobile
+                interaction
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Transaction Pages Responsiveness</strong>
+            <ul>
+              <li>
+                [x] Redesign transaction page layout in
+                apps/webapp/src/app/transactions/page.tsx
+              </li>
+              <li>
+                [x] Update TransactionList component in
+                apps/webapp/src/components/TransactionList.tsx for mobile
+                screens
+              </li>
+              <li>
+                [x] Optimize TransactionItem cards in
+                apps/webapp/src/components/TransactionItem.tsx for smaller
+                screens
+              </li>
+              <li>
+                [x] Enhance TransactionForm responsiveness in
+                apps/webapp/src/components/TransactionForm.tsx
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Form Components Mobile Optimization</strong>
+            <ul>
+              <li>
+                [x] Improve DateTimePicker for mobile in
+                apps/webapp/src/components/DateTimePicker.tsx
+              </li>
+              <li>
+                [x] Enhance CategorySelect for touch devices in
+                apps/webapp/src/components/CategorySelect.tsx
+              </li>
+              <li>
+                [x] Update MonthYearPicker for mobile in
+                apps/webapp/src/components/MonthYearPicker.tsx
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Data Visualization Responsiveness</strong>
+            <ul>
+              <li>
+                [x] Make CategoryPieChart responsive in
+                apps/webapp/src/components/CategoryPieChart.tsx
+              </li>
+              <li>
+                [x] Move chart legend to bottom on small screens and adjust size
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          <strong>Implementation Notes:</strong> The mobile responsive design
+          will focus on creating a native mobile app experience while
+          maintaining the current functionality. We'll use Tailwind's responsive
+          breakpoints (sm, md, lg) consistently across components. The
+          navigation will transform into a hamburger menu on mobile, transaction
+          cards will stack vertically with optimized layouts, and all forms will
+          be adjusted for better touch input. Data visualizations will adapt
+          their layouts based on screen size for optimal readability on all
+          devices.
+        </p>
+      </section>
+
+      <section id="performance-improvements">
+        <h2>Performance Improvements</h2>
+        <meta name="importance" content="high" />
+        <p>
+          Implementation of performance improvements and UI bug fixes to enhance
+          user experience.
+        </p>
+        <ul>
+          <li>
+            <strong>React Performance Optimizations</strong>
+            <ul>
+              <li>
+                [x] Add useCallback to event handlers in DateTimePicker
+                component in apps/webapp/src/components/DateTimePicker.tsx
+              </li>
+              <li>
+                [x] Memoize computation of navigation items with useMemo in
+                apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Optimize TransactionList component with useCallback and
+                useMemo in apps/webapp/src/components/TransactionList.tsx
+              </li>
+              <li>
+                [x] Apply useMemo for derived values in UserMenu component in
+                apps/webapp/src/components/UserMenu.tsx
+              </li>
+              <li>
+                [x] Optimize MobileMenu component with useCallback for event
+                handlers in apps/webapp/src/components/MobileMenu.tsx
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Mobile UI Fixes</strong>
+            <ul>
+              <li>
+                [x] Fix content shift when UserMenu dropdown is expanded on
+                mobile in apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Improve positioning of dropdown menu in UserMenu component
+                to prevent layout shifts in
+                apps/webapp/src/components/UserMenu.tsx
+              </li>
+              <li>
+                [x] Fix the SheetContent component's portal to prevent affecting
+                main layout in apps/webapp/src/components/ui/sheet.tsx
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          <strong>Implementation Notes:</strong> The performance improvements
+          will focus on memoizing expensive computations and callback functions
+          using React's useCallback and useMemo hooks. We'll also fix the mobile
+          UI issue where the main content shifts to the left when the profile
+          dropdown is expanded by ensuring the dropdown is positioned with fixed
+          positioning and doesn't affect the layout flow. We'll be careful to
+          apply memoization judiciously where it makes sense for performance,
+          rather than applying it everywhere.
+        </p>
+      </section>
+
+      <section id="navigation-fixes">
+        <h2>Navigation Links Fixes</h2>
+        <meta name="importance" content="high" />
+        <p>
+          Fix issues with navigation links to align with the app's intended UX.
+        </p>
+        <ul>
+          <li>
+            <strong>Navigation Structure Cleanup</strong>
+            <ul>
+              <li>
+                [x] Remove profile and home navigation links from the main
+                navigation in apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Update the "Budget" app name to link to /app instead of home
+                page in apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Ensure only Transactions link appears in the main navigation
+                menu for authenticated users in
+                apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Update MobileMenu component to reflect the same navigation
+                structure in apps/webapp/src/components/MobileMenu.tsx
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          <strong>Implementation Notes:</strong> The navigation should be
+          simplified to only show the Transactions link in the main navigation
+          for authenticated users. The "Budget" app name should link to /app
+          (dashboard) instead of the home page. The profile should only be
+          accessible via the avatar menu in the top right corner. This will
+          create a more streamlined user experience focused on the core
+          functionality.
+        </p>
+      </section>
+
+      <section id="navigation-improvements">
+        <h2>Navigation Improvements</h2>
+        <meta name="importance" content="high" />
+        <p>
+          Implement navigation improvements for a more streamlined mobile
+          experience.
+        </p>
+        <ul>
+          <li>
+            <strong>Mobile Navigation Enhancements</strong>
+            <ul>
+              <li>
+                [x] Remove the mobile hamburger menu completely in
+                apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Add profile icon to top right on mobile screens in
+                apps/webapp/src/components/Navigation.tsx
+              </li>
+              <li>
+                [x] Update UserMenu component to support showing only icon on
+                mobile in apps/webapp/src/components/UserMenu.tsx
+              </li>
+              <li>
+                [x] Move user name into the dropdown menu for better mobile
+                experience in apps/webapp/src/components/UserMenu.tsx
+              </li>
+              <li>
+                [x] Ensure "Budget" text in header redirects to /app for
+                authenticated users in apps/webapp/src/components/Navigation.tsx
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>
+          <strong>Implementation Notes:</strong> These improvements aim to
+          create a more consistent navigation experience between mobile and
+          desktop views. By removing the hamburger menu and adding the profile
+          icon directly to the top navigation bar, we reduce the number of
+          clicks needed to access profile information. The "Budget" link now
+          correctly redirects to the app dashboard for authenticated users,
+          ensuring consistent navigation across the application. We've used
+          responsive CSS classes to handle the mobile/desktop differences rather
+          than JavaScript detection to ensure correct server/client hydration.
+        </p>
+      </section>
     </section>
   </body>
 </html>

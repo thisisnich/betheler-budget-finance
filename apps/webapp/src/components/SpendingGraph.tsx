@@ -1,12 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { api } from '@workspace/backend/convex/_generated/api';
-import { TransactionItem } from './TransactionItem';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { MonthYearPicker } from './MonthYearPicker';
+import { CategoryPieChart } from './CategoryPieChart';
+import { Card, CardContent } from './ui/card';
 import { Loader2 } from 'lucide-react';
 
-export function TransactionList() {
+export function SpendingGraph() {
   // Get current date for initial state
   const now = new Date();
   const [selectedDate, setSelectedDate] = useState(now);
@@ -20,7 +21,13 @@ export function TransactionList() {
     [selectedDate]
   );
 
-  // Fetch transactions for the selected month
+  // Fetch category summary data for the pie chart
+  const categorySummary = useSessionQuery(api.transactions.getCategorySummary, {
+    year,
+    month,
+  });
+
+  // Get transaction count for the month
   const transactions = useSessionQuery(api.transactions.listByMonth, {
     year,
     month,
@@ -32,15 +39,10 @@ export function TransactionList() {
     [transactions]
   );
 
-  // Function to refresh transactions list after deletion with useCallback
-  const handleTransactionDeleted = useCallback(() => {
-    // The list will automatically refresh due to Convex's reactivity
-  }, []);
-
   // Handle month change with useCallback
-  const handleMonthChange = useCallback((date: Date) => {
+  const handleMonthChange = (date: Date) => {
     setSelectedDate(date);
-  }, []);
+  };
 
   // Memoize the formatted month and year for display
   const formattedMonthYear = useMemo(() => {
@@ -55,12 +57,12 @@ export function TransactionList() {
     return transactions ? `(${transactions.length} transactions)` : '';
   }, [transactions?.length]);
 
-  // If transactions are still loading
-  if (transactions === undefined) {
+  // If data is still loading
+  if (categorySummary === undefined || transactions === undefined) {
     return (
       <div className="py-8 text-center flex justify-center items-center">
         <Loader2 className="h-6 w-6 animate-spin mr-2" />
-        <span>Loading transactions...</span>
+        <span>Loading spending data...</span>
       </div>
     );
   }
@@ -77,9 +79,7 @@ export function TransactionList() {
 
       <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted rounded-lg">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-          <h3 className="text-base sm:text-lg font-medium">
-            Transactions Total
-          </h3>
+          <h3 className="text-base sm:text-lg font-medium">Monthly Overview</h3>
           <span
             className={`text-lg sm:text-xl font-bold ${
               total >= 0 ? 'text-green-600' : 'text-red-600'
@@ -93,23 +93,24 @@ export function TransactionList() {
         </p>
       </div>
 
-      {/* If no transactions found */}
-      {transactions.length === 0 ? (
+      {/* Show pie chart if we have category data and transactions */}
+      {categorySummary && transactions.length > 0 ? (
+        <Card>
+          <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+            <CategoryPieChart
+              data={categorySummary.categories}
+              totalSpent={Math.abs(categorySummary.totalSpent)}
+            />
+          </CardContent>
+        </Card>
+      ) : (
         <div className="py-6 sm:py-8 text-center">
           <p className="text-muted-foreground">
             No transactions found for {formattedMonthYear}.
           </p>
-          <p className="mt-2">Add a new transaction to get started.</p>
-        </div>
-      ) : (
-        <div className="space-y-3 sm:space-y-4">
-          {transactions.map((transaction) => (
-            <TransactionItem
-              key={transaction._id}
-              transaction={transaction}
-              onDelete={handleTransactionDeleted}
-            />
-          ))}
+          <p className="mt-2">
+            Add transactions to see your spending breakdown.
+          </p>
         </div>
       )}
     </div>
