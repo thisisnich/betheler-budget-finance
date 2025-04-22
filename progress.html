@@ -40,6 +40,8 @@
         <li>Shadcn UI - UI component library</li>
         <li>pnpm - Package manager</li>
         <li>nx - Workspace tool</li>
+        <li>Chart.js - Library for displaying charts</li>
+        <li>date-fns - Date utility library</li>
       </ul>
     </section>
 
@@ -269,6 +271,70 @@ betheler-budget-finance/
             checks following the pattern in the existing transactions.ts file.
             The transaction schema is already defined in schema.ts with fields
             for userId, amount, category, datetime, and description.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.1">
+        <meta name="version" content="1.1" />
+        <h1>📍 Version 1.1</h1>
+        <section feature="transaction-enhancements">
+          <h3>Transaction Enhancements</h3>
+          <p>
+            Enhancing the transaction management with a month selector and a
+            category spending pie chart.
+          </p>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Implement listByMonth query in
+                  services/backend/convex/transactions.ts to fetch transactions
+                  for a specific month
+                </li>
+                <li>
+                  [x] Implement getCategorySummary query in
+                  services/backend/convex/transactions.ts to fetch category
+                  spending summary
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create MonthYearPicker component in
+                  apps/webapp/src/components/MonthYearPicker.tsx
+                </li>
+                <li>
+                  [x] Create CategoryPieChart component in
+                  apps/webapp/src/components/CategoryPieChart.tsx
+                </li>
+                <li>
+                  [x] Update TransactionList component to use month selector and
+                  display pie chart in
+                  apps/webapp/src/components/TransactionList.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Dependencies</strong>
+              <ul>
+                <li>
+                  [x] Add Chart.js and React-ChartJS-2 for pie chart
+                  visualization
+                </li>
+                <li>[x] Add date-fns for date manipulation</li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> The month selector will allow
+            filtering transactions for a specific month. The pie chart will
+            display the distribution of spending across different categories
+            within the selected month. For transactions without a category, they
+            will be displayed as "Uncategorized" in the pie chart.
           </p>
         </section>
       </section>

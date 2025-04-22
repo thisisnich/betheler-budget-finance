@@ -45,5 +45,5 @@ export default defineSchema({
     category: v.string(),
     datetime: v.string(),
     description: v.string(),
-  }).index('by_userId', ['userId']),
+  }).index('by_userId_datetime', ['userId', 'datetime']),
 });
