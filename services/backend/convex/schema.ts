@@ -37,4 +37,13 @@ export default defineSchema({
     expiresAt: v.number(),
     expiresAtLabel: v.string(),
   }).index('by_sessionId', ['sessionId']),
+
+  //transactions
+  transactions: defineTable({
+    userId: v.id('users'),
+    amount: v.number(),
+    category: v.string(),
+    datetime: v.string(),
+    description: v.string(),
+  }).index('by_userId', ['userId']),
 });
