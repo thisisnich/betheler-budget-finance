@@ -1,4 +1,4 @@
-import type { AuthState } from '@workspace/backend/types/auth/AuthState';
+import type { AuthState } from '../types/auth/AuthState';
 import { v } from 'convex/values';
 import type { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
