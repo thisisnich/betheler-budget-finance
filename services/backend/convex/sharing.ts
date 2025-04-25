@@ -213,6 +213,12 @@ export const getSharedTransactions = query({
       return null;
     }
 
+    // Get the user info to include the display name
+    const user = await ctx.db.get(shareLink.userId as Id<'users'>);
+    if (!user) {
+      return null;
+    }
+
     // Use provided month/year if available, otherwise use the ones from shareLink
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
@@ -243,6 +249,7 @@ export const getSharedTransactions = query({
       year,
       expiresAt: shareLink.expiresAt,
       permanent: shareLink.expiresAtLabel === 'Never',
+      userName: user.name || 'Anonymous User', // Include user's name
     };
   },
 });

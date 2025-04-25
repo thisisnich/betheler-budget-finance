@@ -23,12 +23,14 @@ interface MonthlySummaryCardProps {
   selectedDate: Date;
   noCard?: boolean;
   onDataChange?: () => void;
+  readOnly?: boolean;
 }
 
 export function MonthlySummaryCard({
   selectedDate,
   noCard = false,
   onDataChange,
+  readOnly = false,
 }: MonthlySummaryCardProps) {
   // State for modals
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
@@ -92,6 +94,10 @@ export function MonthlySummaryCard({
   const hasNoSavings = summary.totalSavings <= 0;
   const hasNoBudget = budgetData.totalBudget <= 0;
 
+  // Whether to show quick action buttons based on both readOnly and data conditions
+  const showIncomeButton = !readOnly && hasNoIncome;
+  const showSavingsButton = !readOnly && hasNoSavings;
+
   const content = (
     <div>
       <div className={noCard ? '' : 'pb-2 border-b mb-4'}>
@@ -123,7 +129,7 @@ export function MonthlySummaryCard({
                 <span className="font-medium text-green-600">
                   {formatCurrency(summary.totalIncome)}
                 </span>
-                {hasNoIncome && (
+                {showIncomeButton && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -154,7 +160,7 @@ export function MonthlySummaryCard({
                 <span className="font-medium text-blue-600">
                   {formatCurrency(summary.totalSavings)}
                 </span>
-                {hasNoSavings && (
+                {showSavingsButton && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -309,20 +315,6 @@ export function MonthlySummaryCard({
           </div>
         </div>
       </div>
-
-      {/* Modals */}
-      <AddIncomeModal
-        isOpen={isIncomeModalOpen}
-        onClose={() => setIsIncomeModalOpen(false)}
-        selectedDate={selectedDate}
-        onSuccess={handleTransactionSuccess}
-      />
-      <AddSavingsModal
-        isOpen={isSavingsModalOpen}
-        onClose={() => setIsSavingsModalOpen(false)}
-        selectedDate={selectedDate}
-        onSuccess={handleTransactionSuccess}
-      />
     </div>
   );
 
@@ -331,8 +323,28 @@ export function MonthlySummaryCard({
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">{content}</CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardContent className="pt-6">{content}</CardContent>
+      </Card>
+
+      {/* Only include modals when not in readOnly mode */}
+      {!readOnly && (
+        <>
+          <AddIncomeModal
+            isOpen={isIncomeModalOpen}
+            onClose={() => setIsIncomeModalOpen(false)}
+            selectedDate={selectedDate}
+            onSuccess={handleTransactionSuccess}
+          />
+          <AddSavingsModal
+            isOpen={isSavingsModalOpen}
+            onClose={() => setIsSavingsModalOpen(false)}
+            selectedDate={selectedDate}
+            onSuccess={handleTransactionSuccess}
+          />
+        </>
+      )}
+    </>
   );
 }

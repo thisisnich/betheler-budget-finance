@@ -12,12 +12,14 @@ interface SpendingGraphProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   showDatePicker?: boolean;
+  readOnly?: boolean;
 }
 
 export function SpendingGraph({
   selectedDate,
   onDateChange,
   showDatePicker = true,
+  readOnly = false,
 }: SpendingGraphProps) {
   // Tab state
   const [activeTab, setActiveTab] = useState<'allocation' | 'expenses'>('allocation');
@@ -126,7 +128,7 @@ export function SpendingGraph({
     <div>
       {showDatePicker && (
         <div className="mb-4">
-          <MonthYearPicker value={selectedDate} onChange={onDateChange} />
+          <MonthYearPicker value={selectedDate} onChange={onDateChange} disabled={readOnly} />
         </div>
       )}
 
@@ -143,11 +145,15 @@ export function SpendingGraph({
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="allocation" className="flex items-center gap-1">
+              <TabsTrigger
+                value="allocation"
+                className="flex items-center gap-1"
+                disabled={readOnly}
+              >
                 <CoinsIcon className="h-4 w-4" />
                 <span>Fund Allocation</span>
               </TabsTrigger>
-              <TabsTrigger value="expenses" className="flex items-center gap-1">
+              <TabsTrigger value="expenses" className="flex items-center gap-1" disabled={readOnly}>
                 <PieChartIcon className="h-4 w-4" />
                 <span>Expenses</span>
               </TabsTrigger>

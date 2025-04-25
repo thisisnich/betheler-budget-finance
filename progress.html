@@ -266,6 +266,134 @@ betheler-budget-finance/
         </section>
       </section>
 
+      <!-- Version 1.5.1 -->
+      <section id="v1.5.1">
+        <meta name="version" content="1.5.1" />
+        <h1>
+          📍 Current Version: 1.5.1 - Consistency and Efficiency Improvements
+        </h1>
+        <section feature="reusable-financial-overview">
+          <h3>Reusable Read-Only Financial Overview</h3>
+          <ul>
+            <li>
+              <strong>Component Creation</strong>
+              <ul>
+                <li>
+                  [x] Create FinancialOverview component in
+                  apps/webapp/src/components/FinancialOverview.tsx
+                </li>
+                <li>
+                  [x] Extract financial overview UI from app/page.tsx with
+                  read-only mode parameter
+                </li>
+                <li>
+                  [x] Create proper component props interface with readOnly
+                  option
+                </li>
+                <li>
+                  [x] Create dedicated SharedFinancialOverview component for
+                  shared views
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Integration</strong>
+              <ul>
+                <li>
+                  [x] Update app/page.tsx to use the new FinancialOverview
+                  component
+                </li>
+                <li>
+                  [x] Update SharedTransactionView to use
+                  SharedFinancialOverview component
+                </li>
+                <li>
+                  [x] Ensure consistent UI between main dashboard and shared
+                  view
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Polishing</strong>
+              <ul>
+                <li>
+                  [x] Add responsive layout for side-by-side sections on desktop
+                </li>
+                <li>
+                  [x] Add icons to tabs in the shared view for better visual
+                  consistency
+                </li>
+                <li>[x] Show original user's name in the shared view header</li>
+                <li>
+                  [x] Include detailed Monthly Summary section in shared view
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature creates a
+            reusable FinancialOverview component for the main dashboard and a
+            dedicated SharedFinancialOverview component for shared views. This
+            approach provides better separation of concerns by keeping the
+            authenticated and public components separate, which improves
+            maintainability and prevents session-related errors. Both components
+            have a consistent UI to ensure a seamless user experience.
+            Additional polishing ensures the shared view has a professional
+            appearance with proper attribution to the original user who shared
+            the data.
+          </p>
+        </section>
+
+        <section feature="inline-transaction-creation">
+          <h3>Inline Transaction Creation Modal</h3>
+          <ul>
+            <li>
+              <strong>Modal Component</strong>
+              <ul>
+                <li>
+                  [x] Create TransactionModal component in
+                  apps/webapp/src/components/TransactionModal.tsx
+                </li>
+                <li>
+                  [x] Implement dialog-based modal that reuses TransactionForm
+                </li>
+                <li>
+                  [x] Add proper open/close state management and callback
+                  handlers
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Dashboard Integration</strong>
+              <ul>
+                <li>
+                  [x] Update Quick Actions in app/page.tsx to open transaction
+                  modal directly
+                </li>
+                <li>
+                  [x] Replace "View Transactions" button with "Add Transaction"
+                  that opens the modal
+                </li>
+                <li>
+                  [x] Add event handlers to refresh financial data after
+                  transaction creation
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This enhancement creates a
+            modal for adding transactions directly from the dashboard,
+            eliminating the need to navigate to a separate page. The
+            implementation will use the standard dialog component from the UI
+            library and reuse the existing TransactionForm component. This
+            improves user experience by allowing users to stay on the dashboard
+            while adding transactions and immediately see the effects of their
+            actions.
+          </p>
+        </section>
+      </section>
+
       <!-- Upcoming tasks for next version -->
       <section id="upcoming-tasks">
         <h1>📍 Upcoming Tasks</h1>

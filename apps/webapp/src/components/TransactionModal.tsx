@@ -1,0 +1,90 @@
+'use client';
+
+import { X } from 'lucide-react';
+import { useState } from 'react';
+import { TransactionForm } from './TransactionForm';
+import { Button } from './ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+
+interface TransactionModalProps {
+  /**
+   * Callback when a transaction is successfully added
+   */
+  onSuccess?: () => void;
+
+  /**
+   * Button label text
+   * @default "Add Transaction"
+   */
+  buttonLabel?: string;
+
+  /**
+   * Button variant
+   * @default "default"
+   */
+  buttonVariant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+
+  /**
+   * Trigger element or custom button
+   */
+  trigger?: React.ReactNode;
+
+  /**
+   * Additional class name for the trigger button
+   */
+  className?: string;
+}
+
+/**
+ * A modal component for adding transactions directly from the dashboard
+ */
+export function TransactionModal({
+  onSuccess,
+  buttonLabel = 'Add Transaction',
+  buttonVariant = 'default',
+  trigger,
+  className,
+}: TransactionModalProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSuccess = () => {
+    // Close the modal
+    setIsOpen(false);
+    // Call the onSuccess callback if provided
+    onSuccess?.();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {trigger ? (
+        // Use the custom trigger if provided
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : (
+        // Otherwise use the default button
+        <DialogTrigger asChild>
+          <Button variant={buttonVariant} className={className}>
+            {buttonLabel}
+          </Button>
+        </DialogTrigger>
+      )}
+
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogDescription>Enter the details of your transaction below</DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-4">
+          <TransactionForm onSuccess={handleSuccess} />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
