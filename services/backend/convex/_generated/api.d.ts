@@ -16,6 +16,7 @@ import type {
 import type * as appinfo from "../appinfo.js";
 import type * as auth from "../auth.js";
 import type * as budgets from "../budgets.js";
+import type * as migration from "../migration.js";
 import type * as presentations from "../presentations.js";
 import type * as sharing from "../sharing.js";
 import type * as transactions from "../transactions.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   appinfo: typeof appinfo;
   auth: typeof auth;
   budgets: typeof budgets;
+  migration: typeof migration;
   presentations: typeof presentations;
   sharing: typeof sharing;
   transactions: typeof transactions;
