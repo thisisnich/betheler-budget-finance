@@ -53,6 +53,17 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
     }
   }, [logout, router]);
 
+  // Memoize navigation items to ensure consistency with main navigation
+  const navItems = useMemo(
+    () => [
+      { href: '/profile', label: 'Profile' },
+      { href: '/app', label: 'Dashboard' },
+      { href: '/transactions', label: 'Transactions' },
+      { href: '/budgets', label: 'Budgets' },
+    ],
+    []
+  );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -81,15 +92,13 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
           <span>{authState.user.name}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <Link href="/profile">
-          <DropdownMenuItem className="cursor-pointer py-2">Profile</DropdownMenuItem>
-        </Link>
-        <Link href="/app">
-          <DropdownMenuItem className="cursor-pointer py-2">Dashboard</DropdownMenuItem>
-        </Link>
-        <Link href="/transactions">
-          <DropdownMenuItem className="cursor-pointer py-2">Transactions</DropdownMenuItem>
-        </Link>
+
+        {navItems.map((item) => (
+          <Link href={item.href} key={item.href}>
+            <DropdownMenuItem className="cursor-pointer py-2">{item.label}</DropdownMenuItem>
+          </Link>
+        ))}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer py-2 text-red-600 focus:text-red-600 focus:bg-red-50 flex items-center gap-2"

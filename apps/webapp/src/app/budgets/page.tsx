@@ -2,6 +2,7 @@
 
 import { BudgetList } from '@/components/BudgetList';
 import { MonthYearPicker } from '@/components/MonthYearPicker';
+import { PageHeader } from '@/components/PageHeader';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { RequireLogin } from '@/modules/auth/RequireLogin';
 import { useState } from 'react';
@@ -19,12 +20,10 @@ export default function BudgetsPage() {
     <RequireLogin>
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4">Budget Management</h1>
-            <p className="text-muted-foreground">
-              Set budgets for each category and track your spending against them.
-            </p>
-          </div>
+          <PageHeader
+            title="Budget Management"
+            description="Set budgets for each category and track your spending against them."
+          />
 
           <div className="mb-6">
             <MonthYearPicker

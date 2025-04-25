@@ -1006,6 +1006,59 @@ betheler-budget-finance/
           </p>
         </section>
       </section>
+
+      <section id="v1.3.4">
+        <meta name="version" content="1.3.4" />
+        <h1>📍 Version 1.3.4 - Navigation Consistency Improvements</h1>
+        <section feature="navigation-consistency">
+          <h3>Navigation Consistency Improvements</h3>
+          <ul>
+            <li>
+              <strong>Page Header Component</strong>
+              <ul>
+                <li>
+                  [x] Create PageHeader component in
+                  apps/webapp/src/components/PageHeader.tsx
+                </li>
+                <li>
+                  [x] Update transactions page to use PageHeader in
+                  apps/webapp/src/app/transactions/page.tsx
+                </li>
+                <li>
+                  [x] Update budgets page to use PageHeader in
+                  apps/webapp/src/app/budgets/page.tsx
+                </li>
+                <li>
+                  [x] Update shares page to use PageHeader in
+                  apps/webapp/src/app/shares/page.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>UserMenu Consistency</strong>
+              <ul>
+                <li>
+                  [x] Update UserMenu to include Budgets link in
+                  apps/webapp/src/components/UserMenu.tsx
+                </li>
+                <li>
+                  [x] Update UserMenu to include Shares link in
+                  apps/webapp/src/components/UserMenu.tsx
+                </li>
+                <li>[x] Ensure consistent ordering of menu items</li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Created a consistent
+            navigation experience across all pages with a shared PageHeader
+            component that includes standard elements like the back button and
+            page title. Additionally, updated the UserMenu to include all main
+            navigation options in a consistent order to improve discoverability
+            and user experience.
+          </p>
+        </section>
+      </section>
     </section>
   </body>
 </html>
