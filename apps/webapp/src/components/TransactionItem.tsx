@@ -109,15 +109,17 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
                 {isIncome ? '+' : ''}
                 {formatCurrency(Math.abs(transaction.amount))}
               </p>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Delete</span>
-              </Button>
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Delete</span>
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
