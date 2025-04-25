@@ -1,11 +1,11 @@
-import { useMemo, useState, useEffect } from 'react';
-import { useSessionQuery } from 'convex-helpers/react/sessions';
-import { api } from '@workspace/backend/convex/_generated/api';
 import { formatCurrency } from '@/lib/formatCurrency';
-import { MonthYearPicker } from './MonthYearPicker';
-import { CategoryPieChart } from './CategoryPieChart';
-import { Card, CardContent } from './ui/card';
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { CategoryPieChart } from './CategoryPieChart';
+import { MonthYearPicker } from './MonthYearPicker';
+import { Card, CardContent } from './ui/card';
 
 export function SpendingGraph() {
   // Get current date for initial state
@@ -55,7 +55,7 @@ export function SpendingGraph() {
   // Memoize the transaction count message
   const transactionCountMessage = useMemo(() => {
     return transactions ? `(${transactions.length} transactions)` : '';
-  }, [transactions?.length]);
+  }, [transactions]);
 
   // If data is still loading
   if (categorySummary === undefined || transactions === undefined) {
@@ -70,11 +70,7 @@ export function SpendingGraph() {
   return (
     <div>
       <div className="mb-4 sm:mb-6">
-        <MonthYearPicker
-          value={selectedDate}
-          onChange={handleMonthChange}
-          className="mb-4"
-        />
+        <MonthYearPicker value={selectedDate} onChange={handleMonthChange} className="mb-4" />
       </div>
 
       <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted rounded-lg">
@@ -105,12 +101,8 @@ export function SpendingGraph() {
         </Card>
       ) : (
         <div className="py-6 sm:py-8 text-center">
-          <p className="text-muted-foreground">
-            No transactions found for {formattedMonthYear}.
-          </p>
-          <p className="mt-2">
-            Add transactions to see your spending breakdown.
-          </p>
+          <p className="text-muted-foreground">No transactions found for {formattedMonthYear}.</p>
+          <p className="mt-2">Add transactions to see your spending breakdown.</p>
         </div>
       )}
     </div>

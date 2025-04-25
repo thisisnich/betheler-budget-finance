@@ -1,13 +1,15 @@
-import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
+'use client';
+
 import { formatCurrency } from '@/lib/formatCurrency';
+import { cn } from '@/lib/utils';
+import { api } from '@workspace/backend/convex/_generated/api';
+import type { Id } from '@workspace/backend/convex/_generated/dataModel';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { format } from 'date-fns';
-import { Id } from '@workspace/backend/convex/_generated/dataModel';
+import { CalendarIcon, TagIcon, TrashIcon } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter } from './ui/card';
-import { TrashIcon, CalendarIcon, TagIcon } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
 
 interface TransactionItemProps {
   transaction: {
@@ -18,12 +20,10 @@ interface TransactionItemProps {
     description: string;
   };
   onDelete?: () => void;
+  readOnly?: boolean;
 }
 
-export function TransactionItem({
-  transaction,
-  onDelete,
-}: TransactionItemProps) {
+export function TransactionItem({ transaction, onDelete, readOnly = false }: TransactionItemProps) {
   const deleteTransaction = useSessionMutation(api.transactions.remove);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -81,18 +81,20 @@ export function TransactionItem({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="py-2 px-3 sm:px-6 bg-muted/30 flex justify-end">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="text-red-500 hover:text-red-700 hover:bg-red-100 h-auto py-1.5"
-        >
-          <TrashIcon className="h-4 w-4 mr-1.5" />
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </Button>
-      </CardFooter>
+      {!readOnly && (
+        <CardFooter className="py-2 px-3 sm:px-6 bg-muted/30 flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-red-500 hover:text-red-700 hover:bg-red-100 h-auto py-1.5"
+          >
+            <TrashIcon className="h-4 w-4 mr-1.5" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

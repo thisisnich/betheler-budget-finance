@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useSessionQuery } from 'convex-helpers/react/sessions';
-import { api } from '@workspace/backend/convex/_generated/api';
-import { TransactionItem } from './TransactionItem';
 import { formatCurrency } from '@/lib/formatCurrency';
-import { MonthYearPicker } from './MonthYearPicker';
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { Loader2 } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { MonthYearPicker } from './MonthYearPicker';
+import { TransactionItem } from './TransactionItem';
 
 export function TransactionList() {
   // Get current date for initial state
@@ -53,7 +53,7 @@ export function TransactionList() {
   // Memoize the transaction count message
   const transactionCountMessage = useMemo(() => {
     return transactions ? `(${transactions.length} transactions)` : '';
-  }, [transactions?.length]);
+  }, [transactions]);
 
   // If transactions are still loading
   if (transactions === undefined) {
@@ -68,18 +68,12 @@ export function TransactionList() {
   return (
     <div>
       <div className="mb-4 sm:mb-6">
-        <MonthYearPicker
-          value={selectedDate}
-          onChange={handleMonthChange}
-          className="mb-4"
-        />
+        <MonthYearPicker value={selectedDate} onChange={handleMonthChange} className="mb-4" />
       </div>
 
       <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted rounded-lg">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-          <h3 className="text-base sm:text-lg font-medium">
-            Transactions Total
-          </h3>
+          <h3 className="text-base sm:text-lg font-medium">Transactions Total</h3>
           <span
             className={`text-lg sm:text-xl font-bold ${
               total >= 0 ? 'text-green-600' : 'text-red-600'
@@ -96,9 +90,7 @@ export function TransactionList() {
       {/* If no transactions found */}
       {transactions.length === 0 ? (
         <div className="py-6 sm:py-8 text-center">
-          <p className="text-muted-foreground">
-            No transactions found for {formattedMonthYear}.
-          </p>
+          <p className="text-muted-foreground">No transactions found for {formattedMonthYear}.</p>
           <p className="mt-2">Add a new transaction to get started.</p>
         </div>
       ) : (

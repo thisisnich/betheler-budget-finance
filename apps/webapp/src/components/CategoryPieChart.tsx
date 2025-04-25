@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+'use client';
+
 import { formatCurrency } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
+import React, { useEffect, useState } from 'react';
+import { Pie } from 'react-chartjs-2';
 
 // Register required Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -39,11 +41,7 @@ interface CategoryPieChartProps {
   className?: string;
 }
 
-export function CategoryPieChart({
-  data,
-  totalSpent,
-  className,
-}: CategoryPieChartProps) {
+export function CategoryPieChart({ data, totalSpent, className }: CategoryPieChartProps) {
   // Sort data by amount descending
   const sortedData = [...data].sort((a, b) => b.amount - a.amount);
 
@@ -100,9 +98,7 @@ export function CategoryPieChart({
               // On mobile, only show category and percentage to save space
               const text = isMobile
                 ? `${label}: ${percentage}%`
-                : `${label}: ${formatCurrency(
-                    Math.abs(sortedData[i].amount)
-                  )} (${percentage}%)`;
+                : `${label}: ${formatCurrency(Math.abs(sortedData[i].amount))} (${percentage}%)`;
 
               return {
                 text,
@@ -122,9 +118,7 @@ export function CategoryPieChart({
             const index = context.dataIndex;
             const value = Math.abs(sortedData[index].amount);
             const percentage = sortedData[index].percentage.toFixed(1);
-            return `${sortedData[index].category}: ${formatCurrency(
-              value
-            )} (${percentage}%)`;
+            return `${sortedData[index].category}: ${formatCurrency(value)} (${percentage}%)`;
           },
         },
       },
@@ -148,16 +142,11 @@ export function CategoryPieChart({
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
-        Spending by Category
-      </h3>
+      <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">Spending by Category</h3>
       <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-4">
         Total: {formatCurrency(Math.abs(totalSpent))}
       </p>
-      <div
-        style={{ height: `${getChartHeight()}px` }}
-        className="max-h-[400px]"
-      >
+      <div style={{ height: `${getChartHeight()}px` }} className="max-h-[400px]">
         <Pie data={chartData} options={options} />
       </div>
     </div>

@@ -46,4 +46,17 @@ export default defineSchema({
     datetime: v.string(),
     description: v.string(),
   }).index('by_userId_datetime', ['userId', 'datetime']),
+
+  //shareLinks
+  shareLinks: defineTable({
+    userId: v.id('users'),
+    shareId: v.string(), // Unique identifier for the share link
+    year: v.number(),
+    month: v.number(),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+    expiresAtLabel: v.string(),
+  })
+    .index('by_shareId', ['shareId'])
+    .index('by_userId', ['userId']),
 });

@@ -1,13 +1,20 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { RecentSharesList } from '@/components/RecentSharesList';
+import { ShareButton } from '@/components/ShareButton';
 import { SpendingGraph } from '@/components/SpendingGraph';
+import { Button } from '@/components/ui/button';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { RequireLogin } from '@/modules/auth/RequireLogin';
 import Link from 'next/link';
 
 export default function AppPage() {
   const authState = useAuthState();
+
+  // Get current date for the share button
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
 
   return (
     <RequireLogin>
@@ -29,12 +36,9 @@ export default function AppPage() {
               {authState.user.type === 'anonymous' && (
                 <div className="p-3 bg-blue-50 rounded border border-blue-200">
                   <p className="text-sm text-blue-800">
-                    <span className="font-semibold">Tip:</span> You're using an
-                    anonymous account. Visit your{' '}
-                    <Link
-                      href="/profile"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
+                    <span className="font-semibold">Tip:</span> You're using an anonymous account.
+                    Visit your{' '}
+                    <Link href="/profile" className="text-blue-600 underline hover:text-blue-800">
                       profile page
                     </Link>{' '}
                     to personalize your display name.
@@ -43,9 +47,10 @@ export default function AppPage() {
               )}
 
               <div className="bg-card rounded-lg border p-4 sm:p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Spending Overview
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Spending Overview</h2>
+                  <ShareButton year={currentYear} month={currentMonth} />
+                </div>
                 <SpendingGraph />
               </div>
 
@@ -54,11 +59,7 @@ export default function AppPage() {
                   <h3 className="font-medium mb-2">Quick Actions</h3>
                   <div className="space-y-2">
                     <Link href="/transactions" className="block">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start"
-                      >
+                      <Button variant="outline" size="sm" className="w-full justify-start">
                         Add New Transaction
                       </Button>
                     </Link>

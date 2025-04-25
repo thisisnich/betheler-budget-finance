@@ -381,6 +381,349 @@ betheler-budget-finance/
           experience across mobile and desktop.
         </p>
       </section>
+
+      <section id="v1.2">
+        <meta name="version" content="1.2" />
+        <h1>📍 Version 1.2</h1>
+        <section feature="expense-sharing">
+          <h3>Expense Sharing</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Implement createShareLink mutation in
+                  services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Implement getSharedTransactions query in
+                  services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Implement getSharedCategorySummary query in
+                  services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Create shareLink type definitions in
+                  services/backend/convex/_generated/dataModel.d.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create ShareButton component in
+                  apps/webapp/src/components/ShareButton.tsx
+                </li>
+                <li>
+                  [x] Create ShareModal component in
+                  apps/webapp/src/components/ShareModal.tsx
+                </li>
+                <li>
+                  [x] Add sharing capabilities to TransactionList in
+                  apps/webapp/src/components/TransactionList.tsx
+                </li>
+                <li>
+                  [x] Add sharing capabilities to CategoryPieChart in
+                  apps/webapp/src/components/CategoryPieChart.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Page Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create shared view page at
+                  apps/webapp/src/app/shared/[id]/page.tsx
+                </li>
+                <li>
+                  [x] Create SharedTransactionView component in
+                  apps/webapp/src/components/SharedTransactionView.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Minor Improvements</strong>
+              <ul>
+                <li>
+                  [x] Change default category to "Food" in
+                  apps/webapp/src/components/TransactionForm.tsx
+                </li>
+                <li>
+                  [x] Move Share button from TransactionList to Spending
+                  Overview section in apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> The sharing functionality
+            will generate unique links that allow viewers to see transaction
+            data and category summary charts without requiring authentication.
+            The share links will have configurable expiration dates for
+            security.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.2.1">
+        <meta name="version" content="1.2.1" />
+        <h1>📍 Version 1.2.1 - Share Management Improvements</h1>
+        <section feature="share-management">
+          <h3>Share Management</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update createShareLink to support permanent shares in
+                  services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Implement listUserShares query in
+                  services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Implement deleteShareLink mutation in
+                  services/backend/convex/sharing.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update ShareModal to include "No expiration" option in
+                  apps/webapp/src/components/ShareModal.tsx
+                </li>
+                <li>
+                  [x] Create SharesListItem component for displaying a share in
+                  apps/webapp/src/components/SharesListItem.tsx
+                </li>
+                <li>
+                  [x] Create SharesList component for displaying all shares in
+                  apps/webapp/src/components/SharesList.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Page Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create shared links management page at
+                  apps/webapp/src/app/shares/page.tsx
+                </li>
+                <li>
+                  [x] Add link to shared links management page in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Enhancing share management by
+            adding the ability to create permanent shares (no expiration), view
+            all active shares, and delete existing shares. The share creation
+            date will be displayed in the shares list for better tracking.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.2.2">
+        <meta name="version" content="1.2.2" />
+        <h1>📍 Version 1.2.2 - Share Usability Improvements</h1>
+        <section feature="share-usability">
+          <h3>Share Usability Improvements</h3>
+          <ul>
+            <li>
+              <strong>Dashboard Recent Shares</strong>
+              <ul>
+                <li>
+                  [x] Create RecentSharesList component for dashboard in
+                  apps/webapp/src/components/RecentSharesList.tsx
+                </li>
+                <li>
+                  [x] Add recent shares list to dashboard in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Share Modal Updates</strong>
+              <ul>
+                <li>
+                  [x] Update ShareModal to set "No expiration" as default and
+                  limit options to 30 days or no expiration in
+                  apps/webapp/src/components/ShareModal.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Shares List UI Improvements</strong>
+              <ul>
+                <li>
+                  [x] Make SharesListItem more compact, converting the "Copy
+                  share link" button to an icon in
+                  apps/webapp/src/components/SharesListItem.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Improving the sharing user
+            experience by showing recent shares on the dashboard, making the
+            ShareModal simpler with better defaults, and making the shares
+            listing more compact.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.2.3">
+        <meta name="version" content="1.2.3" />
+        <h1>📍 Version 1.2.3 - Share Modal Enhancement</h1>
+        <section feature="share-modal-redesign">
+          <h3>Share Modal Redesign</h3>
+          <ul>
+            <li>
+              <strong>Share Modal Improvements</strong>
+              <ul>
+                <li>
+                  [x] Move RecentSharesList into ShareModal for improved access
+                  in apps/webapp/src/components/ShareModal.tsx
+                </li>
+                <li>
+                  [x] Update ShareModal layout to show up to 3 recent shares
+                  with a "View More" button in
+                  apps/webapp/src/components/ShareModal.tsx
+                </li>
+                <li>
+                  [x] Improve overall design and layout of the ShareModal
+                  component in apps/webapp/src/components/ShareModal.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Dashboard Updates</strong>
+              <ul>
+                <li>
+                  [x] Remove "Manage Shared Links" quick action button from
+                  dashboard in apps/webapp/src/app/app/page.tsx
+                </li>
+                <li>
+                  [x] Add any necessary UI adjustments to maintain dashboard
+                  layout after changes in apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Consolidated the share
+            management UI by moving recent shares into the ShareModal with a
+            tabbed interface. This allows users to create new shares and
+            view/manage existing shares in one convenient location, while
+            keeping the dashboard clean and focused.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.2.4">
+        <meta name="version" content="1.2.4" />
+        <h1>📍 Version 1.2.4 - Delete All Shares Functionality</h1>
+        <section feature="delete-all-shares">
+          <h3>Delete All Shares Functionality</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Implement deleteAllShareLinks mutation in
+                  services/backend/convex/sharing.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>UI Implementation</strong>
+              <ul>
+                <li>
+                  [x] Add DeleteAllShares component with confirmation dialog in
+                  apps/webapp/src/components/DeleteAllShares.tsx
+                </li>
+                <li>
+                  [x] Update ShareModal to include Delete All button in the
+                  Recent Shares tab in apps/webapp/src/components/ShareModal.tsx
+                </li>
+                <li>
+                  [x] Update SharesList to include Delete All button at the top
+                  in apps/webapp/src/components/SharesList.tsx
+                </li>
+                <li>
+                  [x] Update SharesPage to include Delete All button in the
+                  header in apps/webapp/src/app/shares/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Added a "Delete All Shares"
+            function to provide users with an efficient way to remove all their
+            shared links at once. This feature includes appropriate confirmation
+            dialogs to prevent accidental deletions and is consistently
+            available in both the ShareModal's Recent Shares tab and the main
+            Shares listing page. We kept the button styling contextual to each
+            location: a more subtle ghost variant in the modal and a clear
+            outline variant in the main shares page.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.2.5">
+        <meta name="version" content="1.2.5" />
+        <h1>📍 Version 1.2.5 - Graceful Share Not Found Handling</h1>
+        <section feature="share-not-found">
+          <h3>Share Not Found Handling</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update getShareLink query to return null instead of
+                  throwing error in services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Update getSharedTransactions query to return null instead
+                  of throwing error in services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Update getSharedCategorySummary query to return null
+                  instead of throwing error in
+                  services/backend/convex/sharing.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create ShareNotFound component in
+                  apps/webapp/src/components/ShareNotFound.tsx
+                </li>
+                <li>
+                  [x] Update SharedTransactionView to handle null responses in
+                  apps/webapp/src/components/SharedTransactionView.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> Instead of throwing errors
+            when a share link is not found or has expired, we will return null
+            from the backend queries and display a user-friendly message in the
+            UI. This provides a better user experience and makes error handling
+            more manageable on the frontend.
+          </p>
+        </section>
+      </section>
     </section>
   </body>
 </html>

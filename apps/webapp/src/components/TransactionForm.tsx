@@ -1,11 +1,13 @@
-import { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation } from 'convex/react';
+import { parseCurrencyInput } from '@/lib/formatCurrency';
+import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { DateTimePicker } from './DateTimePicker';
+import { useMutation } from 'convex/react';
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { CategorySelect } from './CategorySelect';
-import { parseCurrencyInput } from '@/lib/formatCurrency';
+import { DateTimePicker } from './DateTimePicker';
+import { Button } from './ui/button';
 import {
   Form,
   FormControl,
@@ -16,8 +18,6 @@ import {
   FormMessage,
 } from './ui/form';
 import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -31,17 +31,14 @@ interface TransactionFormValues {
   datetime: Date;
 }
 
-export function TransactionForm({
-  onSuccess,
-  className,
-}: TransactionFormProps) {
+export function TransactionForm({ onSuccess, className }: TransactionFormProps) {
   const createTransaction = useSessionMutation(api.transactions.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<TransactionFormValues>({
     defaultValues: {
       amount: '',
-      category: 'Other',
+      category: 'Food',
       description: '',
       datetime: new Date(),
     },
@@ -80,10 +77,7 @@ export function TransactionForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('space-y-4', className)}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-4', className)}>
         <FormField
           control={form.control}
           name="amount"
@@ -113,11 +107,7 @@ export function TransactionForm({
             <FormItem>
               <FormLabel className="text-sm font-medium">Category</FormLabel>
               <FormControl>
-                <CategorySelect
-                  value={field.value}
-                  onChange={field.onChange}
-                  className="w-full"
-                />
+                <CategorySelect value={field.value} onChange={field.onChange} className="w-full" />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
@@ -147,26 +137,16 @@ export function TransactionForm({
           name="datetime"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
-                Date and Time
-              </FormLabel>
+              <FormLabel className="text-sm font-medium">Date and Time</FormLabel>
               <FormControl>
-                <DateTimePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  className="w-full"
-                />
+                <DateTimePicker value={field.value} onChange={field.onChange} className="w-full" />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full sm:w-auto mt-2"
-        >
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto mt-2">
           {isSubmitting ? 'Adding...' : 'Add Transaction'}
         </Button>
       </form>
