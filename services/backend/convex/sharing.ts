@@ -1,6 +1,7 @@
 import { SessionIdArg } from 'convex-helpers/server/sessions';
 import { v } from 'convex/values';
 import { getAuthUser } from '../modules/auth/getAuthUser';
+import { api } from './_generated/api';
 import type { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
 
@@ -244,6 +245,9 @@ export const getSharedTransactions = query({
 export const getSharedCategorySummary = query({
   args: {
     shareId: v.string(),
+    transactionType: v.optional(
+      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'))
+    ),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -270,15 +274,21 @@ export const getSharedCategorySummary = query({
     const endDateStr = endDate.toISOString();
 
     // Get transactions for the user within the specified month
-    const transactions = await ctx.db
-      .query('transactions')
-      .withIndex('by_userId_datetime', (q) =>
-        q
-          .eq('userId', shareLink.userId as Id<'users'>)
-          .gte('datetime', startDateStr)
-          .lte('datetime', endDateStr)
-      )
-      .collect();
+    let transactionsQuery = ctx.db.query('transactions').withIndex('by_userId_datetime', (q) =>
+      q
+        .eq('userId', shareLink.userId as Id<'users'>)
+        .gte('datetime', startDateStr)
+        .lte('datetime', endDateStr)
+    );
+
+    // Apply transaction type filter if specified
+    if (args.transactionType) {
+      transactionsQuery = transactionsQuery.filter((q) =>
+        q.eq(q.field('transactionType'), args.transactionType)
+      );
+    }
+
+    const transactions = await transactionsQuery.collect();
 
     // Calculate totals by category
     const categorySummary: Record<string, { amount: number; count: number }> = {};
@@ -291,9 +301,9 @@ export const getSharedCategorySummary = query({
         categorySummary[category] = { amount: 0, count: 0 };
       }
 
-      categorySummary[category].amount += transaction.amount;
+      categorySummary[category].amount += Math.abs(transaction.amount);
       categorySummary[category].count += 1;
-      totalSpent += transaction.amount;
+      totalSpent += Math.abs(transaction.amount);
     }
 
     // Calculate percentages and prepare final result
@@ -311,6 +321,271 @@ export const getSharedCategorySummary = query({
       year: shareLink.year,
       expiresAt: shareLink.expiresAt,
       permanent: shareLink.expiresAtLabel === 'Never',
+    };
+  },
+});
+
+// Get a comprehensive financial summary for a shared transaction link
+export const getSharedFinancialSummary = query({
+  args: {
+    shareId: v.string(),
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    totalIncome: number;
+    totalExpenses: number;
+    totalSavings: number;
+    totalSpendableIncome: number;
+    formattedMonth: string;
+  } | null> => {
+    // Get the share link
+    const shareLink = await ctx.db
+      .query('shareLinks')
+      .withIndex('by_shareId', (q) => q.eq('shareId', args.shareId))
+      .first();
+
+    if (!shareLink) {
+      return null;
+    }
+
+    // Check if the share link has expired (if it has an expiration)
+    if (shareLink.expiresAt < Date.now() && shareLink.expiresAtLabel !== 'Never') {
+      return null;
+    }
+
+    // Create start and end date for the specified month
+    const startDate = new Date(shareLink.year, shareLink.month, 1);
+    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+
+    // Format as ISO strings for comparison
+    const startDateStr = startDate.toISOString();
+    const endDateStr = endDate.toISOString();
+
+    // Get all transactions for the user within the specified month
+    const transactions = await ctx.db
+      .query('transactions')
+      .withIndex('by_userId_datetime', (q) =>
+        q
+          .eq('userId', shareLink.userId as Id<'users'>)
+          .gte('datetime', startDateStr)
+          .lte('datetime', endDateStr)
+      )
+      .collect();
+
+    // Calculate totals by transaction type
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    let totalSavings = 0;
+
+    for (const transaction of transactions) {
+      const amount = Math.abs(transaction.amount);
+
+      switch (transaction.transactionType) {
+        case 'income':
+          totalIncome += amount;
+          break;
+        case 'expense':
+          totalExpenses += amount;
+          break;
+        case 'savings':
+          totalSavings += amount;
+          break;
+      }
+    }
+
+    // Calculate total spendable income (income minus savings)
+    const totalSpendableIncome = totalIncome - totalSavings;
+
+    return {
+      totalIncome,
+      totalExpenses,
+      totalSavings,
+      totalSpendableIncome,
+      formattedMonth: startDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+    };
+  },
+});
+
+// Get budget progress for a shared link
+export const getSharedBudgetProgress = query({
+  args: {
+    shareId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get the share link
+    const shareLink = await ctx.db
+      .query('shareLinks')
+      .withIndex('by_shareId', (q) => q.eq('shareId', args.shareId))
+      .first();
+
+    if (!shareLink) {
+      return null;
+    }
+
+    // Check if the share link has expired (if it has an expiration)
+    if (shareLink.expiresAt < Date.now() && shareLink.expiresAtLabel !== 'Never') {
+      return null;
+    }
+
+    // Get budgets for this month
+    const budgets = await ctx.db
+      .query('budgets')
+      .withIndex('by_userId_yearMonth', (q) =>
+        q
+          .eq('userId', shareLink.userId as Id<'users'>)
+          .eq('year', shareLink.year)
+          .eq('month', shareLink.month)
+      )
+      .collect();
+
+    // Create start and end date for the specified month
+    const startDate = new Date(shareLink.year, shareLink.month, 1);
+    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+
+    // Format as ISO strings for comparison
+    const startDateStr = startDate.toISOString();
+    const endDateStr = endDate.toISOString();
+
+    // Get transactions for this user within the specified month
+    const transactions = await ctx.db
+      .query('transactions')
+      .withIndex('by_userId_datetime', (q) =>
+        q
+          .eq('userId', shareLink.userId as Id<'users'>)
+          .gte('datetime', startDateStr)
+          .lte('datetime', endDateStr)
+      )
+      // Filter to only include expense transactions for budget calculations
+      .filter((q) => q.eq(q.field('transactionType'), 'expense'))
+      .collect();
+
+    // Calculate totals by category
+    const spendingByCategory: Record<string, number> = {};
+
+    for (const transaction of transactions) {
+      const category = transaction.category || 'Uncategorized';
+      if (!spendingByCategory[category]) {
+        spendingByCategory[category] = 0;
+      }
+
+      // Add amounts (negative for expenses, positive for income)
+      spendingByCategory[category] += transaction.amount;
+    }
+
+    // Combine budget and actual spending data
+    const budgetProgress = budgets.map((budget) => {
+      const spent = spendingByCategory[budget.category] || 0;
+      const remaining = budget.amount - Math.abs(spent); // Use absolute value for expenses
+      const percentage = budget.amount > 0 ? (Math.abs(spent) / budget.amount) * 100 : 0;
+
+      return {
+        ...budget,
+        spent: Math.abs(spent), // Always return as positive for UI
+        remaining: remaining,
+        percentage: percentage,
+        status: remaining >= 0 ? 'within_budget' : 'over_budget',
+      };
+    });
+
+    // Also include categories that have transactions but no budget
+    const categoriesWithoutBudgets = Object.keys(spendingByCategory).filter(
+      (category) => !budgets.some((budget) => budget.category === category)
+    );
+
+    const unbudgetedCategories = categoriesWithoutBudgets.map((category) => ({
+      category,
+      spent: Math.abs(spendingByCategory[category]),
+      status: 'no_budget',
+    }));
+
+    return {
+      budgeted: budgetProgress,
+      unbudgeted: unbudgetedCategories,
+    };
+  },
+});
+
+// Get a high-level summary of budget totals and spending for a shared link
+export const getSharedBudgetSummary = query({
+  args: {
+    shareId: v.string(),
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    totalBudget: number;
+    totalSpent: number;
+    totalRemaining: number;
+    percentSpent: number;
+    budgetCount: number;
+    status: string;
+  } | null> => {
+    // Get the share link
+    const shareLink = await ctx.db
+      .query('shareLinks')
+      .withIndex('by_shareId', (q) => q.eq('shareId', args.shareId))
+      .first();
+
+    if (!shareLink) {
+      return null;
+    }
+
+    // Check if the share link has expired (if it has an expiration)
+    if (shareLink.expiresAt < Date.now() && shareLink.expiresAtLabel !== 'Never') {
+      return null;
+    }
+
+    // Get budget progress which already includes spending data
+    const budgetProgress = await ctx.runQuery(api.sharing.getSharedBudgetProgress, {
+      shareId: args.shareId,
+    });
+
+    if (!budgetProgress) {
+      return null;
+    }
+
+    type BudgetProgressResult = {
+      budgeted: Array<{
+        amount: number;
+        spent: number;
+        status: string;
+      }>;
+      unbudgeted: Array<{
+        spent: number;
+      }>;
+    };
+
+    // Cast to the expected type
+    const typedBudgetProgress = budgetProgress as BudgetProgressResult;
+
+    // Calculate total budget, total spent, and total remaining
+    let totalBudget = 0;
+    let totalSpent = 0;
+
+    // Add up all budgeted categories
+    for (const budget of typedBudgetProgress.budgeted) {
+      totalBudget += budget.amount;
+      totalSpent += budget.spent;
+    }
+
+    // Add spending from unbudgeted categories
+    for (const item of typedBudgetProgress.unbudgeted) {
+      totalSpent += item.spent;
+    }
+
+    const totalRemaining = totalBudget - totalSpent;
+    const percentSpent = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+    return {
+      totalBudget,
+      totalSpent,
+      totalRemaining,
+      percentSpent,
+      budgetCount: typedBudgetProgress.budgeted.length,
+      status: totalRemaining >= 0 ? 'within_budget' : 'over_budget',
     };
   },
 });

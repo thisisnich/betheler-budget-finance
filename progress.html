@@ -8,6 +8,44 @@
       name="description"
       content="Key information about current tasks and their progress"
     />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      .notice {
+        background-color: #fef3c7;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #f59e0b;
+        margin: 24px 0;
+      }
+      .changelog-link {
+        background-color: #e0f2fe;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #0ea5e9;
+        margin: 24px 0;
+        text-align: center;
+      }
+      .changelog-link a {
+        color: #0369a1;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      .changelog-link a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
 
   <body>
@@ -21,6 +59,22 @@
   -->
 
     <h1>Current Tasks Progress Tracker</h1>
+
+    <div class="changelog-link">
+      <p>
+        Detailed version history is now available in the
+        <a href="./changelog/index.html">changelog directory</a>.
+      </p>
+    </div>
+
+    <div class="notice">
+      <p>
+        <strong>Notice:</strong> The detailed version history has been moved to
+        the changelog directory for better organization. This document now
+        focuses on tracking the current active tasks and providing high-level
+        project information.
+      </p>
+    </div>
 
     <section id="tech-stack">
       <h2>Tech Stack</h2>
@@ -157,1164 +211,115 @@ betheler-budget-finance/
     <section id="technical-tasks">
       <h2>Technical Tasks</h2>
       <meta name="importance" content="high" />
-      <!-- 
-      IMPORTANT: This section contains the actual task lists.
-      - Update the status markers ([ ], [.], [x]) as tasks progress.
-      - Add new tasks or versions as needed.
-      - Keep the structure (headings, subheadings) consistent.
-      - Ensure all task descriptions include relevant details such as:
-        * File names
-        * Function names
-        * Component names
-        * Interface / Type / Enum names (where applicable)
-        * Enum Values (where applicable)
-      - Do not include tests in the list of tasks.
-      - The implementation notes at the end of each version provide context and should be updated as needed.
-      - When adding a new version, create a new section with appropriate metadata.
-
-      ⚠️ Implementation Reminders:
-      - Keep changes incremental - Make small, focused changes that are easy to validate
-      - Verify before proceeding - After creating each file, verify it compiles before moving on
-      - Follow existing patterns - Match the code style and patterns already in the codebase
-      - Preserve existing code - Be very careful when modifying existing files
-      - Minimal dependencies - Avoid adding unnecessary dependencies
-      - Implementation order - Start with data models, then backend, then frontend core components, then integration
-      - Type safety first - Ensure strong typing throughout the implementation
-      - Complete one feature at a time - Implement features vertically (backend to frontend) before moving to the next
-    -->
-      <section id="v1.0">
-        <meta name="version" content="1.0" />
-        <h1>📍 Version 1.0</h1>
-        <section feature="transaction-management">
-          <h3>Transaction Management</h3>
+      <!-- Current active tasks -->
+      <section id="v1.5.0">
+        <meta name="version" content="1.5.0" />
+        <h1>
+          📍 Current Version: 1.5.0 - Proper Fund Allocation in Shared View
+        </h1>
+        <section feature="fund-allocation-enhancement">
+          <h3>Proper Fund Allocation in Shared View</h3>
           <ul>
             <li>
-              <strong>Backend Implementation</strong>
+              <strong>Backend Enhancements</strong>
               <ul>
                 <li>
-                  [x] Complete transaction creation mutation in
-                  services/backend/convex/transactions.ts
-                </li>
-                <li>
-                  [x] Implement listTransactions query in
-                  services/backend/convex/transactions.ts
-                </li>
-                <li>
-                  [x] Implement deleteTransaction mutation in
-                  services/backend/convex/transactions.ts
-                </li>
-                <li>
-                  [x] Create transaction type definitions in
-                  services/backend/convex/_generated/dataModel.d.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create TransactionForm component in
-                  apps/webapp/src/components/TransactionForm.tsx
-                </li>
-                <li>
-                  [x] Create TransactionList component in
-                  apps/webapp/src/components/TransactionList.tsx
-                </li>
-                <li>
-                  [x] Create TransactionItem component in
-                  apps/webapp/src/components/TransactionItem.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Page Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create transactions page at
-                  apps/webapp/src/app/transactions/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Built using Convex for the
-            backend and React with Shadcn UI components for the frontend.
-            Authentication checks will follow existing patterns.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.1">
-        <meta name="version" content="1.1" />
-        <h1>📍 Version 1.1</h1>
-        <section feature="transaction-enhancements">
-          <h3>Transaction Enhancements</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Implement listByMonth query in
-                  services/backend/convex/transactions.ts
-                </li>
-                <li>
-                  [x] Implement getCategorySummary query in
-                  services/backend/convex/transactions.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create MonthYearPicker component in
-                  apps/webapp/src/components/MonthYearPicker.tsx
-                </li>
-                <li>
-                  [x] Create CategoryPieChart component in
-                  apps/webapp/src/components/CategoryPieChart.tsx
-                </li>
-                <li>
-                  [x] Update TransactionList component in
-                  apps/webapp/src/components/TransactionList.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Dependencies</strong>
-              <ul>
-                <li>[x] Add Chart.js and React-ChartJS-2</li>
-                <li>[x] Add date-fns</li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Month selector for filtering
-            transactions and pie chart for spending distribution.
-          </p>
-        </section>
-      </section>
-
-      <section id="mobile-responsiveness">
-        <h2>Mobile Responsiveness</h2>
-        <ul>
-          <li>
-            <strong>Transaction Pages Responsiveness</strong>
-            <ul>
-              <li>
-                [x] Redesign transaction page layout in
-                apps/webapp/src/app/transactions/page.tsx
-              </li>
-              <li>
-                [x] Update TransactionList component in
-                apps/webapp/src/components/TransactionList.tsx
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <p>
-          <strong>Implementation Notes:</strong> Focus on creating a native
-          mobile app experience using Tailwind's responsive breakpoints.
-        </p>
-      </section>
-
-      <section id="performance-improvements">
-        <h2>Performance Improvements</h2>
-        <ul>
-          <li>
-            <strong>React Performance Optimizations</strong>
-            <ul>
-              <li>[x] Add useCallback in DateTimePicker component</li>
-              <li>
-                [x] Memoize navigation items in
-                apps/webapp/src/components/Navigation.tsx
-              </li>
-              <li>[x] Optimize TransactionList component</li>
-            </ul>
-          </li>
-        </ul>
-        <p>
-          <strong>Implementation Notes:</strong> Focus on memoizing computations
-          and fixing mobile UI issues.
-        </p>
-      </section>
-
-      <section id="navigation-fixes">
-        <h2>Navigation Links Fixes</h2>
-        <ul>
-          <li>
-            <strong>Navigation Structure Cleanup</strong>
-            <ul>
-              <li>
-                [x] Update "Budget" app link in
-                apps/webapp/src/components/Navigation.tsx
-              </li>
-              <li>
-                [x] Ensure only Transactions link appears for authenticated
-                users
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <p>
-          <strong>Implementation Notes:</strong> Simplify navigation for a
-          streamlined user experience.
-        </p>
-      </section>
-
-      <section id="navigation-improvements">
-        <h2>Navigation Improvements</h2>
-        <ul>
-          <li>
-            <strong>Mobile Navigation Enhancements</strong>
-            <ul>
-              <li>
-                [x] Add profile icon in
-                apps/webapp/src/components/Navigation.tsx
-              </li>
-              <li>[x] Update UserMenu component for mobile</li>
-            </ul>
-          </li>
-        </ul>
-        <p>
-          <strong>Implementation Notes:</strong> Create a consistent navigation
-          experience across mobile and desktop.
-        </p>
-      </section>
-
-      <section id="v1.2">
-        <meta name="version" content="1.2" />
-        <h1>📍 Version 1.2</h1>
-        <section feature="expense-sharing">
-          <h3>Expense Sharing</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Implement createShareLink mutation in
+                  [x] Create getSharedFinancialSummary API endpoint in
                   services/backend/convex/sharing.ts
                 </li>
                 <li>
-                  [x] Implement getSharedTransactions query in
+                  [x] Create getSharedBudgetDetails API endpoint in
                   services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Implement getSharedCategorySummary query in
-                  services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Create shareLink type definitions in
-                  services/backend/convex/_generated/dataModel.d.ts
                 </li>
               </ul>
             </li>
             <li>
-              <strong>Frontend Implementation</strong>
+              <strong>Shared View Updates</strong>
               <ul>
                 <li>
-                  [x] Create ShareButton component in
-                  apps/webapp/src/components/ShareButton.tsx
-                </li>
-                <li>
-                  [x] Create ShareModal component in
-                  apps/webapp/src/components/ShareModal.tsx
-                </li>
-                <li>
-                  [x] Add sharing capabilities to TransactionList in
-                  apps/webapp/src/components/TransactionList.tsx
-                </li>
-                <li>
-                  [x] Add sharing capabilities to CategoryPieChart in
-                  apps/webapp/src/components/CategoryPieChart.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Page Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create shared view page at
-                  apps/webapp/src/app/shared/[id]/page.tsx
-                </li>
-                <li>
-                  [x] Create SharedTransactionView component in
+                  [x] Update SharedTransactionView to use new API endpoints in
                   apps/webapp/src/components/SharedTransactionView.tsx
                 </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Minor Improvements</strong>
-              <ul>
                 <li>
-                  [x] Change default category to "Food" in
-                  apps/webapp/src/components/TransactionForm.tsx
+                  [x] Implement proper fund allocation calculation with savings,
+                  budget categories, and unallocated funds
                 </li>
                 <li>
-                  [x] Move Share button from TransactionList to Spending
-                  Overview section in apps/webapp/src/app/app/page.tsx
+                  [x] Improve UI to match main app's fund allocation
+                  visualization
                 </li>
               </ul>
             </li>
           </ul>
           <p>
-            <strong>Implementation Notes:</strong> The sharing functionality
-            will generate unique links that allow viewers to see transaction
-            data and category summary charts without requiring authentication.
-            The share links will have configurable expiration dates for
-            security.
+            <strong>Implementation Notes:</strong> This enhancement improves the
+            shared view's fund allocation chart to match the main app's
+            functionality. The implementation includes: 1. New API endpoints in
+            the backend for retrieving shared financial summaries and budget
+            data 2. Updated fund allocation calculation that properly shows
+            savings, budget categories, and unallocated funds 3. Enhanced UI
+            with additional financial information to provide better context to
+            shared view recipients The implementation now provides users who
+            receive shared links with the same level of insight into fund
+            allocation as seen in the main app dashboard.
           </p>
         </section>
       </section>
 
-      <section id="v1.2.1">
-        <meta name="version" content="1.2.1" />
-        <h1>📍 Version 1.2.1 - Share Management Improvements</h1>
-        <section feature="share-management">
-          <h3>Share Management</h3>
+      <section id="v1.4.10">
+        <meta name="version" content="1.4.10" />
+        <h1>
+          📍 Previous Version: 1.4.10 - Enhanced Shared Page Visualization
+        </h1>
+        <section feature="shared-page-enhancements">
+          <h3>Shared Page Visualization Improvements</h3>
           <ul>
             <li>
-              <strong>Backend Implementation</strong>
+              <strong>Visualization Enhancements</strong>
               <ul>
                 <li>
-                  [x] Update createShareLink to support permanent shares in
-                  services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Implement listUserShares query in
-                  services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Implement deleteShareLink mutation in
-                  services/backend/convex/sharing.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Update ShareModal to include "No expiration" option in
-                  apps/webapp/src/components/ShareModal.tsx
-                </li>
-                <li>
-                  [x] Create SharesListItem component for displaying a share in
-                  apps/webapp/src/components/SharesListItem.tsx
-                </li>
-                <li>
-                  [x] Create SharesList component for displaying all shares in
-                  apps/webapp/src/components/SharesList.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Page Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create shared links management page at
-                  apps/webapp/src/app/shares/page.tsx
-                </li>
-                <li>
-                  [x] Add link to shared links management page in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Enhancing share management by
-            adding the ability to create permanent shares (no expiration), view
-            all active shares, and delete existing shares. The share creation
-            date will be displayed in the shares list for better tracking.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.2.2">
-        <meta name="version" content="1.2.2" />
-        <h1>📍 Version 1.2.2 - Share Usability Improvements</h1>
-        <section feature="share-usability">
-          <h3>Share Usability Improvements</h3>
-          <ul>
-            <li>
-              <strong>Dashboard Recent Shares</strong>
-              <ul>
-                <li>
-                  [x] Create RecentSharesList component for dashboard in
-                  apps/webapp/src/components/RecentSharesList.tsx
-                </li>
-                <li>
-                  [x] Add recent shares list to dashboard in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Share Modal Updates</strong>
-              <ul>
-                <li>
-                  [x] Update ShareModal to set "No expiration" as default and
-                  limit options to 30 days or no expiration in
-                  apps/webapp/src/components/ShareModal.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Shares List UI Improvements</strong>
-              <ul>
-                <li>
-                  [x] Make SharesListItem more compact, converting the "Copy
-                  share link" button to an icon in
-                  apps/webapp/src/components/SharesListItem.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Improving the sharing user
-            experience by showing recent shares on the dashboard, making the
-            ShareModal simpler with better defaults, and making the shares
-            listing more compact.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.2.3">
-        <meta name="version" content="1.2.3" />
-        <h1>📍 Version 1.2.3 - Share Modal Enhancement</h1>
-        <section feature="share-modal-redesign">
-          <h3>Share Modal Redesign</h3>
-          <ul>
-            <li>
-              <strong>Share Modal Improvements</strong>
-              <ul>
-                <li>
-                  [x] Move RecentSharesList into ShareModal for improved access
-                  in apps/webapp/src/components/ShareModal.tsx
-                </li>
-                <li>
-                  [x] Update ShareModal layout to show up to 3 recent shares
-                  with a "View More" button in
-                  apps/webapp/src/components/ShareModal.tsx
-                </li>
-                <li>
-                  [x] Improve overall design and layout of the ShareModal
-                  component in apps/webapp/src/components/ShareModal.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Dashboard Updates</strong>
-              <ul>
-                <li>
-                  [x] Remove "Manage Shared Links" quick action button from
-                  dashboard in apps/webapp/src/app/app/page.tsx
-                </li>
-                <li>
-                  [x] Add any necessary UI adjustments to maintain dashboard
-                  layout after changes in apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Consolidated the share
-            management UI by moving recent shares into the ShareModal with a
-            tabbed interface. This allows users to create new shares and
-            view/manage existing shares in one convenient location, while
-            keeping the dashboard clean and focused.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.2.4">
-        <meta name="version" content="1.2.4" />
-        <h1>📍 Version 1.2.4 - Delete All Shares Functionality</h1>
-        <section feature="delete-all-shares">
-          <h3>Delete All Shares Functionality</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Implement deleteAllShareLinks mutation in
-                  services/backend/convex/sharing.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>UI Implementation</strong>
-              <ul>
-                <li>
-                  [x] Add DeleteAllShares component with confirmation dialog in
-                  apps/webapp/src/components/DeleteAllShares.tsx
-                </li>
-                <li>
-                  [x] Update ShareModal to include Delete All button in the
-                  Recent Shares tab in apps/webapp/src/components/ShareModal.tsx
-                </li>
-                <li>
-                  [x] Update SharesList to include Delete All button at the top
-                  in apps/webapp/src/components/SharesList.tsx
-                </li>
-                <li>
-                  [x] Update SharesPage to include Delete All button in the
-                  header in apps/webapp/src/app/shares/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Added a "Delete All Shares"
-            function to provide users with an efficient way to remove all their
-            shared links at once. This feature includes appropriate confirmation
-            dialogs to prevent accidental deletions and is consistently
-            available in both the ShareModal's Recent Shares tab and the main
-            Shares listing page. We kept the button styling contextual to each
-            location: a more subtle ghost variant in the modal and a clear
-            outline variant in the main shares page.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.2.5">
-        <meta name="version" content="1.2.5" />
-        <h1>📍 Version 1.2.5 - Graceful Share Not Found Handling</h1>
-        <section feature="share-not-found">
-          <h3>Share Not Found Handling</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Update getShareLink query to return null instead of
-                  throwing error in services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Update getSharedTransactions query to return null instead
-                  of throwing error in services/backend/convex/sharing.ts
-                </li>
-                <li>
-                  [x] Update getSharedCategorySummary query to return null
-                  instead of throwing error in
-                  services/backend/convex/sharing.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create ShareNotFound component in
-                  apps/webapp/src/components/ShareNotFound.tsx
-                </li>
-                <li>
-                  [x] Update SharedTransactionView to handle null responses in
+                  [x] Update SharedTransactionView component with tabbed
+                  interface in
                   apps/webapp/src/components/SharedTransactionView.tsx
                 </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Instead of throwing errors
-            when a share link is not found or has expired, we will return null
-            from the backend queries and display a user-friendly message in the
-            UI. This provides a better user experience and makes error handling
-            more manageable on the frontend.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.2.6">
-        <meta name="version" content="1.2.6" />
-        <h1>📍 Version 1.2.6 - Unauthorized Page Enhancement</h1>
-        <section feature="unauthorized-page">
-          <h3>Unauthorized Page Enhancement</h3>
-          <ul>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
                 <li>
-                  [x] Create UnauthorizedPage component in
-                  apps/webapp/src/components/UnauthorizedPage.tsx
+                  [x] Create Fund Allocation tab showing transaction types
+                  breakdown
                 </li>
-                <li>
-                  [ ] Update unauthorized page layout with improved design in
-                  apps/webapp/src/app/unauthorized/page.tsx
-                </li>
+                <li>[x] Create Expenses tab showing expense categories</li>
+                <li>[x] Add empty state messages for both tabs</li>
               </ul>
             </li>
             <li>
-              <strong>Design Improvements</strong>
+              <strong>Backend Improvements</strong>
               <ul>
                 <li>
-                  [ ] Add illustration or icon to make the page more visually
-                  appealing
+                  [x] Update getSharedCategorySummary to support transaction
+                  type filtering in services/backend/convex/sharing.ts
                 </li>
                 <li>
-                  [ ] Add a "Sign In" button that redirects to the login page
-                </li>
-                <li>
-                  [ ] Improve typography and spacing for better readability
-                </li>
-                <li>
-                  [ ] Add a helpful message explaining why authentication is
-                  required
+                  [x] Ensure consistent handling of transaction amounts for
+                  better visualization
                 </li>
               </ul>
             </li>
           </ul>
           <p>
-            <strong>Implementation Notes:</strong> Enhancing the unauthorized
-            page with a more polished and user-friendly design. The improved
-            layout will include clear visual cues, helpful messaging, and a
-            direct path to authentication. This will provide a better experience
-            for users who encounter authentication barriers while trying to
-            access protected routes.
+            <strong>Implementation Notes:</strong> This enhancement improves the
+            shared transaction visualization by adding tabbed views for Fund
+            Allocation and Expenses, matching the functionality available on the
+            main dashboard. The Fund Allocation tab provides a high-level
+            breakdown of income, expenses, and savings, while the Expenses tab
+            shows a detailed breakdown of expense categories. This gives
+            recipients of shared transaction links a more comprehensive and
+            organized view of the financial data.
           </p>
         </section>
       </section>
 
-      <section id="v1.3.0">
-        <meta name="version" content="1.3.0" />
-        <h1>📍 Version 1.3.0 - Budget Management</h1>
-        <section feature="budget-management">
-          <h3>Budget Management</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>[x] Update schema.ts to add budgets table</li>
-                <li>
-                  [x] Implement createBudget mutation in
-                  services/backend/convex/budgets.ts
-                </li>
-                <li>
-                  [x] Implement updateBudget mutation in
-                  services/backend/convex/budgets.ts
-                </li>
-                <li>
-                  [x] Implement deleteBudget mutation in
-                  services/backend/convex/budgets.ts
-                </li>
-                <li>
-                  [x] Implement listUserBudgets query in
-                  services/backend/convex/budgets.ts
-                </li>
-                <li>
-                  [x] Implement getBudgetProgress query in
-                  services/backend/convex/budgets.ts to compare budgets with
-                  actual spending
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create BudgetForm component in
-                  apps/webapp/src/components/BudgetForm.tsx
-                </li>
-                <li>
-                  [x] Create BudgetList component in
-                  apps/webapp/src/components/BudgetList.tsx
-                </li>
-                <li>
-                  [x] Create BudgetItem component in
-                  apps/webapp/src/components/BudgetItem.tsx
-                </li>
-                <li>
-                  [x] Create BudgetProgress component in
-                  apps/webapp/src/components/BudgetProgress.tsx
-                </li>
-                <li>
-                  [x] Update CategoryPieChart to show budget vs. actual spending
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Page Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create budgets page at
-                  apps/webapp/src/app/budgets/page.tsx
-                </li>
-                <li>
-                  [x] Add navigation link to budgets page in
-                  apps/webapp/src/components/Navigation.tsx
-                </li>
-                <li>
-                  [x] Add quick action link to set budget on dashboard in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> The budget management feature
-            allows users to set monthly budgets for each spending category and
-            track their actual spending against these budgets. Users can see
-            whether they're within budget or overspending in each category. The
-            dashboard displays budget progress visually with color-coded
-            indicators, making it easy to identify problem areas.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.3.1">
-        <meta name="version" content="1.3.1" />
-        <h1>📍 Version 1.3.1 - Budget Enhancements</h1>
-        <section feature="budget-enhancements">
-          <h3>Budget Dashboard and Copy Features</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Implement getTotalBudgetSummary query in
-                  services/backend/convex/budgets.ts
-                </li>
-                <li>
-                  [x] Implement copyBudgetsFromMonth mutation in
-                  services/backend/convex/budgets.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Dashboard Budget Overview</strong>
-              <ul>
-                <li>
-                  [x] Create BudgetSummaryCard component in
-                  apps/webapp/src/components/BudgetSummaryCard.tsx
-                </li>
-                <li>
-                  [x] Add budget summary to dashboard in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-                <li>
-                  [x] Show total budget, spent amount, and remaining budget in
-                  the summary
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Budget Copy Feature</strong>
-              <ul>
-                <li>
-                  [x] Create CopyBudgetButton component in
-                  apps/webapp/src/components/CopyBudgetButton.tsx
-                </li>
-                <li>
-                  [x] Update BudgetList to include copy functionality in
-                  apps/webapp/src/components/BudgetList.tsx
-                </li>
-                <li>[x] Add month selection for copying budgets</li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> These enhancements add a
-            high-level budget summary to the dashboard, showing users their
-            total budget for the month and how much they have left to spend. The
-            copy feature allows users to quickly set up budgets for a new month
-            by copying all budget entries from a previous month, saving time and
-            maintaining consistency in their budget planning.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.3.2">
-        <meta name="version" content="1.3.2" />
-        <h1>📍 Version 1.3.2 - Budget Copy Feature Refinement</h1>
-        <section feature="budget-copy-refinement">
-          <h3>Budget Copy Feature Refinement</h3>
-          <ul>
-            <li>
-              <strong>User Experience Improvements</strong>
-              <ul>
-                <li>
-                  [x] Modify BudgetList to show CopyBudgetButton only in empty
-                  state in apps/webapp/src/components/BudgetList.tsx
-                </li>
-                <li>
-                  [x] Add additional CopyBudgetButton to empty state content
-                  area
-                </li>
-                <li>
-                  [x] Display hint text when no transactions exist for the month
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This refinement improves the
-            user experience by showing the "Copy from Previous Month" button
-            only when it's most relevant - when there are no budgets set up for
-            the current month. This contextual approach simplifies the interface
-            by only showing the option when it's most useful, reducing visual
-            clutter and making the workflow more intuitive for users who are
-            just starting to set up their monthly budget.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.3.3">
-        <meta name="version" content="1.3.3" />
-        <h1>📍 Version 1.3.3 - Dedicated Empty Budget State Component</h1>
-        <section feature="empty-budget-component">
-          <h3>Empty Budget State Component</h3>
-          <ul>
-            <li>
-              <strong>Component Creation</strong>
-              <ul>
-                <li>
-                  [x] Create EmptyBudgetState component in
-                  apps/webapp/src/components/EmptyBudgetState.tsx
-                </li>
-                <li>
-                  [x] Enhance CopyBudgetButton to support customization in
-                  apps/webapp/src/components/CopyBudgetButton.tsx
-                </li>
-                <li>
-                  [x] Update BudgetList to use EmptyBudgetState component in
-                  apps/webapp/src/components/BudgetList.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Design Improvements</strong>
-              <ul>
-                <li>[x] Create a more prominent design for the copy action</li>
-                <li>
-                  [x] Add content hierarchy with primary and secondary actions
-                </li>
-                <li>
-                  [x] Improve empty state messaging based on transaction status
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This improvement creates a
-            dedicated component for the empty budget state that uses a more
-            strategic approach to encourage budget creation. The new component
-            prominently features the "Copy from Previous Month" as the primary
-            action, with "Add Budget Manually" as an alternative. The component
-            also adapts its messaging based on whether the user has transactions
-            for the month, providing a more personalized experience and clearer
-            next steps for users.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.3.4">
-        <meta name="version" content="1.3.4" />
-        <h1>📍 Version 1.3.4 - Navigation Consistency Improvements</h1>
-        <section feature="navigation-consistency">
-          <h3>Navigation Consistency Improvements</h3>
-          <ul>
-            <li>
-              <strong>Page Header Component</strong>
-              <ul>
-                <li>
-                  [x] Create PageHeader component in
-                  apps/webapp/src/components/PageHeader.tsx
-                </li>
-                <li>
-                  [x] Update transactions page to use PageHeader in
-                  apps/webapp/src/app/transactions/page.tsx
-                </li>
-                <li>
-                  [x] Update budgets page to use PageHeader in
-                  apps/webapp/src/app/budgets/page.tsx
-                </li>
-                <li>
-                  [x] Update shares page to use PageHeader in
-                  apps/webapp/src/app/shares/page.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>UserMenu Consistency</strong>
-              <ul>
-                <li>
-                  [x] Update UserMenu to include Budgets link in
-                  apps/webapp/src/components/UserMenu.tsx
-                </li>
-                <li>
-                  [x] Update UserMenu to include Shares link in
-                  apps/webapp/src/components/UserMenu.tsx
-                </li>
-                <li>[x] Ensure consistent ordering of menu items</li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Created a consistent
-            navigation experience across all pages with a shared PageHeader
-            component that includes standard elements like the back button and
-            page title. Additionally, updated the UserMenu to include all main
-            navigation options in a consistent order to improve discoverability
-            and user experience.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.3.5">
-        <meta name="version" content="1.3.5" />
-        <h1>📍 Version 1.3.5 - Bug Fixes</h1>
-        <section feature="bug-fixes">
-          <h3>Budget Interface Bug Fixes</h3>
-          <ul>
-            <li>
-              <strong>EmptyBudgetState Button Fix</strong>
-              <ul>
-                <li>
-                  [x] Fix "Add Budget Manually" button in EmptyBudgetState to
-                  properly open the dialog in
-                  apps/webapp/src/components/BudgetList.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> Fixed the "Add Budget
-            Manually" button in the empty budget state to properly open the add
-            budget dialog, ensuring consistent behavior between empty and
-            non-empty states. The fix involved restructuring the dialog
-            component to be available outside of conditional rendering.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.0">
-        <meta name="version" content="1.4.0" />
-        <h1>📍 Version 1.4.0 - Income and Savings Tracking</h1>
-        <section feature="transaction-types">
-          <h3>Transaction Types: Income and Savings</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Update schema.ts to add transactionType field in the
-                  transactions table
-                </li>
-                <li>
-                  [x] Update existing queries and mutations in
-                  services/backend/convex/transactions.ts to support transaction
-                  types
-                </li>
-                <li>
-                  [x] Create getSavingsSummary query in
-                  services/backend/convex/transactions.ts
-                </li>
-                <li>
-                  [x] Update getCategorySummary to filter by transaction type in
-                  services/backend/convex/transactions.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create TransactionTypeSelect component in
-                  apps/webapp/src/components/TransactionTypeSelect.tsx
-                </li>
-                <li>
-                  [x] Update TransactionForm to include transaction type and
-                  handle Income/Savings in
-                  apps/webapp/src/components/TransactionForm.tsx
-                </li>
-                <li>
-                  [x] Update TransactionItem to display transaction types in
-                  apps/webapp/src/components/TransactionItem.tsx
-                </li>
-                <li>
-                  [x] Update TransactionList to filter by transaction type in
-                  apps/webapp/src/components/TransactionList.tsx
-                </li>
-                <li>
-                  [x] Create SavingsSummaryCard component in
-                  apps/webapp/src/components/SavingsSummaryCard.tsx
-                </li>
-                <li>
-                  [x] Update CategoryPieChart to include savings and rename to
-                  SpendingBreakdown in
-                  apps/webapp/src/components/CategoryPieChart.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Dashboard Updates</strong>
-              <ul>
-                <li>
-                  [x] Add SavingsSummaryCard to dashboard in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-                <li>
-                  [x] Update SpendingGraph to display income vs. expenses in
-                  apps/webapp/src/components/SpendingGraph.tsx
-                </li>
-                <li>
-                  [x] Add filters for transaction types in transactions page in
-                  apps/webapp/src/app/transactions/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This feature adds support for
-            different transaction types - expense (default), income, and
-            savings. Income transactions will not require a category, while
-            savings will be treated as a special transaction type. The dashboard
-            will display a summary of savings and the pie chart will be updated
-            to include this information. Users will be able to filter
-            transactions by type and see a more comprehensive financial picture.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.1">
-        <meta name="version" content="1.4.1" />
-        <h1>📍 Version 1.4.1 - Transaction Bugfixes</h1>
-        <section feature="transaction-fixes">
-          <h3>Fix Transaction Type Bugs</h3>
-          <ul>
-            <li>
-              <strong>Backend Fixes</strong>
-              <ul>
-                <li>
-                  [x] Fix version mismatch in transaction create mutation in
-                  services/backend/convex/schema.ts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Fixes</strong>
-              <ul>
-                <li>
-                  [x] Remove duplicate transaction creation buttons in
-                  TransactionList component in
-                  apps/webapp/src/components/TransactionList.tsx
-                </li>
-                <li>
-                  [x] Update transactions page to use the correct
-                  TransactionList component in
-                  apps/webapp/src/app/transactions/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This bugfix addresses two
-            issues: 1) an error when creating savings transactions due to API
-            schema validation, and 2) duplicate "Add Transaction" buttons
-            appearing on the transactions page. The backend fix resolves a
-            parameter mismatch between the client schema and server schema for
-            transactions, while the frontend fix removes redundant UI elements.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.2">
-        <meta name="version" content="1.4.2" />
-        <h1>📍 Version 1.4.2 - Dashboard Visualization Fixes</h1>
-        <section feature="dashboard-visualization">
-          <h3>Dashboard Visualization Bugfixes</h3>
-          <ul>
-            <li>
-              <strong>Month Selector Synchronization</strong>
-              <ul>
-                <li>
-                  [x] Fix the SpendingGraph to update data based on month
-                  selection in apps/webapp/src/components/SpendingGraph.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Pie Chart Enhancements</strong>
-              <ul>
-                <li>
-                  [x] Update SpendingBreakdownChart to show combined expenses
-                  and savings breakdown in
-                  apps/webapp/src/components/CategoryPieChart.tsx
-                </li>
-                <li>
-                  [x] Update SpendingGraph to pass correct data to
-                  SpendingBreakdownChart in
-                  apps/webapp/src/components/SpendingGraph.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> These fixes address two
-            issues in the dashboard: 1) the pie chart not updating when the
-            month selector changes, and 2) the pie chart showing only savings
-            breakdown instead of a combined breakdown of expenses and savings to
-            give users a complete picture of their fund allocation for the
-            month.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.3">
-        <meta name="version" content="1.4.3" />
-        <h1>📍 Version 1.4.3 - Fund Allocation Chart Fix</h1>
-        <section feature="fund-allocation-chart">
-          <h3>Fund Allocation Chart Investigation and Fix</h3>
-          <ul>
-            <li>
-              <strong>Investigation</strong>
-              <ul>
-                <li>
-                  [x] Trace data flow through SpendingGraph.tsx and
-                  CategoryPieChart.tsx to identify why expense categories are
-                  not showing up
-                </li>
-                <li>
-                  [x] Issue identified: In SpendingGraph.tsx, we're filtering
-                  transactions by transactionType='expense' when calling
-                  getCategorySummary, but the expenses data is showing only
-                  savings in SpendingBreakdownChart because the
-                  includeSavings=true parameter is overriding the expense
-                  categories instead of adding to them.
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Implementation</strong>
-              <ul>
-                <li>
-                  [x] Update data processing in SpendingBreakdownChart to
-                  properly combine expense categories with savings
-                </li>
-                <li>
-                  [x] Add logic to handle existing 'Savings' category in the
-                  expense data
-                </li>
-                <li>
-                  [x] Filter out very small amounts to avoid cluttering the
-                  chart
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This patch focuses on fixing
-            an issue where the "Fund Allocation" pie chart only displays savings
-            data but not expense categories. The investigation will trace the
-            data flow from the SpendingGraph component to the
-            SpendingBreakdownChart component to identify and fix the issue.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.4">
-        <meta name="version" content="1.4.4" />
-        <h1>📍 Version 1.4.4 - Zero Expenses Bug Fix</h1>
+      <!-- Upcoming tasks for next version -->
+      <section id="upcoming-tasks">
+        <h1>📍 Upcoming Tasks</h1>
         <section feature="expenses-calculation">
           <h3>Fix for Zero Expenses in Spending Overview</h3>
           <ul>
@@ -1343,263 +348,6 @@ betheler-budget-finance/
             transaction list but show up as 0 in the spending overview section.
             This suggests a fundamental problem with how expenses are being
             calculated, filtered, or displayed.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.5">
-        <meta name="version" content="1.4.5" />
-        <h1>📍 Version 1.4.5 - Improved Monthly Summary</h1>
-        <section feature="monthly-summary">
-          <h3>Enhanced Monthly Summary Card</h3>
-          <ul>
-            <li>
-              <strong>Backend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Implement getMonthlyFinancialSummary query in
-                  services/backend/convex/transactions.ts to return income,
-                  expenses, savings, and budget totals
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Frontend Implementation</strong>
-              <ul>
-                <li>
-                  [x] Create MonthlySummaryCard component in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-                <li>
-                  [x] Design breakdown list showing income, expenses, budgeted
-                  amount, savings, and remainder
-                </li>
-                <li>
-                  [x] Add warning/info states for different remainder scenarios
-                </li>
-                <li>
-                  [x] Update dashboard to replace BudgetSummaryCard with new
-                  MonthlySummaryCard in apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This enhancement replaces the current budget summary card with a more comprehensive monthly financial summary that follows a specific calculation flow: starting with total income, then subtracting savings to get spendable income, and finally subtracting expenses to get the remainder. The card will display warnings when the remainder is not zero - indicating either unbudgeted money (positive remainder) or overspending (negative remainder). This gives users a clearer financial picture and helps them identify planning issues immediately.
-          </p>
-          <p>
-            <strong>Additional Changes:</strong> As part of this update, we've also:
-            <ul>
-              <li>Removed the previous BudgetSummaryCard component as it's no longer needed</li>
-              <li>Simplified the SpendingGraph component to focus only on the fund allocation visualization</li>
-              <li>Improved the dashboard layout for better integration of the financial sections</li>
-              <li>Renamed "Spending Overview" to "Fund Allocation" to better reflect its purpose</li>
-            </ul>
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.6">
-        <meta name="version" content="1.4.6" />
-        <h1>📍 Version 1.4.6 - Monthly Summary UI Enhancements</h1>
-        <section feature="monthly-summary-enhancement">
-          <h3>Monthly Summary UI Improvements</h3>
-          <ul>
-            <li>
-              <strong>UI Cleanup</strong>
-              <ul>
-                <li>
-                  [x] Remove transaction and budget buttons from MonthlySummaryCard in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-                <li>
-                  [x] Remove SavingsSummaryCard from dashboard layout in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Monthly Summary Reorganization</strong>
-              <ul>
-                <li>
-                  [x] Reorganize MonthlySummaryCard into two distinct sections (Budgeting and Remainder) in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-                <li>
-                  [x] Create Budgeting section showing income, savings, and spendable income calculation
-                </li>
-                <li>
-                  [x] Add warning if total budget doesn't match spendable income
-                </li>
-                <li>
-                  [x] Create Remainder section showing budget versus actual spending calculation
-                </li>
-                <li>
-                  [x] Highlight key figures (spendable income and remaining allowance) with larger fonts
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Visual Styling Standardization</strong>
-              <ul>
-                <li>
-                  [x] Standardize color codes: green for income, red for expenses, blue for savings, black for other values
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This update improves the Monthly Summary card by reorganizing it into distinct functional sections, removing redundant buttons, and standardizing the color coding for better visual clarity. The enhancements focus on highlighting the two key pieces of information for users: their total spendable income for budgeting purposes and their remaining spending allowance for the month.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.7">
-        <meta name="version" content="1.4.7" />
-        <h1>📍 Version 1.4.7 - Monthly Summary and Fund Allocation Integration</h1>
-        <section feature="unified-financial-view">
-          <h3>Unified Financial View</h3>
-          <ul>
-            <li>
-              <strong>Layout Integration</strong>
-              <ul>
-                <li>
-                  [x] Combine monthly summary and fund allocation into a single card in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-                <li>
-                  [x] Update layout for desktop to show monthly summary and fund allocation side by side
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Date Synchronization</strong>
-              <ul>
-                <li>
-                  [x] Modify MonthlySummaryCard to accept a controlled date from parent component in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-                <li>
-                  [x] Update SpendingGraph to expose its date selection state to parent components in
-                  apps/webapp/src/components/SpendingGraph.tsx
-                </li>
-                <li>
-                  [x] Synchronize date selection between the monthly summary and fund allocation in
-                  apps/webapp/src/app/app/page.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Budget Warning Enhancement</strong>
-              <ul>
-                <li>
-                  [x] Add contextual action links to the budget mismatch warning in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-                <li>
-                  [x] Add "Add to Savings" link for the transactions option
-                </li>
-                <li>
-                  [x] Add "Adjust Budget" link for the budgets option
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This update creates a more cohesive financial dashboard by integrating the monthly summary and fund allocation into a unified view. The shared date selection ensures that users are always looking at the same time period across all financial information. The enhanced budget warning now provides actionable links to help users quickly resolve budget discrepancies, either by adding the difference to savings or by adjusting their budget.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.8">
-        <meta name="version" content="1.4.8" />
-        <h1>📍 Version 1.4.8 - Quick Transaction Helpers</h1>
-        <section feature="transaction-helpers">
-          <h3>Financial Overview Quick Actions</h3>
-          <ul>
-            <li>
-              <strong>Income Quick Add</strong>
-              <ul>
-                <li>
-                  [x] Create AddIncomeModal component for quick income entry in
-                  apps/webapp/src/components/AddIncomeModal.tsx
-                </li>
-                <li>
-                  [x] Add "Add Income" button to MonthlySummaryCard when income is zero in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Savings Quick Add</strong>
-              <ul>
-                <li>
-                  [x] Create AddSavingsModal component for quick savings entry in
-                  apps/webapp/src/components/AddSavingsModal.tsx
-                </li>
-                <li>
-                  [x] Add "Add Savings" button to MonthlySummaryCard when savings is zero in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Budget Quick Setup</strong>
-              <ul>
-                <li>
-                  [x] Add "Plan Budget" button to MonthlySummaryCard when budget is zero in
-                  apps/webapp/src/components/MonthlySummaryCard.tsx
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This feature adds contextual quick action buttons to the financial overview that appear when key financial values (income, savings, or budget) are zero. These buttons will either open a streamlined modal for adding transactions with minimal required fields and smart defaults, or direct users to the budget planning page. This makes the financial overview more actionable and helps guide users in setting up their financial tracking.
-          </p>
-        </section>
-      </section>
-
-      <section id="v1.4.9">
-        <meta name="version" content="1.4.9" />
-        <h1>📍 Version 1.4.9 - Enhanced Fund Allocation Visualization</h1>
-        <section feature="fund-allocation-tabs">
-          <h3>Fund Allocation and Expenses Visualization</h3>
-          <ul>
-            <li>
-              <strong>Fund Allocation Visualization</strong>
-              <ul>
-                <li>
-                  [x] Update SpendingGraph component to add tabbed interface in
-                  apps/webapp/src/components/SpendingGraph.tsx
-                </li>
-                <li>
-                  [x] Create Fund Allocation tab showing savings, budgets by category, and unallocated funds
-                </li>
-                <li>
-                  [x] Create Expenses tab showing actual expenses by category
-                </li>
-                <li>
-                  [x] Add empty state messages for both tabs
-                </li>
-              </ul>
-            </li>
-            <li>
-              <strong>Data Visualization Improvements</strong>
-              <ul>
-                <li>
-                  [x] Use budget progress data to extract category-specific budget information
-                </li>
-                <li>
-                  [x] Calculate unallocated funds (total income minus savings minus budgets)
-                </li>
-                <li>
-                  [x] Show budget comparison in the Expenses tab only
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <p>
-            <strong>Implementation Notes:</strong> This enhancement improves the financial visualization by separating fund allocation (planning) from expenses (actual spending) into two distinct tabs. The Fund Allocation tab shows how income is distributed across savings, budgets, and unallocated funds, providing users with a clear view of their financial planning. The Expenses tab shows actual spending by category, allowing users to compare their spending against their budget allocations.
           </p>
         </section>
       </section>
