@@ -6,6 +6,7 @@ const TRANSACTION_CATEGORIES = [
   'Food',
   'Transportation',
   'Tithe & Offering',
+  'Bills & Utilities',
   'Entertainment',
   'Shopping',
   'Personal',
