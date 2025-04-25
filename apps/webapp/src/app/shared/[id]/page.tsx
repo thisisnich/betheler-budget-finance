@@ -1,16 +1,11 @@
 import { ConvexClientProvider } from '@/app/ConvexClientProvider';
 import { SharedTransactionView } from '@/components/SharedTransactionView';
 
-interface SharedPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function SharedPage({ params }: SharedPageProps) {
+export default async function SharedPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <ConvexClientProvider>
-      <SharedTransactionView shareId={params.id} />
+      <SharedTransactionView shareId={id} />
     </ConvexClientProvider>
   );
 }
