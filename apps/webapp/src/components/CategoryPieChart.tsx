@@ -38,7 +38,7 @@ const CHART_BORDER_COLORS = [
 ];
 
 // Define props type for the component
-interface CategoryPieChartProps {
+interface SpendingBreakdownChartProps {
   data: Array<{
     category: string;
     amount: number;
@@ -48,15 +48,19 @@ interface CategoryPieChartProps {
   year?: number;
   month?: number;
   showBudgetComparison?: boolean;
+  includeSavings?: boolean;
+  title?: string;
 }
 
-export function CategoryPieChart({
+export function SpendingBreakdownChart({
   data,
   totalSpent,
   year,
   month,
   showBudgetComparison = false,
-}: CategoryPieChartProps) {
+  includeSavings = false,
+  title = 'Spending Breakdown',
+}: SpendingBreakdownChartProps) {
   // Only fetch budget data if we're showing the comparison and have year/month
   const budgetProgress = useSessionQuery(
     api.budgets.getBudgetProgress,
@@ -68,36 +72,72 @@ export function CategoryPieChart({
       : 'skip'
   );
 
+  // Fetch savings data from the specific month if we have year/month
+  const savingsSummary = useSessionQuery(
+    api.transactions.getSavingsSummary,
+    includeSavings ? (year !== undefined && month !== undefined ? { year, month } : {}) : 'skip'
+  );
+
   // Memoize chart data to prevent unnecessary recalculations
   const chartData = useMemo(() => {
     // Sort data by amount (descending)
     const sortedData = [...data].sort((a, b) => b.amount - a.amount);
 
-    // Create labels and data arrays
-    const labels = sortedData.map((item) => item.category);
-    const amounts = sortedData.map((item) => Math.abs(item.amount));
+    // Create labels and data arrays for expense categories
+    let labels = sortedData.map((item) => item.category);
+    let amounts = sortedData.map((item) => Math.abs(item.amount));
+
+    // Include savings if requested and available
+    if (includeSavings && savingsSummary && savingsSummary.netSavings > 0) {
+      // Check if we already have a savings category
+      const savingsIndex = labels.findIndex((label) => label.toLowerCase() === 'savings');
+
+      if (savingsIndex >= 0) {
+        // Update existing savings amount instead of adding a new entry
+        amounts[savingsIndex] = Math.max(amounts[savingsIndex], savingsSummary.netSavings);
+      } else {
+        // Add new savings entry
+        labels = ['Savings', ...labels];
+        amounts = [savingsSummary.netSavings, ...amounts];
+      }
+    }
+
+    // Filter out zero or very small amounts (less than 0.01)
+    const filteredLabels = [];
+    const filteredAmounts = [];
+
+    for (let i = 0; i < labels.length; i++) {
+      if (amounts[i] > 0.01) {
+        filteredLabels.push(labels[i]);
+        filteredAmounts.push(amounts[i]);
+      }
+    }
 
     // Calculate color for each data point
-    const backgroundColors = sortedData.map(
+    const backgroundColors = filteredLabels.map(
       (_, index) => CHART_COLORS[index % CHART_COLORS.length]
     );
-    const borderColors = sortedData.map(
+    const borderColors = filteredLabels.map(
       (_, index) => CHART_BORDER_COLORS[index % CHART_BORDER_COLORS.length]
     );
 
+    // Calculate total (including savings if included)
+    const total = filteredAmounts.reduce((sum, amount) => sum + amount, 0);
+
     return {
-      labels,
+      labels: filteredLabels,
       datasets: [
         {
-          label: 'Spending',
-          data: amounts,
+          label: 'Amount',
+          data: filteredAmounts,
           backgroundColor: backgroundColors,
           borderColor: borderColors,
           borderWidth: 1,
         },
       ],
+      total,
     };
-  }, [data]);
+  }, [data, includeSavings, savingsSummary]);
 
   // Create chart options
   const options = useMemo(
@@ -115,12 +155,11 @@ export function CategoryPieChart({
 
               // Add percentage and amount to legend labels
               return original.map((label: any, i: number) => {
-                const item = data[i];
-                if (item) {
-                  label.text = `${item.category} · ${formatCurrency(Math.abs(item.amount))} · ${Math.round(
-                    item.percentage
-                  )}%`;
-                }
+                const dataIndex = i;
+                const value = chart.data.datasets[0].data[dataIndex];
+                const percentage = Math.round((value / chartData.total) * 100);
+
+                label.text = `${label.text} · ${formatCurrency(value)} · ${percentage}%`;
                 return label;
               });
             },
@@ -132,10 +171,10 @@ export function CategoryPieChart({
               const value = context.parsed;
               const label = context.label || '';
               const formattedValue = formatCurrency(value);
-              const percentage = ((value / totalSpent) * 100).toFixed(1);
+              const percentage = ((value / chartData.total) * 100).toFixed(1);
 
               // Add budget comparison if available
-              if (showBudgetComparison && budgetProgress) {
+              if (showBudgetComparison && budgetProgress && label !== 'Savings') {
                 const budgetItem = budgetProgress.budgeted.find((b) => b.category === label);
 
                 if (budgetItem) {
@@ -158,12 +197,16 @@ export function CategoryPieChart({
         },
       },
     }),
-    [data, totalSpent, showBudgetComparison, budgetProgress]
+    [chartData.total, showBudgetComparison, budgetProgress]
   );
 
   return (
     <div className="pt-4">
+      <h3 className="text-base font-semibold mb-2">{title}</h3>
       <Pie data={chartData} options={options} />
     </div>
   );
 }
+
+// Export CategoryPieChart as an alias for backward compatibility
+export const CategoryPieChart = SpendingBreakdownChart;

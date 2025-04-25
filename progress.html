@@ -1086,6 +1086,523 @@ betheler-budget-finance/
           </p>
         </section>
       </section>
+
+      <section id="v1.4.0">
+        <meta name="version" content="1.4.0" />
+        <h1>📍 Version 1.4.0 - Income and Savings Tracking</h1>
+        <section feature="transaction-types">
+          <h3>Transaction Types: Income and Savings</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update schema.ts to add transactionType field in the
+                  transactions table
+                </li>
+                <li>
+                  [x] Update existing queries and mutations in
+                  services/backend/convex/transactions.ts to support transaction
+                  types
+                </li>
+                <li>
+                  [x] Create getSavingsSummary query in
+                  services/backend/convex/transactions.ts
+                </li>
+                <li>
+                  [x] Update getCategorySummary to filter by transaction type in
+                  services/backend/convex/transactions.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create TransactionTypeSelect component in
+                  apps/webapp/src/components/TransactionTypeSelect.tsx
+                </li>
+                <li>
+                  [x] Update TransactionForm to include transaction type and
+                  handle Income/Savings in
+                  apps/webapp/src/components/TransactionForm.tsx
+                </li>
+                <li>
+                  [x] Update TransactionItem to display transaction types in
+                  apps/webapp/src/components/TransactionItem.tsx
+                </li>
+                <li>
+                  [x] Update TransactionList to filter by transaction type in
+                  apps/webapp/src/components/TransactionList.tsx
+                </li>
+                <li>
+                  [x] Create SavingsSummaryCard component in
+                  apps/webapp/src/components/SavingsSummaryCard.tsx
+                </li>
+                <li>
+                  [x] Update CategoryPieChart to include savings and rename to
+                  SpendingBreakdown in
+                  apps/webapp/src/components/CategoryPieChart.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Dashboard Updates</strong>
+              <ul>
+                <li>
+                  [x] Add SavingsSummaryCard to dashboard in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+                <li>
+                  [x] Update SpendingGraph to display income vs. expenses in
+                  apps/webapp/src/components/SpendingGraph.tsx
+                </li>
+                <li>
+                  [x] Add filters for transaction types in transactions page in
+                  apps/webapp/src/app/transactions/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature adds support for
+            different transaction types - expense (default), income, and
+            savings. Income transactions will not require a category, while
+            savings will be treated as a special transaction type. The dashboard
+            will display a summary of savings and the pie chart will be updated
+            to include this information. Users will be able to filter
+            transactions by type and see a more comprehensive financial picture.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.1">
+        <meta name="version" content="1.4.1" />
+        <h1>📍 Version 1.4.1 - Transaction Bugfixes</h1>
+        <section feature="transaction-fixes">
+          <h3>Fix Transaction Type Bugs</h3>
+          <ul>
+            <li>
+              <strong>Backend Fixes</strong>
+              <ul>
+                <li>
+                  [x] Fix version mismatch in transaction create mutation in
+                  services/backend/convex/schema.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Fixes</strong>
+              <ul>
+                <li>
+                  [x] Remove duplicate transaction creation buttons in
+                  TransactionList component in
+                  apps/webapp/src/components/TransactionList.tsx
+                </li>
+                <li>
+                  [x] Update transactions page to use the correct
+                  TransactionList component in
+                  apps/webapp/src/app/transactions/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This bugfix addresses two
+            issues: 1) an error when creating savings transactions due to API
+            schema validation, and 2) duplicate "Add Transaction" buttons
+            appearing on the transactions page. The backend fix resolves a
+            parameter mismatch between the client schema and server schema for
+            transactions, while the frontend fix removes redundant UI elements.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.2">
+        <meta name="version" content="1.4.2" />
+        <h1>📍 Version 1.4.2 - Dashboard Visualization Fixes</h1>
+        <section feature="dashboard-visualization">
+          <h3>Dashboard Visualization Bugfixes</h3>
+          <ul>
+            <li>
+              <strong>Month Selector Synchronization</strong>
+              <ul>
+                <li>
+                  [x] Fix the SpendingGraph to update data based on month
+                  selection in apps/webapp/src/components/SpendingGraph.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Pie Chart Enhancements</strong>
+              <ul>
+                <li>
+                  [x] Update SpendingBreakdownChart to show combined expenses
+                  and savings breakdown in
+                  apps/webapp/src/components/CategoryPieChart.tsx
+                </li>
+                <li>
+                  [x] Update SpendingGraph to pass correct data to
+                  SpendingBreakdownChart in
+                  apps/webapp/src/components/SpendingGraph.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> These fixes address two
+            issues in the dashboard: 1) the pie chart not updating when the
+            month selector changes, and 2) the pie chart showing only savings
+            breakdown instead of a combined breakdown of expenses and savings to
+            give users a complete picture of their fund allocation for the
+            month.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.3">
+        <meta name="version" content="1.4.3" />
+        <h1>📍 Version 1.4.3 - Fund Allocation Chart Fix</h1>
+        <section feature="fund-allocation-chart">
+          <h3>Fund Allocation Chart Investigation and Fix</h3>
+          <ul>
+            <li>
+              <strong>Investigation</strong>
+              <ul>
+                <li>
+                  [x] Trace data flow through SpendingGraph.tsx and
+                  CategoryPieChart.tsx to identify why expense categories are
+                  not showing up
+                </li>
+                <li>
+                  [x] Issue identified: In SpendingGraph.tsx, we're filtering
+                  transactions by transactionType='expense' when calling
+                  getCategorySummary, but the expenses data is showing only
+                  savings in SpendingBreakdownChart because the
+                  includeSavings=true parameter is overriding the expense
+                  categories instead of adding to them.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update data processing in SpendingBreakdownChart to
+                  properly combine expense categories with savings
+                </li>
+                <li>
+                  [x] Add logic to handle existing 'Savings' category in the
+                  expense data
+                </li>
+                <li>
+                  [x] Filter out very small amounts to avoid cluttering the
+                  chart
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This patch focuses on fixing
+            an issue where the "Fund Allocation" pie chart only displays savings
+            data but not expense categories. The investigation will trace the
+            data flow from the SpendingGraph component to the
+            SpendingBreakdownChart component to identify and fix the issue.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.4">
+        <meta name="version" content="1.4.4" />
+        <h1>📍 Version 1.4.4 - Zero Expenses Bug Fix</h1>
+        <section feature="expenses-calculation">
+          <h3>Fix for Zero Expenses in Spending Overview</h3>
+          <ul>
+            <li>
+              <strong>Investigation</strong>
+              <ul>
+                <li>
+                  [.] Investigate why expenses appear in transaction list but
+                  show as 0 in spending overview
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Implementation</strong>
+              <ul>
+                <li>[ ] Fix expense calculation in relevant components</li>
+                <li>
+                  [ ] Ensure transactionType filtering is properly applied
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This patch focuses on fixing
+            a critical issue where expense transactions are visible in the
+            transaction list but show up as 0 in the spending overview section.
+            This suggests a fundamental problem with how expenses are being
+            calculated, filtered, or displayed.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.5">
+        <meta name="version" content="1.4.5" />
+        <h1>📍 Version 1.4.5 - Improved Monthly Summary</h1>
+        <section feature="monthly-summary">
+          <h3>Enhanced Monthly Summary Card</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Implement getMonthlyFinancialSummary query in
+                  services/backend/convex/transactions.ts to return income,
+                  expenses, savings, and budget totals
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create MonthlySummaryCard component in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+                <li>
+                  [x] Design breakdown list showing income, expenses, budgeted
+                  amount, savings, and remainder
+                </li>
+                <li>
+                  [x] Add warning/info states for different remainder scenarios
+                </li>
+                <li>
+                  [x] Update dashboard to replace BudgetSummaryCard with new
+                  MonthlySummaryCard in apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This enhancement replaces the current budget summary card with a more comprehensive monthly financial summary that follows a specific calculation flow: starting with total income, then subtracting savings to get spendable income, and finally subtracting expenses to get the remainder. The card will display warnings when the remainder is not zero - indicating either unbudgeted money (positive remainder) or overspending (negative remainder). This gives users a clearer financial picture and helps them identify planning issues immediately.
+          </p>
+          <p>
+            <strong>Additional Changes:</strong> As part of this update, we've also:
+            <ul>
+              <li>Removed the previous BudgetSummaryCard component as it's no longer needed</li>
+              <li>Simplified the SpendingGraph component to focus only on the fund allocation visualization</li>
+              <li>Improved the dashboard layout for better integration of the financial sections</li>
+              <li>Renamed "Spending Overview" to "Fund Allocation" to better reflect its purpose</li>
+            </ul>
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.6">
+        <meta name="version" content="1.4.6" />
+        <h1>📍 Version 1.4.6 - Monthly Summary UI Enhancements</h1>
+        <section feature="monthly-summary-enhancement">
+          <h3>Monthly Summary UI Improvements</h3>
+          <ul>
+            <li>
+              <strong>UI Cleanup</strong>
+              <ul>
+                <li>
+                  [x] Remove transaction and budget buttons from MonthlySummaryCard in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+                <li>
+                  [x] Remove SavingsSummaryCard from dashboard layout in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Monthly Summary Reorganization</strong>
+              <ul>
+                <li>
+                  [x] Reorganize MonthlySummaryCard into two distinct sections (Budgeting and Remainder) in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+                <li>
+                  [x] Create Budgeting section showing income, savings, and spendable income calculation
+                </li>
+                <li>
+                  [x] Add warning if total budget doesn't match spendable income
+                </li>
+                <li>
+                  [x] Create Remainder section showing budget versus actual spending calculation
+                </li>
+                <li>
+                  [x] Highlight key figures (spendable income and remaining allowance) with larger fonts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Visual Styling Standardization</strong>
+              <ul>
+                <li>
+                  [x] Standardize color codes: green for income, red for expenses, blue for savings, black for other values
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This update improves the Monthly Summary card by reorganizing it into distinct functional sections, removing redundant buttons, and standardizing the color coding for better visual clarity. The enhancements focus on highlighting the two key pieces of information for users: their total spendable income for budgeting purposes and their remaining spending allowance for the month.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.7">
+        <meta name="version" content="1.4.7" />
+        <h1>📍 Version 1.4.7 - Monthly Summary and Fund Allocation Integration</h1>
+        <section feature="unified-financial-view">
+          <h3>Unified Financial View</h3>
+          <ul>
+            <li>
+              <strong>Layout Integration</strong>
+              <ul>
+                <li>
+                  [x] Combine monthly summary and fund allocation into a single card in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+                <li>
+                  [x] Update layout for desktop to show monthly summary and fund allocation side by side
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Date Synchronization</strong>
+              <ul>
+                <li>
+                  [x] Modify MonthlySummaryCard to accept a controlled date from parent component in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+                <li>
+                  [x] Update SpendingGraph to expose its date selection state to parent components in
+                  apps/webapp/src/components/SpendingGraph.tsx
+                </li>
+                <li>
+                  [x] Synchronize date selection between the monthly summary and fund allocation in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Budget Warning Enhancement</strong>
+              <ul>
+                <li>
+                  [x] Add contextual action links to the budget mismatch warning in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+                <li>
+                  [x] Add "Add to Savings" link for the transactions option
+                </li>
+                <li>
+                  [x] Add "Adjust Budget" link for the budgets option
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This update creates a more cohesive financial dashboard by integrating the monthly summary and fund allocation into a unified view. The shared date selection ensures that users are always looking at the same time period across all financial information. The enhanced budget warning now provides actionable links to help users quickly resolve budget discrepancies, either by adding the difference to savings or by adjusting their budget.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.8">
+        <meta name="version" content="1.4.8" />
+        <h1>📍 Version 1.4.8 - Quick Transaction Helpers</h1>
+        <section feature="transaction-helpers">
+          <h3>Financial Overview Quick Actions</h3>
+          <ul>
+            <li>
+              <strong>Income Quick Add</strong>
+              <ul>
+                <li>
+                  [x] Create AddIncomeModal component for quick income entry in
+                  apps/webapp/src/components/AddIncomeModal.tsx
+                </li>
+                <li>
+                  [x] Add "Add Income" button to MonthlySummaryCard when income is zero in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Savings Quick Add</strong>
+              <ul>
+                <li>
+                  [x] Create AddSavingsModal component for quick savings entry in
+                  apps/webapp/src/components/AddSavingsModal.tsx
+                </li>
+                <li>
+                  [x] Add "Add Savings" button to MonthlySummaryCard when savings is zero in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Budget Quick Setup</strong>
+              <ul>
+                <li>
+                  [x] Add "Plan Budget" button to MonthlySummaryCard when budget is zero in
+                  apps/webapp/src/components/MonthlySummaryCard.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature adds contextual quick action buttons to the financial overview that appear when key financial values (income, savings, or budget) are zero. These buttons will either open a streamlined modal for adding transactions with minimal required fields and smart defaults, or direct users to the budget planning page. This makes the financial overview more actionable and helps guide users in setting up their financial tracking.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.4.9">
+        <meta name="version" content="1.4.9" />
+        <h1>📍 Version 1.4.9 - Enhanced Fund Allocation Visualization</h1>
+        <section feature="fund-allocation-tabs">
+          <h3>Fund Allocation and Expenses Visualization</h3>
+          <ul>
+            <li>
+              <strong>Fund Allocation Visualization</strong>
+              <ul>
+                <li>
+                  [x] Update SpendingGraph component to add tabbed interface in
+                  apps/webapp/src/components/SpendingGraph.tsx
+                </li>
+                <li>
+                  [x] Create Fund Allocation tab showing savings, budgets by category, and unallocated funds
+                </li>
+                <li>
+                  [x] Create Expenses tab showing actual expenses by category
+                </li>
+                <li>
+                  [x] Add empty state messages for both tabs
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Data Visualization Improvements</strong>
+              <ul>
+                <li>
+                  [x] Use budget progress data to extract category-specific budget information
+                </li>
+                <li>
+                  [x] Calculate unallocated funds (total income minus savings minus budgets)
+                </li>
+                <li>
+                  [x] Show budget comparison in the Expenses tab only
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This enhancement improves the financial visualization by separating fund allocation (planning) from expenses (actual spending) into two distinct tabs. The Fund Allocation tab shows how income is distributed across savings, budgets, and unallocated funds, providing users with a clear view of their financial planning. The Expenses tab shows actual spending by category, allowing users to compare their spending against their budget allocations.
+          </p>
+        </section>
+      </section>
     </section>
   </body>
 </html>

@@ -171,6 +171,8 @@ export const getBudgetProgress = query({
       .withIndex('by_userId_datetime', (q) =>
         q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
       )
+      // Filter to only include expense transactions for budget calculations
+      .filter((q) => q.eq(q.field('transactionType'), 'expense'))
       .collect();
 
     // Calculate totals by category

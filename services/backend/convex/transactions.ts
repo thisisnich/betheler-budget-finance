@@ -1,15 +1,17 @@
 import { SessionIdArg } from 'convex-helpers/server/sessions';
 import { v } from 'convex/values';
 import { getAuthUser } from '../modules/auth/getAuthUser';
+import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
 
 export const create = mutation({
   args: {
     ...SessionIdArg,
     amount: v.number(),
-    category: v.string(),
+    category: v.optional(v.string()),
     datetime: v.string(),
     description: v.string(),
+    transactionType: v.union(v.literal('expense'), v.literal('income'), v.literal('savings')),
   },
   handler: async (ctx, args) => {
     //ensure user is authenticated
@@ -18,13 +20,33 @@ export const create = mutation({
       throw new Error('Unauthorized');
     }
 
+    // For income and savings, ensure amount is positive; for expenses, ensure amount is negative
+    let adjustedAmount = args.amount;
+    if (args.transactionType === 'expense' && adjustedAmount > 0) {
+      adjustedAmount = -adjustedAmount; // Make expense amounts negative
+    } else if (
+      (args.transactionType === 'income' || args.transactionType === 'savings') &&
+      adjustedAmount < 0
+    ) {
+      adjustedAmount = Math.abs(adjustedAmount); // Make income/savings amounts positive
+    }
+
+    // Set default category based on transaction type
+    let category = args.category || '';
+    if (args.transactionType === 'income' && !category) {
+      category = 'Income';
+    } else if (args.transactionType === 'savings' && !category) {
+      category = 'Savings';
+    }
+
     // Create the transaction
     const transactionId = await ctx.db.insert('transactions', {
       userId: user._id,
-      amount: args.amount,
-      category: args.category,
+      amount: adjustedAmount,
+      category,
       datetime: args.datetime,
       description: args.description,
+      transactionType: args.transactionType,
     });
 
     return transactionId;
@@ -100,6 +122,9 @@ export const listByMonth = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    transactionType: v.optional(
+      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'), v.literal('all'))
+    ),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -118,13 +143,20 @@ export const listByMonth = query({
 
     // Get transactions for this user within the specified month
     // Using the by_userId_datetime index
-    const transactions = await ctx.db
+    let transactionsQuery = ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
         q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
-      )
-      .order('desc')
-      .collect();
+      );
+
+    // Apply transaction type filter if specified and not 'all'
+    if (args.transactionType && args.transactionType !== 'all') {
+      transactionsQuery = transactionsQuery.filter((q) =>
+        q.eq(q.field('transactionType'), args.transactionType)
+      );
+    }
+
+    const transactions = await transactionsQuery.order('desc').collect();
 
     return transactions;
   },
@@ -136,6 +168,9 @@ export const getCategorySummary = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    transactionType: v.optional(
+      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'))
+    ),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -154,12 +189,25 @@ export const getCategorySummary = query({
 
     // Get transactions for this user within the specified month
     // Using the by_userId_datetime index
-    const transactions = await ctx.db
+    let transactionsQuery = ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
         q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
-      )
-      .collect();
+      );
+
+    // Apply transaction type filter if specified
+    if (args.transactionType) {
+      transactionsQuery = transactionsQuery.filter((q) =>
+        q.eq(q.field('transactionType'), args.transactionType)
+      );
+    } else {
+      // Default to only showing expenses when not specified
+      transactionsQuery = transactionsQuery.filter((q) =>
+        q.eq(q.field('transactionType'), 'expense')
+      );
+    }
+
+    const transactions = await transactionsQuery.collect();
 
     // Calculate totals by category
     const categorySummary: Record<string, { amount: number; count: number }> = {};
@@ -172,9 +220,9 @@ export const getCategorySummary = query({
         categorySummary[category] = { amount: 0, count: 0 };
       }
 
-      categorySummary[category].amount += transaction.amount;
+      categorySummary[category].amount += Math.abs(transaction.amount);
       categorySummary[category].count += 1;
-      totalSpent += transaction.amount;
+      totalSpent += Math.abs(transaction.amount);
     }
 
     // Calculate percentages and prepare final result
@@ -188,6 +236,169 @@ export const getCategorySummary = query({
     return {
       categories: result,
       totalSpent,
+    };
+  },
+});
+
+// Add getSavingsSummary query
+export const getSavingsSummary = query({
+  args: {
+    ...SessionIdArg,
+    year: v.optional(v.number()),
+    month: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Ensure user is authenticated
+    const user = await getAuthUser(ctx, args);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Start with user's transactions
+    let transactionsQuery = ctx.db
+      .query('transactions')
+      .withIndex('by_userId_datetime', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('transactionType'), 'savings'));
+
+    // Apply month/year filter if specified
+    if (args.year !== undefined && args.month !== undefined) {
+      // Create start and end date for the specified month
+      const startDate = new Date(args.year, args.month, 1);
+      const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+
+      // Format as ISO strings for comparison
+      const startDateStr = startDate.toISOString();
+      const endDateStr = endDate.toISOString();
+
+      // Filter by date range
+      transactionsQuery = transactionsQuery.filter((q) =>
+        q.and(q.gte(q.field('datetime'), startDateStr), q.lte(q.field('datetime'), endDateStr))
+      );
+    }
+
+    const transactions = await transactionsQuery.collect();
+
+    // Calculate totals
+    let totalSaved = 0;
+    let totalWithdrawn = 0;
+
+    for (const transaction of transactions) {
+      if (transaction.amount > 0) {
+        totalSaved += transaction.amount;
+      } else {
+        totalWithdrawn += Math.abs(transaction.amount);
+      }
+    }
+
+    const netSavings = totalSaved - totalWithdrawn;
+
+    return {
+      totalSaved,
+      totalWithdrawn,
+      netSavings,
+      count: transactions.length,
+    };
+  },
+});
+
+// Get a comprehensive monthly financial summary with income, expenses, budgeted amounts, and savings
+export const getMonthlyFinancialSummary = query({
+  args: {
+    ...SessionIdArg,
+    year: v.number(),
+    month: v.number(), // 0-based (January is 0)
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    totalIncome: number;
+    totalExpenses: number;
+    totalSavings: number;
+    totalSpendableIncome: number;
+    remainder: number;
+    status: 'balanced' | 'unbudgeted' | 'overbudgeted';
+    formattedMonth: string;
+  }> => {
+    // Ensure user is authenticated
+    const user = await getAuthUser(ctx, args);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Create start and end date for the specified month
+    const startDate = new Date(args.year, args.month, 1);
+    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+
+    // Format as ISO strings for comparison
+    const startDateStr = startDate.toISOString();
+    const endDateStr = endDate.toISOString();
+
+    // Get all transactions for this user within the specified month
+    const transactions = await ctx.db
+      .query('transactions')
+      .withIndex('by_userId_datetime', (q) =>
+        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+      )
+      .collect();
+
+    // Get budget data from budget service
+    const budgetData: {
+      totalBudget: number;
+      totalSpent: number;
+      totalRemaining: number;
+      percentSpent: number;
+      budgetCount: number;
+      status: string;
+    } = await ctx.runQuery(api.budgets.getTotalBudgetSummary, {
+      sessionId: args.sessionId,
+      year: args.year,
+      month: args.month,
+    });
+
+    // Calculate totals by transaction type
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    let totalSavings = 0;
+
+    for (const transaction of transactions) {
+      const amount = Math.abs(transaction.amount);
+
+      switch (transaction.transactionType) {
+        case 'income':
+          totalIncome += amount;
+          break;
+        case 'expense':
+          totalExpenses += amount;
+          break;
+        case 'savings':
+          totalSavings += amount;
+          break;
+      }
+    }
+
+    // Calculate total spendable income (income minus savings)
+    const totalSpendableIncome = totalIncome - totalSavings;
+
+    // Calculate the remainder (spendable income minus expenses)
+    const remainder = totalSpendableIncome - totalExpenses;
+
+    // Determine the status of the remainder
+    let status: 'balanced' | 'unbudgeted' | 'overbudgeted' = 'balanced';
+    if (remainder > 0) {
+      status = 'unbudgeted'; // Positive remainder means unbudgeted money
+    } else if (remainder < 0) {
+      status = 'overbudgeted'; // Negative remainder means overbudgeting
+    }
+
+    return {
+      totalIncome,
+      totalExpenses,
+      totalSavings,
+      totalSpendableIncome,
+      remainder,
+      status,
+      formattedMonth: startDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
     };
   },
 });

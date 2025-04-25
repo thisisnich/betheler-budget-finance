@@ -23,7 +23,7 @@ export function MonthYearPicker({ value, onChange, className }: MonthYearPickerP
   const isCurrentMonth = format(new Date(), 'yyyy-MM') === format(value, 'yyyy-MM');
 
   return (
-    <div className={cn('flex items-center justify-between', className)}>
+    <div className={cn('flex items-center justify-between space-x-2', className)}>
       <Button
         variant="outline"
         size="icon"

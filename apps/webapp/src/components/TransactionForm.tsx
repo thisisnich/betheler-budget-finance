@@ -2,11 +2,11 @@ import { parseCurrencyInput } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { useMutation } from 'convex/react';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CategorySelect } from './CategorySelect';
 import { DateTimePicker } from './DateTimePicker';
+import { type TransactionType, TransactionTypeSelect } from './TransactionTypeSelect';
 import { Button } from './ui/button';
 import {
   Form,
@@ -29,6 +29,7 @@ interface TransactionFormValues {
   category: string;
   description: string;
   datetime: Date;
+  transactionType: TransactionType;
 }
 
 export function TransactionForm({ onSuccess, className }: TransactionFormProps) {
@@ -41,8 +42,12 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
       category: 'Food',
       description: '',
       datetime: new Date(),
+      transactionType: 'expense',
     },
   });
+
+  const transactionType = form.watch('transactionType');
+  const showCategoryField = transactionType === 'expense' || transactionType === 'savings';
 
   const onSubmit = useCallback(
     async (data: TransactionFormValues) => {
@@ -59,9 +64,10 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
 
         await createTransaction({
           amount,
-          category: data.category,
+          category: showCategoryField ? data.category : undefined,
           description: data.description,
           datetime: data.datetime.toISOString(),
+          transactionType: data.transactionType,
         });
 
         form.reset();
@@ -72,12 +78,30 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
         setIsSubmitting(false);
       }
     },
-    [createTransaction, form, onSuccess]
+    [createTransaction, form, onSuccess, showCategoryField]
   );
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-4', className)}>
+        <FormField
+          control={form.control}
+          name="transactionType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">Transaction Type</FormLabel>
+              <FormControl>
+                <TransactionTypeSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="amount"
@@ -93,26 +117,36 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
                 />
               </FormControl>
               <FormDescription className="text-xs">
-                Enter the transaction amount (e.g., 10.99)
+                {transactionType === 'expense'
+                  ? 'Enter the expense amount (e.g., 10.99)'
+                  : transactionType === 'income'
+                    ? 'Enter the income amount (e.g., 1000.00)'
+                    : 'Enter the savings amount (e.g., 500.00)'}
               </FormDescription>
               <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium">Category</FormLabel>
-              <FormControl>
-                <CategorySelect value={field.value} onChange={field.onChange} className="w-full" />
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
+        {showCategoryField && (
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Category</FormLabel>
+                <FormControl>
+                  <CategorySelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -147,7 +181,7 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
         />
 
         <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto mt-2">
-          {isSubmitting ? 'Adding...' : 'Add Transaction'}
+          {isSubmitting ? 'Adding...' : `Add ${transactionType}`}
         </Button>
       </form>
     </Form>

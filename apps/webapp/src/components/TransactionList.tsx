@@ -1,109 +1,107 @@
 import { formatCurrency } from '@/lib/formatCurrency';
 import { api } from '@workspace/backend/convex/_generated/api';
+import type { Doc } from '@workspace/backend/convex/_generated/dataModel';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { Loader2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { MonthYearPicker } from './MonthYearPicker';
+import { TransactionForm } from './TransactionForm';
 import { TransactionItem } from './TransactionItem';
+import { type TransactionType, TransactionTypeSelect } from './TransactionTypeSelect';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Skeleton } from './ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
-export function TransactionList() {
-  // Get current date for initial state
-  const now = new Date();
-  const [selectedDate, setSelectedDate] = useState(now);
+interface TransactionListProps {
+  year: number;
+  month: number;
+  actions?: React.ReactNode;
+  showAddButton?: boolean;
+  onAddClick?: () => void;
+}
 
-  // Extract year and month (0-based) from selected date - memoize to prevent recalculation
-  const { year, month } = useMemo(
-    () => ({
-      year: selectedDate.getFullYear(),
-      month: selectedDate.getMonth(),
-    }),
-    [selectedDate]
-  );
+export function TransactionList({
+  year,
+  month,
+  actions,
+  showAddButton = false,
+  onAddClick,
+}: TransactionListProps) {
+  const [selectedType, setSelectedType] = useState<TransactionType | 'all'>('all');
 
-  // Fetch transactions for the selected month
+  // We now accept year and month as props directly, no need for selectedDate
   const transactions = useSessionQuery(api.transactions.listByMonth, {
     year,
     month,
+    transactionType: selectedType !== 'all' ? selectedType : undefined,
   });
 
-  // Calculate total for all transactions - memoize this computation
-  const total = useMemo(
-    () => transactions?.reduce((sum, tx) => sum + tx.amount, 0) || 0,
-    [transactions]
-  );
-
-  // Function to refresh transactions list after deletion with useCallback
+  // Handler for transaction deletion
   const handleTransactionDeleted = useCallback(() => {
     // The list will automatically refresh due to Convex's reactivity
   }, []);
 
-  // Handle month change with useCallback
-  const handleMonthChange = useCallback((date: Date) => {
-    setSelectedDate(date);
-  }, []);
-
-  // Memoize the formatted month and year for display
-  const formattedMonthYear = useMemo(() => {
-    return selectedDate.toLocaleString('default', {
-      month: 'long',
-      year: 'numeric',
-    });
-  }, [selectedDate]);
-
-  // Memoize the transaction count message
-  const transactionCountMessage = useMemo(() => {
-    return transactions ? `(${transactions.length} transactions)` : '';
-  }, [transactions]);
-
-  // If transactions are still loading
-  if (transactions === undefined) {
-    return (
-      <div className="py-8 text-center flex justify-center items-center">
-        <Loader2 className="h-6 w-6 animate-spin mr-2" />
-        <span>Loading transactions...</span>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="mb-4 sm:mb-6">
-        <MonthYearPicker value={selectedDate} onChange={handleMonthChange} className="mb-4" />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Select value={selectedType} onValueChange={(value) => setSelectedType(value as any)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Transaction Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Transactions</SelectItem>
+              <SelectItem value="expense">Expenses</SelectItem>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="savings">Savings</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {actions}
       </div>
 
-      <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted rounded-lg">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-          <h3 className="text-base sm:text-lg font-medium">Transactions Total</h3>
-          <span
-            className={`text-lg sm:text-xl font-bold ${
-              total >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}
-          >
-            {formatCurrency(total)}
-          </span>
-        </div>
-        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-          For {formattedMonthYear} {transactionCountMessage}
-        </p>
+      <div className="space-y-2">
+        {transactions === undefined ? (
+          // Loading state
+          <>
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-20 w-full rounded-lg" />
+          </>
+        ) : transactions.length === 0 ? (
+          // Empty state
+          <div className="text-center p-8 border rounded-lg bg-card">
+            <h3 className="font-medium mb-2">No transactions found</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {selectedType !== 'all'
+                ? `You haven't added any ${selectedType} transactions for this month yet.`
+                : "You haven't added any transactions for this month yet."}
+            </p>
+            {showAddButton && onAddClick && (
+              <button
+                type="button"
+                onClick={onAddClick}
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 text-sm"
+              >
+                Add your first transaction
+              </button>
+            )}
+          </div>
+        ) : (
+          // Display transactions
+          <div className="space-y-2">
+            {transactions.map((transaction) => (
+              <TransactionItem
+                key={transaction._id}
+                transaction={transaction as Doc<'transactions'>}
+                onDelete={handleTransactionDeleted}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* If no transactions found */}
-      {transactions.length === 0 ? (
-        <div className="py-6 sm:py-8 text-center">
-          <p className="text-muted-foreground">No transactions found for {formattedMonthYear}.</p>
-          <p className="mt-2">Add a new transaction to get started.</p>
-        </div>
-      ) : (
-        <div className="space-y-3 sm:space-y-4">
-          {transactions.map((transaction) => (
-            <TransactionItem
-              key={transaction._id}
-              transaction={transaction}
-              onDelete={handleTransactionDeleted}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

@@ -45,6 +45,9 @@ export default defineSchema({
     category: v.string(),
     datetime: v.string(),
     description: v.string(),
+    transactionType: v.optional(
+      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'))
+    ),
   }).index('by_userId_datetime', ['userId', 'datetime']),
 
   //budgets
