@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.4.10 - Enhanced Shared Page Visualization</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.4.10 - Enhanced Shared Page Visualization</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Shared Page Visualization Improvements</strong>
+        <ul>
+          <li>Added tabbed interface to shared transaction view</li>
+          <li>Fund Allocation tab showing transaction types breakdown</li>
+          <li>Expenses tab showing expense categories</li>
+          <li>Empty state messages for both tabs</li>
+          <li>Consistent visualization between dashboard and shared views</li>
+          <li>Improved data presentation for shared transactions</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Visualization Enhancements</h3>
+      <ul>
+        <li>
+          Updated <code>SharedTransactionView</code> component with tabbed
+          interface in
+          <code>apps/webapp/src/components/SharedTransactionView.tsx</code>
+        </li>
+        <li>Created Fund Allocation tab showing transaction types breakdown</li>
+        <li>Created Expenses tab showing expense categories</li>
+        <li>Added empty state messages for both tabs</li>
+        <li>
+          Implemented consistent UI patterns between main app and shared pages
+        </li>
+      </ul>
+
+      <h3>Backend Improvements</h3>
+      <ul>
+        <li>
+          Updated <code>getSharedCategorySummary</code> to support transaction
+          type filtering in <code>services/backend/convex/sharing.ts</code>
+        </li>
+        <li>
+          Ensured consistent handling of transaction amounts for better
+          visualization
+        </li>
+        <li>Enhanced data processing for accurate fund allocation display</li>
+        <li>Optimized query performance for shared data retrieval</li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> This enhancement improves the
+        shared transaction visualization by adding tabbed views for Fund
+        Allocation and Expenses, matching the functionality available on the
+        main dashboard. The Fund Allocation tab provides a high-level breakdown
+        of income, expenses, and savings, while the Expenses tab shows a
+        detailed breakdown of expense categories. This gives recipients of
+        shared transaction links a more comprehensive and organized view of the
+        financial data.
+      </p>
+    </div>
+  </body>
+</html>

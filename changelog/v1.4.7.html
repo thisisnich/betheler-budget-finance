@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Version 1.4.7 - Monthly Summary and Fund Allocation Integration
+    </title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.4.7 - Monthly Summary and Fund Allocation Integration</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Unified Financial View</strong>
+        <ul>
+          <li>
+            Combined monthly summary and fund allocation into a single card
+          </li>
+          <li>Synchronized date selection across all financial components</li>
+          <li>Enhanced responsive layout for desktop (side-by-side view)</li>
+          <li>Contextual action links in budget mismatch warnings</li>
+          <li>Streamlined user interface for better financial insights</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Layout Integration</h3>
+      <ul>
+        <li>
+          Combined monthly summary and fund allocation into a single card in
+          <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+        <li>
+          Updated layout for desktop to show monthly summary and fund allocation
+          side by side
+        </li>
+        <li>
+          Improved mobile view with stacked components and consistent spacing
+        </li>
+      </ul>
+
+      <h3>Date Synchronization</h3>
+      <ul>
+        <li>
+          Modified <code>MonthlySummaryCard</code> to accept a controlled date
+          from parent component in
+          <code>apps/webapp/src/components/MonthlySummaryCard.tsx</code>
+        </li>
+        <li>
+          Updated <code>SpendingGraph</code> to expose its date selection state
+          to parent components in
+          <code>apps/webapp/src/components/SpendingGraph.tsx</code>
+        </li>
+        <li>
+          Synchronized date selection between the monthly summary and fund
+          allocation in <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+        <li>
+          Implemented shared state management to ensure consistent filtering
+        </li>
+      </ul>
+
+      <h3>Budget Warning Enhancement</h3>
+      <ul>
+        <li>
+          Added contextual action links to the budget mismatch warning in
+          <code>apps/webapp/src/components/MonthlySummaryCard.tsx</code>
+        </li>
+        <li>Added "Add to Savings" link for the transactions option</li>
+        <li>Added "Adjust Budget" link for the budgets option</li>
+        <li>Enhanced warning visibility based on discrepancy severity</li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> This update creates a more
+        cohesive financial dashboard by integrating the monthly summary and fund
+        allocation into a unified view. The shared date selection ensures that
+        users are always looking at the same time period across all financial
+        information. The enhanced budget warning now provides actionable links
+        to help users quickly resolve budget discrepancies, either by adding the
+        difference to savings or by adjusting their budget.
+      </p>
+    </div>
+  </body>
+</html>

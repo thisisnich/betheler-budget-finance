@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.3.0 - Budget Management</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.3.0 - Budget Management</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Budget Management</strong>
+        <ul>
+          <li>Set monthly budgets for each spending category</li>
+          <li>Track actual spending against budgeted amounts</li>
+          <li>Visual progress indicators for budget status</li>
+          <li>Color-coded indicators to identify problem areas</li>
+          <li>Dedicated budgets page with full management capabilities</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Backend Implementation</h3>
+      <ul>
+        <li>
+          Updated <code>schema.ts</code> to add budgets table with proper
+          relationships
+        </li>
+        <li>
+          Implemented <code>createBudget</code> mutation in
+          <code>services/backend/convex/budgets.ts</code>
+        </li>
+        <li>
+          Implemented <code>updateBudget</code> mutation in
+          <code>services/backend/convex/budgets.ts</code>
+        </li>
+        <li>
+          Implemented <code>deleteBudget</code> mutation in
+          <code>services/backend/convex/budgets.ts</code>
+        </li>
+        <li>
+          Implemented <code>listUserBudgets</code> query in
+          <code>services/backend/convex/budgets.ts</code>
+        </li>
+        <li>
+          Implemented <code>getBudgetProgress</code> query in
+          <code>services/backend/convex/budgets.ts</code> to compare budgets
+          with actual spending
+        </li>
+      </ul>
+
+      <h3>Frontend Implementation</h3>
+      <ul>
+        <li>
+          Created <code>BudgetForm</code> component in
+          <code>apps/webapp/src/components/BudgetForm.tsx</code>
+        </li>
+        <li>
+          Created <code>BudgetList</code> component in
+          <code>apps/webapp/src/components/BudgetList.tsx</code>
+        </li>
+        <li>
+          Created <code>BudgetItem</code> component in
+          <code>apps/webapp/src/components/BudgetItem.tsx</code>
+        </li>
+        <li>
+          Created <code>BudgetProgress</code> component in
+          <code>apps/webapp/src/components/BudgetProgress.tsx</code>
+        </li>
+        <li>
+          Updated <code>CategoryPieChart</code> to show budget vs. actual
+          spending comparisons
+        </li>
+        <li>
+          Created budgets page at
+          <code>apps/webapp/src/app/budgets/page.tsx</code>
+        </li>
+        <li>
+          Added navigation link to budgets page in
+          <code>apps/webapp/src/components/Navigation.tsx</code>
+        </li>
+        <li>
+          Added quick action link to dashboard in
+          <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> The budget management feature
+        allows users to set monthly budgets for each spending category and track
+        their actual spending against these budgets. Users can see whether
+        they're within budget or overspending in each category. The dashboard
+        displays budget progress visually with color-coded indicators, making it
+        easy to identify problem areas.
+      </p>
+    </div>
+  </body>
+</html>

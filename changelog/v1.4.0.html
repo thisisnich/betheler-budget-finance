@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.4.0 - Income and Savings Tracking</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.4.0 - Income and Savings Tracking</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Transaction Types</strong>
+        <ul>
+          <li>
+            Support for different transaction types: expense (default), income,
+            and savings
+          </li>
+          <li>Specialized UI for each transaction type</li>
+          <li>Filter transactions by type</li>
+          <li>Savings summary on dashboard</li>
+          <li>Income vs. expenses visualization</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Backend Implementation</h3>
+      <ul>
+        <li>
+          Updated <code>schema.ts</code> to add
+          <code>transactionType</code> field in the transactions table
+        </li>
+        <li>
+          Updated existing queries and mutations in
+          <code>services/backend/convex/transactions.ts</code> to support
+          transaction types
+        </li>
+        <li>
+          Created <code>getSavingsSummary</code> query in
+          <code>services/backend/convex/transactions.ts</code>
+        </li>
+        <li>
+          Updated <code>getCategorySummary</code> to filter by transaction type
+          in <code>services/backend/convex/transactions.ts</code>
+        </li>
+        <li>
+          Added validation for transaction types and appropriate schema changes
+        </li>
+      </ul>
+
+      <h3>Frontend Implementation</h3>
+      <ul>
+        <li>
+          Created <code>TransactionTypeSelect</code> component in
+          <code>apps/webapp/src/components/TransactionTypeSelect.tsx</code>
+        </li>
+        <li>
+          Updated <code>TransactionForm</code> to include transaction type
+          selection in
+          <code>apps/webapp/src/components/TransactionForm.tsx</code>
+        </li>
+        <li>
+          Updated <code>TransactionItem</code> to display transaction types in
+          <code>apps/webapp/src/components/TransactionItem.tsx</code>
+        </li>
+        <li>
+          Updated <code>TransactionList</code> to filter by transaction type in
+          <code>apps/webapp/src/components/TransactionList.tsx</code>
+        </li>
+        <li>
+          Created <code>SavingsSummaryCard</code> component in
+          <code>apps/webapp/src/components/SavingsSummaryCard.tsx</code>
+        </li>
+        <li>
+          Updated <code>CategoryPieChart</code> to include savings and renamed
+          to <code>SpendingBreakdown</code>
+        </li>
+        <li>
+          Added <code>SavingsSummaryCard</code> to dashboard in
+          <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+        <li>
+          Updated <code>SpendingGraph</code> to display income vs. expenses in
+          <code>apps/webapp/src/components/SpendingGraph.tsx</code>
+        </li>
+        <li>
+          Added filters for transaction types in transactions page in
+          <code>apps/webapp/src/app/transactions/page.tsx</code>
+        </li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> This feature adds support for
+        different transaction types - expense (default), income, and savings.
+        Income transactions do not require a category, while savings are treated
+        as a special transaction type. The dashboard displays a summary of
+        savings and the pie chart includes this information. Users can filter
+        transactions by type and see a more comprehensive financial picture.
+      </p>
+    </div>
+  </body>
+</html>

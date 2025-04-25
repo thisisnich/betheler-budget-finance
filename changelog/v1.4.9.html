@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.4.9 - Enhanced Fund Allocation Visualization</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.4.9 - Enhanced Fund Allocation Visualization</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Fund Allocation Visualization</strong>
+        <ul>
+          <li>Tabbed interface for financial visualizations</li>
+          <li>Fund Allocation tab showing planned distribution of income</li>
+          <li>Expenses tab showing actual spending by category</li>
+          <li>
+            Visualization of savings, budgets by category, and unallocated funds
+          </li>
+          <li>Budget vs. actual comparisons</li>
+          <li>Empty state messaging for both views</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Implementation</h3>
+      <ul>
+        <li>
+          Updated <code>SpendingGraph</code> component with tabbed interface in
+          <code>apps/webapp/src/components/SpendingGraph.tsx</code>
+        </li>
+        <li>
+          Created Fund Allocation tab showing savings, budgets by category, and
+          unallocated funds
+        </li>
+        <li>Created Expenses tab showing actual expenses by category</li>
+        <li>Added empty state messages for both tabs</li>
+        <li>
+          Enhanced data processing to extract category-specific budget
+          information from budget progress data
+        </li>
+        <li>
+          Added calculation for unallocated funds (total income minus savings
+          minus budgets)
+        </li>
+        <li>Implemented budget comparison in the Expenses tab only</li>
+        <li>
+          Added clear visual distinction between planning and actual spending
+          views
+        </li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> This enhancement improves the
+        financial visualization by separating fund allocation (planning) from
+        expenses (actual spending) into two distinct tabs. The Fund Allocation
+        tab shows how income is distributed across savings, budgets, and
+        unallocated funds, providing users with a clear view of their financial
+        planning. The Expenses tab shows actual spending by category, allowing
+        users to compare their spending against their budget allocations.
+      </p>
+    </div>
+  </body>
+</html>

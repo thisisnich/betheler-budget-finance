@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.2.1 - Share Management Improvements</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.2.1 - Share Management Improvements</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Share Management</strong>
+        <ul>
+          <li>Permanent share links (no expiration option)</li>
+          <li>Dedicated shares management page</li>
+          <li>Listing of all active share links</li>
+          <li>Ability to delete individual share links</li>
+          <li>Display of share creation date for tracking</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Backend Implementation</h3>
+      <ul>
+        <li>
+          Updated <code>createShareLink</code> to support permanent shares in
+          <code>services/backend/convex/sharing.ts</code>
+        </li>
+        <li>
+          Implemented <code>listUserShares</code> query in
+          <code>services/backend/convex/sharing.ts</code>
+        </li>
+        <li>
+          Implemented <code>deleteShareLink</code> mutation in
+          <code>services/backend/convex/sharing.ts</code>
+        </li>
+        <li>Enhanced data schema to support null expiration dates</li>
+      </ul>
+
+      <h3>Frontend Implementation</h3>
+      <ul>
+        <li>
+          Updated <code>ShareModal</code> to include "No expiration" option in
+          <code>apps/webapp/src/components/ShareModal.tsx</code>
+        </li>
+        <li>
+          Created <code>SharesListItem</code> component for displaying a share
+          in <code>apps/webapp/src/components/SharesListItem.tsx</code>
+        </li>
+        <li>
+          Created <code>SharesList</code> component for displaying all shares in
+          <code>apps/webapp/src/components/SharesList.tsx</code>
+        </li>
+        <li>
+          Created shared links management page at
+          <code>apps/webapp/src/app/shares/page.tsx</code>
+        </li>
+        <li>
+          Added link to shared links management page in
+          <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> Enhanced share management by
+        adding the ability to create permanent shares (no expiration), view all
+        active shares, and delete existing shares. The share creation date is
+        displayed in the shares list for better tracking. This creates a more
+        complete sharing system for users who want to maintain long-term access
+        to shared financial data.
+      </p>
+    </div>
+  </body>
+</html>

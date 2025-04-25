@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.4.5 - Improved Monthly Summary</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+      .additional {
+        background: #ecfdf5;
+        padding: 16px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.4.5 - Improved Monthly Summary</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Enhanced Monthly Summary Card</strong>
+        <ul>
+          <li>Comprehensive monthly financial overview</li>
+          <li>Clear calculation flow from income to remainder</li>
+          <li>Visual indicators for budget mismatch and overspending</li>
+          <li>
+            Integrated display of income, expenses, savings, and budget
+            information
+          </li>
+          <li>Warning states for different financial situations</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Backend Implementation</h3>
+      <ul>
+        <li>
+          Implemented <code>getMonthlyFinancialSummary</code> query in
+          <code>services/backend/convex/transactions.ts</code> to return income,
+          expenses, savings, and budget totals
+        </li>
+        <li>
+          Created efficient aggregations for monthly financial calculations
+        </li>
+        <li>
+          Enhanced budget and transaction data processing for summarization
+        </li>
+      </ul>
+
+      <h3>Frontend Implementation</h3>
+      <ul>
+        <li>
+          Created <code>MonthlySummaryCard</code> component in
+          <code>apps/webapp/src/components/MonthlySummaryCard.tsx</code>
+        </li>
+        <li>
+          Designed breakdown list showing income, expenses, budgeted amount,
+          savings, and remainder
+        </li>
+        <li>Added warning/info states for different remainder scenarios</li>
+        <li>
+          Updated dashboard to replace <code>BudgetSummaryCard</code> with new
+          <code>MonthlySummaryCard</code> in
+          <code>apps/webapp/src/app/app/page.tsx</code>
+        </li>
+        <li>
+          Implemented logical flow display: income → savings → spendable income
+          → expenses → remainder
+        </li>
+      </ul>
+    </div>
+
+    <div class="additional">
+      <h3>Additional Changes</h3>
+      <ul>
+        <li>
+          Removed the previous <code>BudgetSummaryCard</code> component as it's
+          no longer needed
+        </li>
+        <li>
+          Simplified the <code>SpendingGraph</code> component to focus only on
+          the fund allocation visualization
+        </li>
+        <li>
+          Improved the dashboard layout for better integration of the financial
+          sections
+        </li>
+        <li>
+          Renamed "Spending Overview" to "Fund Allocation" to better reflect its
+          purpose
+        </li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> This enhancement replaces the
+        current budget summary card with a more comprehensive monthly financial
+        summary that follows a specific calculation flow: starting with total
+        income, then subtracting savings to get spendable income, and finally
+        subtracting expenses to get the remainder. The card displays warnings
+        when the remainder is not zero - indicating either unbudgeted money
+        (positive remainder) or overspending (negative remainder). This gives
+        users a clearer financial picture and helps them identify planning
+        issues immediately.
+      </p>
+    </div>
+  </body>
+</html>

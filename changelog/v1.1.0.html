@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 1.1.0 - Transaction Enhancements</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #2563eb;
+      }
+      h2 {
+        color: #4b5563;
+        margin-top: 24px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .technical {
+        background: #f3f4f6;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .notes {
+        font-style: italic;
+        margin-top: 24px;
+        border-left: 4px solid #3b82f6;
+        padding-left: 16px;
+      }
+      .dependencies {
+        background: #eff6ff;
+        padding: 10px 16px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Version 1.1.0 - Transaction Enhancements</h1>
+
+    <h2>Features</h2>
+    <ul>
+      <li>
+        <strong>Transaction Filtering & Visualization</strong>
+        <ul>
+          <li>Monthly transaction filtering with dedicated date selection</li>
+          <li>
+            Category visualization with pie charts for spending distribution
+          </li>
+          <li>Improved data queries for analytics and reporting</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Technical Details</h2>
+    <div class="technical">
+      <h3>Backend Implementation</h3>
+      <ul>
+        <li>
+          Implemented <code>listByMonth</code> query in
+          <code>services/backend/convex/transactions.ts</code>
+        </li>
+        <li>
+          Implemented <code>getCategorySummary</code> query in
+          <code>services/backend/convex/transactions.ts</code>
+        </li>
+        <li>Added date range filtering logic to optimize query performance</li>
+      </ul>
+
+      <h3>Frontend Implementation</h3>
+      <ul>
+        <li>
+          Created <code>MonthYearPicker</code> component in
+          <code>apps/webapp/src/components/MonthYearPicker.tsx</code>
+        </li>
+        <li>
+          Created <code>CategoryPieChart</code> component in
+          <code>apps/webapp/src/components/CategoryPieChart.tsx</code>
+        </li>
+        <li>
+          Updated <code>TransactionList</code> component to handle monthly
+          filtering
+        </li>
+        <li>Implemented chart rendering with dynamic color generation</li>
+      </ul>
+    </div>
+
+    <div class="dependencies">
+      <h3>Dependencies Added</h3>
+      <ul>
+        <li>
+          <code>Chart.js</code> and <code>React-ChartJS-2</code> for data
+          visualization
+        </li>
+        <li><code>date-fns</code> for date manipulation and formatting</li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <p>
+        <strong>Implementation Notes:</strong> Month selector for filtering
+        transactions and pie chart for spending distribution. This enhancement
+        provides users with better insights into their spending patterns by
+        category.
+      </p>
+    </div>
+  </body>
+</html>
