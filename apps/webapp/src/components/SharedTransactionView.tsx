@@ -4,7 +4,7 @@ import { api } from '@workspace/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
-import { type CategoryData, CategoryPieChart } from './CategoryPieChart';
+import { CategoryPieChart } from './CategoryPieChart';
 import { ShareNotFound } from './ShareNotFound';
 import { TransactionItem } from './TransactionItem';
 
@@ -92,7 +92,7 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
         {/* Category Summary */}
         <div className="p-4 bg-muted rounded-lg">
           <CategoryPieChart
-            data={categorySummary.categories as CategoryData[]}
+            data={categorySummary.categories}
             totalSpent={categorySummary.totalSpent}
           />
         </div>
