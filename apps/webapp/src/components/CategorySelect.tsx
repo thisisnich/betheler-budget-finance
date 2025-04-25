@@ -5,17 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 const TRANSACTION_CATEGORIES = [
   'Food',
   'Transportation',
-  'Housing',
-  'Utilities',
+  'Tithe & Offering',
   'Entertainment',
-  'Healthcare',
   'Shopping',
-  'Education',
-  'Travel',
-  'Groceries',
   'Personal',
   'Gifts',
-  'Investments',
   'Income',
   'Other',
 ];
