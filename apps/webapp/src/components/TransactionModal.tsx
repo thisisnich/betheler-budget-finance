@@ -40,6 +40,16 @@ interface TransactionModalProps {
    * Additional class name for the trigger button
    */
   className?: string;
+
+  /**
+   * Preset transaction type (for Add Income/Add Savings buttons)
+   */
+  transactionType?: 'expense' | 'income' | 'savings';
+
+  /**
+   * Preset category
+   */
+  category?: string;
 }
 
 /**
@@ -51,6 +61,8 @@ export function TransactionModal({
   buttonVariant = 'default',
   trigger,
   className,
+  transactionType,
+  category,
 }: TransactionModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,6 +71,18 @@ export function TransactionModal({
     setIsOpen(false);
     // Call the onSuccess callback if provided
     onSuccess?.();
+  };
+
+  // Determine dialog title based on transaction type
+  const getDialogTitle = () => {
+    switch (transactionType) {
+      case 'income':
+        return 'Add Income';
+      case 'savings':
+        return 'Add to Savings';
+      default:
+        return 'Add Transaction';
+    }
   };
 
   return (
@@ -77,12 +101,16 @@ export function TransactionModal({
 
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
           <DialogDescription>Enter the details of your transaction below</DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
-          <TransactionForm onSuccess={handleSuccess} />
+          <TransactionForm
+            onSuccess={handleSuccess}
+            initialType={transactionType}
+            initialCategory={category}
+          />
         </div>
       </DialogContent>
     </Dialog>

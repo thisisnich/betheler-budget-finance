@@ -35,7 +35,7 @@ export function TransactionList({
   const transactions = useSessionQuery(api.transactions.listByMonth, {
     year,
     month,
-    transactionType: selectedType !== 'all' ? selectedType : undefined,
+    transactionType: selectedType,
   });
 
   // Handler for transaction deletion

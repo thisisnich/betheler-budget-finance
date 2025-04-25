@@ -20,16 +20,15 @@ export const create = mutation({
       throw new Error('Unauthorized');
     }
 
-    // For income and savings, ensure amount is positive; for expenses, ensure amount is negative
+    // For income, ensure amount is positive; for expenses, ensure amount is negative
+    // For savings, allow both positive (adding to savings) and negative (withdrawing from savings)
     let adjustedAmount = args.amount;
     if (args.transactionType === 'expense' && adjustedAmount > 0) {
       adjustedAmount = -adjustedAmount; // Make expense amounts negative
-    } else if (
-      (args.transactionType === 'income' || args.transactionType === 'savings') &&
-      adjustedAmount < 0
-    ) {
-      adjustedAmount = Math.abs(adjustedAmount); // Make income/savings amounts positive
+    } else if (args.transactionType === 'income' && adjustedAmount < 0) {
+      adjustedAmount = Math.abs(adjustedAmount); // Make income amounts positive
     }
+    // Note: Savings amounts can be either positive (adding to savings) or negative (withdrawing from savings)
 
     // Set default category based on transaction type
     let category = args.category || '';
@@ -122,8 +121,11 @@ export const listByMonth = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
-    transactionType: v.optional(
-      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'), v.literal('all'))
+    transactionType: v.union(
+      v.literal('expense'),
+      v.literal('income'),
+      v.literal('savings'),
+      v.literal('all')
     ),
   },
   handler: async (ctx, args) => {
@@ -149,8 +151,8 @@ export const listByMonth = query({
         q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
       );
 
-    // Apply transaction type filter if specified and not 'all'
-    if (args.transactionType && args.transactionType !== 'all') {
+    // Apply transaction type filter only if not 'all'
+    if (args.transactionType !== 'all') {
       transactionsQuery = transactionsQuery.filter((q) =>
         q.eq(q.field('transactionType'), args.transactionType)
       );
@@ -168,9 +170,7 @@ export const getCategorySummary = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
-    transactionType: v.optional(
-      v.union(v.literal('expense'), v.literal('income'), v.literal('savings'))
-    ),
+    transactionType: v.union(v.literal('expense'), v.literal('income'), v.literal('savings')),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -195,17 +195,10 @@ export const getCategorySummary = query({
         q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
       );
 
-    // Apply transaction type filter if specified
-    if (args.transactionType) {
-      transactionsQuery = transactionsQuery.filter((q) =>
-        q.eq(q.field('transactionType'), args.transactionType)
-      );
-    } else {
-      // Default to only showing expenses when not specified
-      transactionsQuery = transactionsQuery.filter((q) =>
-        q.eq(q.field('transactionType'), 'expense')
-      );
-    }
+    // Apply transaction type filter
+    transactionsQuery = transactionsQuery.filter((q) =>
+      q.eq(q.field('transactionType'), args.transactionType)
+    );
 
     const transactions = await transactionsQuery.collect();
 
@@ -359,7 +352,8 @@ export const getMonthlyFinancialSummary = query({
     // Calculate totals by transaction type
     let totalIncome = 0;
     let totalExpenses = 0;
-    let totalSavings = 0;
+    let totalSavingsDeposits = 0;
+    let totalSavingsWithdrawals = 0;
 
     for (const transaction of transactions) {
       const amount = Math.abs(transaction.amount);
@@ -372,10 +366,18 @@ export const getMonthlyFinancialSummary = query({
           totalExpenses += amount;
           break;
         case 'savings':
-          totalSavings += amount;
+          // Handle savings deposits (positive amounts) and withdrawals (negative amounts) separately
+          if (transaction.amount > 0) {
+            totalSavingsDeposits += transaction.amount;
+          } else {
+            totalSavingsWithdrawals += Math.abs(transaction.amount);
+          }
           break;
       }
     }
+
+    // Calculate net savings (deposits minus withdrawals)
+    const totalSavings = totalSavingsDeposits - totalSavingsWithdrawals;
 
     // Calculate total spendable income (income minus savings)
     const totalSpendableIncome = totalIncome - totalSavings;
@@ -400,5 +402,52 @@ export const getMonthlyFinancialSummary = query({
       status,
       formattedMonth: startDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
     };
+  },
+});
+
+// Migration function to update any transactions without transactionType
+export const migrateTransactionTypes = mutation({
+  args: {
+    ...SessionIdArg,
+  },
+  handler: async (ctx, args) => {
+    // Ensure user is authenticated
+    const user = await getAuthUser(ctx, args);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Get all transactions for this user that don't have a transactionType
+    const transactions = await ctx.db
+      .query('transactions')
+      .withIndex('by_userId_datetime', (q) => q.eq('userId', user._id))
+      .collect();
+
+    let updatedCount = 0;
+
+    for (const transaction of transactions) {
+      // If transaction doesn't have a transactionType or it's undefined
+      if (transaction.transactionType === undefined) {
+        let transactionType: 'expense' | 'income' | 'savings';
+
+        // Determine type based on amount and category
+        if (transaction.amount < 0) {
+          transactionType = 'expense';
+        } else if (transaction.category?.toLowerCase() === 'savings') {
+          transactionType = 'savings';
+        } else {
+          transactionType = 'income';
+        }
+
+        // Update the transaction
+        await ctx.db.patch(transaction._id, {
+          transactionType,
+        });
+
+        updatedCount++;
+      }
+    }
+
+    return { updatedCount };
   },
 });

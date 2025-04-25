@@ -2,7 +2,7 @@ import { parseCurrencyInput } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CategorySelect } from './CategorySelect';
 import { DateTimePicker } from './DateTimePicker';
@@ -22,6 +22,8 @@ import { Input } from './ui/input';
 interface TransactionFormProps {
   onSuccess?: () => void;
   className?: string;
+  initialType?: TransactionType;
+  initialCategory?: string;
 }
 
 interface TransactionFormValues {
@@ -32,22 +34,35 @@ interface TransactionFormValues {
   transactionType: TransactionType;
 }
 
-export function TransactionForm({ onSuccess, className }: TransactionFormProps) {
+export function TransactionForm({
+  onSuccess,
+  className,
+  initialType = 'expense',
+  initialCategory = 'Food',
+}: TransactionFormProps) {
   const createTransaction = useSessionMutation(api.transactions.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<TransactionFormValues>({
     defaultValues: {
       amount: '',
-      category: 'Food',
+      category: initialCategory,
       description: '',
       datetime: new Date(),
-      transactionType: 'expense',
+      transactionType: initialType,
     },
   });
 
   const transactionType = form.watch('transactionType');
-  const showCategoryField = transactionType === 'expense' || transactionType === 'savings';
+  const showCategoryField = transactionType === 'expense';
+
+  useEffect(() => {
+    if (transactionType === 'income') {
+      form.setValue('category', 'Income');
+    } else if (transactionType === 'savings') {
+      form.setValue('category', 'Savings');
+    }
+  }, [transactionType, form]);
 
   const onSubmit = useCallback(
     async (data: TransactionFormValues) => {
@@ -62,9 +77,16 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
           return;
         }
 
+        let category = data.category;
+        if (data.transactionType === 'income') {
+          category = 'Income';
+        } else if (data.transactionType === 'savings') {
+          category = 'Savings';
+        }
+
         await createTransaction({
           amount,
-          category: showCategoryField ? data.category : undefined,
+          category,
           description: data.description,
           datetime: data.datetime.toISOString(),
           transactionType: data.transactionType,
@@ -78,7 +100,7 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
         setIsSubmitting(false);
       }
     },
-    [createTransaction, form, onSuccess, showCategoryField]
+    [createTransaction, form, onSuccess]
   );
 
   return (
@@ -121,7 +143,7 @@ export function TransactionForm({ onSuccess, className }: TransactionFormProps) 
                   ? 'Enter the expense amount (e.g., 10.99)'
                   : transactionType === 'income'
                     ? 'Enter the income amount (e.g., 1000.00)'
-                    : 'Enter the savings amount (e.g., 500.00)'}
+                    : 'Enter the savings amount (e.g., 500.00 for deposits, -500.00 for withdrawals)'}
               </FormDescription>
               <FormMessage className="text-xs" />
             </FormItem>

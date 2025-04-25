@@ -6,27 +6,11 @@ import { api } from '@workspace/backend/convex/_generated/api';
 import type { Doc } from '@workspace/backend/convex/_generated/dataModel';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { format } from 'date-fns';
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  CreditCard,
-  DollarSign,
-  PiggyBank,
-  Trash2,
-} from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, PiggyBank, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from './ui/alert-dialog';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 
 interface TransactionItemProps {
   transaction: Doc<'transactions'>;
@@ -125,29 +109,28 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
         </CardContent>
       </Card>
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this transaction. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete();
-              }}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Transaction</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this transaction? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

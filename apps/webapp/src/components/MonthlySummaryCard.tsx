@@ -12,12 +12,11 @@ import {
   WrenchIcon,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { AddIncomeModal } from './AddIncomeModal';
-import { AddSavingsModal } from './AddSavingsModal';
+import { useMemo } from 'react';
 import { BudgetNavigationButton } from './BudgetNavigationButton';
+import { TransactionModal } from './TransactionModal';
 import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent } from './ui/card';
 
 interface MonthlySummaryCardProps {
   selectedDate: Date;
@@ -32,10 +31,6 @@ export function MonthlySummaryCard({
   onDataChange,
   readOnly = false,
 }: MonthlySummaryCardProps) {
-  // State for modals
-  const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
-  const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
-
   // Extract year and month from the date
   const { year, month } = useMemo(
     () => ({
@@ -130,15 +125,19 @@ export function MonthlySummaryCard({
                   {formatCurrency(summary.totalIncome)}
                 </span>
                 {showIncomeButton && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <TransactionModal
+                    buttonVariant="ghost"
                     className="h-7 px-2"
-                    onClick={() => setIsIncomeModalOpen(true)}
-                  >
-                    <PlusIcon className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs">Add Income</span>
-                  </Button>
+                    onSuccess={handleTransactionSuccess}
+                    transactionType="income"
+                    category="Income"
+                    trigger={
+                      <Button variant="ghost" size="sm" className="h-7 px-2">
+                        <PlusIcon className="h-3.5 w-3.5 mr-1" />
+                        <span className="text-xs">Add Income</span>
+                      </Button>
+                    }
+                  />
                 )}
               </div>
             </div>
@@ -161,15 +160,19 @@ export function MonthlySummaryCard({
                   {formatCurrency(summary.totalSavings)}
                 </span>
                 {showSavingsButton && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <TransactionModal
+                    buttonVariant="ghost"
                     className="h-7 px-2"
-                    onClick={() => setIsSavingsModalOpen(true)}
-                  >
-                    <PlusIcon className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs">Add Savings</span>
-                  </Button>
+                    onSuccess={handleTransactionSuccess}
+                    transactionType="savings"
+                    category="Savings"
+                    trigger={
+                      <Button variant="ghost" size="sm" className="h-7 px-2">
+                        <PlusIcon className="h-3.5 w-3.5 mr-1" />
+                        <span className="text-xs">Add Savings</span>
+                      </Button>
+                    }
+                  />
                 )}
               </div>
             </div>
@@ -327,24 +330,6 @@ export function MonthlySummaryCard({
       <Card>
         <CardContent className="pt-6">{content}</CardContent>
       </Card>
-
-      {/* Only include modals when not in readOnly mode */}
-      {!readOnly && (
-        <>
-          <AddIncomeModal
-            isOpen={isIncomeModalOpen}
-            onClose={() => setIsIncomeModalOpen(false)}
-            selectedDate={selectedDate}
-            onSuccess={handleTransactionSuccess}
-          />
-          <AddSavingsModal
-            isOpen={isSavingsModalOpen}
-            onClose={() => setIsSavingsModalOpen(false)}
-            selectedDate={selectedDate}
-            onSuccess={handleTransactionSuccess}
-          />
-        </>
-      )}
     </>
   );
 }

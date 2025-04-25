@@ -402,7 +402,8 @@ export const getSharedFinancialSummary = query({
     // Calculate totals by transaction type
     let totalIncome = 0;
     let totalExpenses = 0;
-    let totalSavings = 0;
+    let totalSavingsDeposits = 0;
+    let totalSavingsWithdrawals = 0;
 
     for (const transaction of transactions) {
       const amount = Math.abs(transaction.amount);
@@ -415,10 +416,18 @@ export const getSharedFinancialSummary = query({
           totalExpenses += amount;
           break;
         case 'savings':
-          totalSavings += amount;
+          // Handle savings deposits (positive amounts) and withdrawals (negative amounts) separately
+          if (transaction.amount > 0) {
+            totalSavingsDeposits += transaction.amount;
+          } else {
+            totalSavingsWithdrawals += Math.abs(transaction.amount);
+          }
           break;
       }
     }
+
+    // Calculate net savings (deposits minus withdrawals)
+    const totalSavings = totalSavingsDeposits - totalSavingsWithdrawals;
 
     // Calculate total spendable income (income minus savings)
     const totalSpendableIncome = totalIncome - totalSavings;

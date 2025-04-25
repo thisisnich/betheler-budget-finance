@@ -99,25 +99,23 @@ export function SharedFinancialOverview({
     if (!financialSummary || financialSummary === null || !budgetSummary || budgetSummary === null)
       return 0;
 
-    // Get savings total from transactions
-    const savingsTotal =
-      sharedTransactions?.transactions
-        .filter((tx) => tx.transactionType === 'savings')
-        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0) || 0;
-
-    return Math.max(0, financialSummary.totalIncome - savingsTotal - budgetSummary.totalBudget);
-  }, [financialSummary, budgetSummary, sharedTransactions]);
+    return Math.max(
+      0,
+      financialSummary.totalIncome - financialSummary.totalSavings - budgetSummary.totalBudget
+    );
+  }, [financialSummary, budgetSummary]);
 
   // Prepare fund allocation data
   const allocationData = useMemo(() => {
-    if (!budgetSummary || budgetSummary === null || !budgetProgress || budgetProgress === null)
+    if (
+      !budgetSummary ||
+      budgetSummary === null ||
+      !budgetProgress ||
+      budgetProgress === null ||
+      !financialSummary ||
+      financialSummary === null
+    )
       return [];
-
-    // Create savings entry from transactions
-    const savingsAmount =
-      sharedTransactions?.transactions
-        .filter((tx) => tx.transactionType === 'savings')
-        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0) || 0;
 
     // Extract budget categories from budgetProgress
     const budgetCategories = budgetProgress.budgeted.map((budget) => ({
@@ -128,11 +126,11 @@ export function SharedFinancialOverview({
 
     const data = [
       // Only include savings if there are any
-      ...(savingsAmount > 0
+      ...(financialSummary.totalSavings > 0
         ? [
             {
               category: 'Savings',
-              amount: savingsAmount,
+              amount: financialSummary.totalSavings,
               percentage: 0, // Will be calculated later
             },
           ]
@@ -158,7 +156,7 @@ export function SharedFinancialOverview({
     }
 
     return data;
-  }, [budgetSummary, budgetProgress, sharedTransactions, unallocatedFunds]);
+  }, [budgetSummary, budgetProgress, financialSummary, unallocatedFunds]);
 
   // Calculate total allocated funds
   const totalAllocated = useMemo(() => {
@@ -253,11 +251,7 @@ export function SharedFinancialOverview({
                     <Skeleton className="h-5 w-20" />
                   ) : (
                     <span className="font-medium text-blue-600">
-                      {formatCurrency(
-                        sharedTransactions.transactions
-                          .filter((tx) => tx.transactionType === 'savings')
-                          .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-                      )}
+                      {formatCurrency(financialSummary.totalSavings)}
                     </span>
                   )}
                 </div>
@@ -415,11 +409,7 @@ export function SharedFinancialOverview({
                 <Skeleton className="h-6 w-20 mt-1" />
               ) : (
                 <div className="text-blue-600 text-lg font-semibold">
-                  {formatCurrency(
-                    sharedTransactions.transactions
-                      .filter((tx) => tx.transactionType === 'savings')
-                      .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-                  )}
+                  {formatCurrency(financialSummary.totalSavings)}
                 </div>
               )}
             </div>
