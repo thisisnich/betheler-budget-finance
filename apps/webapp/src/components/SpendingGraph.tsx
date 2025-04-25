@@ -93,9 +93,20 @@ export function SpendingGraph() {
       {categorySummary && transactions.length > 0 ? (
         <Card>
           <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base sm:text-lg font-medium">Spending by Category</h3>
+              <div>
+                <p className="text-xs sm:text-sm text-muted-foreground text-right">
+                  Total: {formatCurrency(Math.abs(categorySummary.totalSpent))}
+                </p>
+              </div>
+            </div>
             <CategoryPieChart
               data={categorySummary.categories}
               totalSpent={Math.abs(categorySummary.totalSpent)}
+              year={year}
+              month={month}
+              showBudgetComparison={true}
             />
           </CardContent>
         </Card>

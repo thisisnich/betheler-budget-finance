@@ -1,12 +1,18 @@
 /**
  * Formats a number as currency
  * @param amount - The amount to format
- * @param currency - The currency code (default: USD)
+ * @param options - Formatting options
  * @returns Formatted currency string
  */
-export function formatCurrency(amount: number, currency = 'USD'): string {
+export function formatCurrency(
+  amount: number,
+  options?: { currency?: string; showCurrency?: boolean }
+): string {
+  const currency = options?.currency || 'USD';
+  const style = options?.showCurrency === false ? 'decimal' : 'currency';
+
   return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+    style,
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

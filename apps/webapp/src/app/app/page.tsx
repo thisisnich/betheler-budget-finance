@@ -1,5 +1,6 @@
 'use client';
 
+import { BudgetSummaryCard } from '@/components/BudgetSummaryCard';
 import { RecentSharesList } from '@/components/RecentSharesList';
 import { ShareButton } from '@/components/ShareButton';
 import { SpendingGraph } from '@/components/SpendingGraph';
@@ -55,22 +56,31 @@ export default function AppPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border rounded-md bg-card">
-                  <h3 className="font-medium mb-2">Quick Actions</h3>
-                  <div className="space-y-2">
-                    <Link href="/transactions" className="block">
-                      <Button variant="outline" size="sm" className="w-full justify-start">
-                        Add New Transaction
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+                <BudgetSummaryCard year={currentYear} month={currentMonth} />
 
-                <div className="p-4 border rounded-md bg-card">
-                  <h3 className="font-medium mb-2">Financial Tips</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Track your spending regularly to stay on top of your budget.
-                  </p>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="p-4 border rounded-md bg-card">
+                    <h3 className="font-medium mb-2">Quick Actions</h3>
+                    <div className="space-y-2">
+                      <Link href="/transactions" className="block">
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          Add New Transaction
+                        </Button>
+                      </Link>
+                      <Link href="/budgets" className="block">
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          Manage Budgets
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="p-4 border rounded-md bg-card">
+                    <h3 className="font-medium mb-2">Financial Tips</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Track your spending regularly to stay on top of your budget.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

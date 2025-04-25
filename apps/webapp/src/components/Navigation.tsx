@@ -14,7 +14,7 @@ export function Navigation() {
   const isAuthenticated = authState?.state === 'authenticated';
 
   // Memoize navigation items to prevent unnecessary recalculations
-  // Only include Dashboard and Transactions links for authenticated users
+  // Only include Dashboard, Transactions, and Budgets links for authenticated users
   const navItems = useMemo(
     () => [
       ...(isAuthenticated
@@ -28,6 +28,11 @@ export function Navigation() {
               href: '/transactions',
               label: 'Transactions',
               isActive: pathname.startsWith('/transactions'),
+            },
+            {
+              href: '/budgets',
+              label: 'Budgets',
+              isActive: pathname.startsWith('/budgets'),
             },
           ]
         : []),

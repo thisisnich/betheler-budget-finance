@@ -774,6 +774,238 @@ betheler-budget-finance/
           </p>
         </section>
       </section>
+
+      <section id="v1.3.0">
+        <meta name="version" content="1.3.0" />
+        <h1>📍 Version 1.3.0 - Budget Management</h1>
+        <section feature="budget-management">
+          <h3>Budget Management</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>[x] Update schema.ts to add budgets table</li>
+                <li>
+                  [x] Implement createBudget mutation in
+                  services/backend/convex/budgets.ts
+                </li>
+                <li>
+                  [x] Implement updateBudget mutation in
+                  services/backend/convex/budgets.ts
+                </li>
+                <li>
+                  [x] Implement deleteBudget mutation in
+                  services/backend/convex/budgets.ts
+                </li>
+                <li>
+                  [x] Implement listUserBudgets query in
+                  services/backend/convex/budgets.ts
+                </li>
+                <li>
+                  [x] Implement getBudgetProgress query in
+                  services/backend/convex/budgets.ts to compare budgets with
+                  actual spending
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create BudgetForm component in
+                  apps/webapp/src/components/BudgetForm.tsx
+                </li>
+                <li>
+                  [x] Create BudgetList component in
+                  apps/webapp/src/components/BudgetList.tsx
+                </li>
+                <li>
+                  [x] Create BudgetItem component in
+                  apps/webapp/src/components/BudgetItem.tsx
+                </li>
+                <li>
+                  [x] Create BudgetProgress component in
+                  apps/webapp/src/components/BudgetProgress.tsx
+                </li>
+                <li>
+                  [x] Update CategoryPieChart to show budget vs. actual spending
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Page Implementation</strong>
+              <ul>
+                <li>
+                  [x] Create budgets page at
+                  apps/webapp/src/app/budgets/page.tsx
+                </li>
+                <li>
+                  [x] Add navigation link to budgets page in
+                  apps/webapp/src/components/Navigation.tsx
+                </li>
+                <li>
+                  [x] Add quick action link to set budget on dashboard in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> The budget management feature
+            allows users to set monthly budgets for each spending category and
+            track their actual spending against these budgets. Users can see
+            whether they're within budget or overspending in each category. The
+            dashboard displays budget progress visually with color-coded
+            indicators, making it easy to identify problem areas.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.3.1">
+        <meta name="version" content="1.3.1" />
+        <h1>📍 Version 1.3.1 - Budget Enhancements</h1>
+        <section feature="budget-enhancements">
+          <h3>Budget Dashboard and Copy Features</h3>
+          <ul>
+            <li>
+              <strong>Backend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Implement getTotalBudgetSummary query in
+                  services/backend/convex/budgets.ts
+                </li>
+                <li>
+                  [x] Implement copyBudgetsFromMonth mutation in
+                  services/backend/convex/budgets.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Dashboard Budget Overview</strong>
+              <ul>
+                <li>
+                  [x] Create BudgetSummaryCard component in
+                  apps/webapp/src/components/BudgetSummaryCard.tsx
+                </li>
+                <li>
+                  [x] Add budget summary to dashboard in
+                  apps/webapp/src/app/app/page.tsx
+                </li>
+                <li>
+                  [x] Show total budget, spent amount, and remaining budget in
+                  the summary
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Budget Copy Feature</strong>
+              <ul>
+                <li>
+                  [x] Create CopyBudgetButton component in
+                  apps/webapp/src/components/CopyBudgetButton.tsx
+                </li>
+                <li>
+                  [x] Update BudgetList to include copy functionality in
+                  apps/webapp/src/components/BudgetList.tsx
+                </li>
+                <li>[x] Add month selection for copying budgets</li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> These enhancements add a
+            high-level budget summary to the dashboard, showing users their
+            total budget for the month and how much they have left to spend. The
+            copy feature allows users to quickly set up budgets for a new month
+            by copying all budget entries from a previous month, saving time and
+            maintaining consistency in their budget planning.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.3.2">
+        <meta name="version" content="1.3.2" />
+        <h1>📍 Version 1.3.2 - Budget Copy Feature Refinement</h1>
+        <section feature="budget-copy-refinement">
+          <h3>Budget Copy Feature Refinement</h3>
+          <ul>
+            <li>
+              <strong>User Experience Improvements</strong>
+              <ul>
+                <li>
+                  [x] Modify BudgetList to show CopyBudgetButton only in empty
+                  state in apps/webapp/src/components/BudgetList.tsx
+                </li>
+                <li>
+                  [x] Add additional CopyBudgetButton to empty state content
+                  area
+                </li>
+                <li>
+                  [x] Display hint text when no transactions exist for the month
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This refinement improves the
+            user experience by showing the "Copy from Previous Month" button
+            only when it's most relevant - when there are no budgets set up for
+            the current month. This contextual approach simplifies the interface
+            by only showing the option when it's most useful, reducing visual
+            clutter and making the workflow more intuitive for users who are
+            just starting to set up their monthly budget.
+          </p>
+        </section>
+      </section>
+
+      <section id="v1.3.3">
+        <meta name="version" content="1.3.3" />
+        <h1>📍 Version 1.3.3 - Dedicated Empty Budget State Component</h1>
+        <section feature="empty-budget-component">
+          <h3>Empty Budget State Component</h3>
+          <ul>
+            <li>
+              <strong>Component Creation</strong>
+              <ul>
+                <li>
+                  [x] Create EmptyBudgetState component in
+                  apps/webapp/src/components/EmptyBudgetState.tsx
+                </li>
+                <li>
+                  [x] Enhance CopyBudgetButton to support customization in
+                  apps/webapp/src/components/CopyBudgetButton.tsx
+                </li>
+                <li>
+                  [x] Update BudgetList to use EmptyBudgetState component in
+                  apps/webapp/src/components/BudgetList.tsx
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Design Improvements</strong>
+              <ul>
+                <li>[x] Create a more prominent design for the copy action</li>
+                <li>
+                  [x] Add content hierarchy with primary and secondary actions
+                </li>
+                <li>
+                  [x] Improve empty state messaging based on transaction status
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This improvement creates a
+            dedicated component for the empty budget state that uses a more
+            strategic approach to encourage budget creation. The new component
+            prominently features the "Copy from Previous Month" as the primary
+            action, with "Add Budget Manually" as an alternative. The component
+            also adapts its messaging based on whether the user has transactions
+            for the month, providing a more personalized experience and clearer
+            next steps for users.
+          </p>
+        </section>
+      </section>
     </section>
   </body>
 </html>

@@ -47,6 +47,19 @@ export default defineSchema({
     description: v.string(),
   }).index('by_userId_datetime', ['userId', 'datetime']),
 
+  //budgets
+  budgets: defineTable({
+    userId: v.id('users'),
+    category: v.string(),
+    amount: v.number(),
+    month: v.number(), // 0-based (January is 0)
+    year: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId_yearMonth', ['userId', 'year', 'month'])
+    .index('by_userId_category', ['userId', 'category']),
+
   //shareLinks
   shareLinks: defineTable({
     userId: v.id('users'),

@@ -1,0 +1,141 @@
+import { formatCurrency, parseCurrencyInput } from '@/lib/formatCurrency';
+import { api } from '@workspace/backend/convex/_generated/api';
+import type { Id } from '@workspace/backend/convex/_generated/dataModel';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { CategorySelect } from './CategorySelect';
+import { Button } from './ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from './ui/form';
+import { Input } from './ui/input';
+
+interface BudgetFormProps {
+  onSuccess?: () => void;
+  className?: string;
+  year: number;
+  month: number;
+  initialData?: {
+    _id?: Id<'budgets'>;
+    category: string;
+    amount: number;
+  };
+}
+
+interface BudgetFormValues {
+  amount: string;
+  category: string;
+}
+
+export function BudgetForm({ onSuccess, className, year, month, initialData }: BudgetFormProps) {
+  const createBudget = useSessionMutation(api.budgets.create);
+  const updateBudget = useSessionMutation(api.budgets.update);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<BudgetFormValues>({
+    defaultValues: {
+      amount: initialData ? formatCurrency(initialData.amount, { showCurrency: false }) : '',
+      category: initialData?.category || 'Food',
+    },
+  });
+
+  const onSubmit = useCallback(
+    async (data: BudgetFormValues) => {
+      try {
+        setIsSubmitting(true);
+        const amount = parseCurrencyInput(data.amount);
+
+        if (!amount) {
+          form.setError('amount', {
+            message: 'Please enter a valid amount',
+          });
+          return;
+        }
+
+        if (initialData?._id && typeof initialData._id === 'object') {
+          // Update existing budget (only if we have a valid ID)
+          await updateBudget({
+            budgetId: initialData._id,
+            amount,
+          });
+        } else {
+          // Create new budget
+          await createBudget({
+            category: data.category,
+            amount,
+            year,
+            month,
+          });
+        }
+
+        form.reset();
+        onSuccess?.();
+      } catch (error) {
+        console.error('Failed to save budget:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [createBudget, updateBudget, form, onSuccess, initialData, year, month]
+  );
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={className}>
+        <div className="space-y-4">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Category</FormLabel>
+                <FormControl>
+                  <CategorySelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    className="w-full"
+                    disabled={!!initialData}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Budget Amount</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="0.00"
+                    inputMode="decimal"
+                    className="text-base sm:text-sm"
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  Enter the budget amount for this category
+                </FormDescription>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? 'Saving...' : initialData ? 'Update Budget' : 'Add Budget'}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}
