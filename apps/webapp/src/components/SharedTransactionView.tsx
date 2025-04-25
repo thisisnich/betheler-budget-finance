@@ -5,6 +5,7 @@ import { useQuery } from 'convex/react';
 import { CoinsIcon, Loader2, PieChartIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { SpendingBreakdownChart } from './CategoryPieChart';
+import { MonthYearPicker } from './MonthYearPicker';
 import { ShareNotFound } from './ShareNotFound';
 import { TransactionItem } from './TransactionItem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -17,35 +18,52 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
   // Tab state
   const [activeTab, setActiveTab] = useState<'allocation' | 'expenses'>('expenses');
 
+  // Date state for month/year selection
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const selectedMonth = selectedDate.getMonth();
+  const selectedYear = selectedDate.getFullYear();
+
   // Fetch shared transactions and category data
   const sharedTransactions = useQuery(api.sharing.getSharedTransactions, {
     shareId,
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Fetch expense categories
   const expenseCategorySummary = useQuery(api.sharing.getSharedCategorySummary, {
     shareId,
     transactionType: 'expense',
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Fetch all transactions for fund allocation
   const allCategorySummary = useQuery(api.sharing.getSharedCategorySummary, {
     shareId,
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Fetch financial summary data
   const financialSummary = useQuery(api.sharing.getSharedFinancialSummary, {
     shareId,
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Fetch budget data
   const budgetSummary = useQuery(api.sharing.getSharedBudgetSummary, {
     shareId,
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Fetch budget progress data
   const budgetProgress = useQuery(api.sharing.getSharedBudgetProgress, {
     shareId,
+    month: selectedMonth,
+    year: selectedYear,
   });
 
   // Pre-compute all memoized values
@@ -185,6 +203,13 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
             This shared view is available until {expirationDate}
           </p>
         )}
+      </div>
+
+      {/* Month selector */}
+      <div className="mb-6 flex justify-center">
+        <div className="w-1/2">
+          <MonthYearPicker value={selectedDate} onChange={setSelectedDate} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

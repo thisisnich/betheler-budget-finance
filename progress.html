@@ -320,6 +320,59 @@ betheler-budget-finance/
       <!-- Upcoming tasks for next version -->
       <section id="upcoming-tasks">
         <h1>📍 Upcoming Tasks</h1>
+        <section feature="month-selector-sharing">
+          <h3>Month Selector for Shared View</h3>
+          <ul>
+            <li>
+              <strong>Backend Updates</strong>
+              <ul>
+                <li>
+                  [x] Update getSharedTransactions to accept month and year
+                  parameters in services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Update getSharedCategorySummary to accept month and year
+                  parameters in services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Update getSharedFinancialSummary to accept month and year
+                  parameters in services/backend/convex/sharing.ts
+                </li>
+                <li>
+                  [x] Update getSharedBudgetProgress to accept month and year
+                  parameters in services/backend/convex/sharing.ts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Frontend Implementation</strong>
+              <ul>
+                <li>
+                  [x] Add date state to SharedTransactionView in
+                  apps/webapp/src/components/SharedTransactionView.tsx
+                </li>
+                <li>
+                  [x] Implement MonthYearPicker component in the shared view
+                </li>
+                <li>[x] Pass month/year parameters to all API calls</li>
+                <li>
+                  [x] Style the month selector to match the main app dashboard
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature enhances the
+            shared view by adding a month selector, similar to the one in the
+            main dashboard. This allows users who receive shared links to view
+            historical data by paging through different months, rather than only
+            seeing the most recent data. The implementation requires updating
+            the backend API endpoints to accept month and year parameters and
+            modifying the frontend to include and use the MonthYearPicker
+            component.
+          </p>
+        </section>
+
         <section feature="expenses-calculation">
           <h3>Fix for Zero Expenses in Spending Overview</h3>
           <ul>

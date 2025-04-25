@@ -194,6 +194,8 @@ export const getShareLink = query({
 export const getSharedTransactions = query({
   args: {
     shareId: v.string(),
+    month: v.optional(v.number()),
+    year: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -211,9 +213,13 @@ export const getSharedTransactions = query({
       return null;
     }
 
+    // Use provided month/year if available, otherwise use the ones from shareLink
+    const year = args.year !== undefined ? args.year : shareLink.year;
+    const month = args.month !== undefined ? args.month : shareLink.month;
+
     // Create start and end date for the specified month
-    const startDate = new Date(shareLink.year, shareLink.month, 1);
-    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0); // Last day of month
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
@@ -233,8 +239,8 @@ export const getSharedTransactions = query({
 
     return {
       transactions,
-      month: shareLink.month,
-      year: shareLink.year,
+      month,
+      year,
       expiresAt: shareLink.expiresAt,
       permanent: shareLink.expiresAtLabel === 'Never',
     };
@@ -248,6 +254,8 @@ export const getSharedCategorySummary = query({
     transactionType: v.optional(
       v.union(v.literal('expense'), v.literal('income'), v.literal('savings'))
     ),
+    month: v.optional(v.number()),
+    year: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -265,9 +273,13 @@ export const getSharedCategorySummary = query({
       return null;
     }
 
+    // Use provided month/year if available, otherwise use the ones from shareLink
+    const year = args.year !== undefined ? args.year : shareLink.year;
+    const month = args.month !== undefined ? args.month : shareLink.month;
+
     // Create start and end date for the specified month
-    const startDate = new Date(shareLink.year, shareLink.month, 1);
-    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0); // Last day of month
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
@@ -317,8 +329,8 @@ export const getSharedCategorySummary = query({
     return {
       categories: result,
       totalSpent,
-      month: shareLink.month,
-      year: shareLink.year,
+      month,
+      year,
       expiresAt: shareLink.expiresAt,
       permanent: shareLink.expiresAtLabel === 'Never',
     };
@@ -329,6 +341,8 @@ export const getSharedCategorySummary = query({
 export const getSharedFinancialSummary = query({
   args: {
     shareId: v.string(),
+    month: v.optional(v.number()),
+    year: v.optional(v.number()),
   },
   handler: async (
     ctx,
@@ -355,9 +369,13 @@ export const getSharedFinancialSummary = query({
       return null;
     }
 
+    // Use provided month/year if available, otherwise use the ones from shareLink
+    const year = args.year !== undefined ? args.year : shareLink.year;
+    const month = args.month !== undefined ? args.month : shareLink.month;
+
     // Create start and end date for the specified month
-    const startDate = new Date(shareLink.year, shareLink.month, 1);
-    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0); // Last day of month
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
@@ -412,6 +430,8 @@ export const getSharedFinancialSummary = query({
 export const getSharedBudgetProgress = query({
   args: {
     shareId: v.string(),
+    month: v.optional(v.number()),
+    year: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -429,20 +449,24 @@ export const getSharedBudgetProgress = query({
       return null;
     }
 
+    // Use provided month/year if available, otherwise use the ones from shareLink
+    const year = args.year !== undefined ? args.year : shareLink.year;
+    const month = args.month !== undefined ? args.month : shareLink.month;
+
     // Get budgets for this month
     const budgets = await ctx.db
       .query('budgets')
       .withIndex('by_userId_yearMonth', (q) =>
         q
           .eq('userId', shareLink.userId as Id<'users'>)
-          .eq('year', shareLink.year)
-          .eq('month', shareLink.month)
+          .eq('year', year)
+          .eq('month', month)
       )
       .collect();
 
     // Create start and end date for the specified month
-    const startDate = new Date(shareLink.year, shareLink.month, 1);
-    const endDate = new Date(shareLink.year, shareLink.month + 1, 0); // Last day of month
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0); // Last day of month
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
@@ -511,18 +535,10 @@ export const getSharedBudgetProgress = query({
 export const getSharedBudgetSummary = query({
   args: {
     shareId: v.string(),
+    month: v.optional(v.number()),
+    year: v.optional(v.number()),
   },
-  handler: async (
-    ctx,
-    args
-  ): Promise<{
-    totalBudget: number;
-    totalSpent: number;
-    totalRemaining: number;
-    percentSpent: number;
-    budgetCount: number;
-    status: string;
-  } | null> => {
+  handler: async (ctx, args) => {
     // Get the share link
     const shareLink = await ctx.db
       .query('shareLinks')
@@ -538,54 +554,29 @@ export const getSharedBudgetSummary = query({
       return null;
     }
 
-    // Get budget progress which already includes spending data
-    const budgetProgress = await ctx.runQuery(api.sharing.getSharedBudgetProgress, {
-      shareId: args.shareId,
-    });
+    // Use provided month/year if available, otherwise use the ones from shareLink
+    const year = args.year !== undefined ? args.year : shareLink.year;
+    const month = args.month !== undefined ? args.month : shareLink.month;
 
-    if (!budgetProgress) {
-      return null;
-    }
+    // Get budgets for this month
+    const budgets = await ctx.db
+      .query('budgets')
+      .withIndex('by_userId_yearMonth', (q) =>
+        q
+          .eq('userId', shareLink.userId as Id<'users'>)
+          .eq('year', year)
+          .eq('month', month)
+      )
+      .collect();
 
-    type BudgetProgressResult = {
-      budgeted: Array<{
-        amount: number;
-        spent: number;
-        status: string;
-      }>;
-      unbudgeted: Array<{
-        spent: number;
-      }>;
-    };
-
-    // Cast to the expected type
-    const typedBudgetProgress = budgetProgress as BudgetProgressResult;
-
-    // Calculate total budget, total spent, and total remaining
-    let totalBudget = 0;
-    let totalSpent = 0;
-
-    // Add up all budgeted categories
-    for (const budget of typedBudgetProgress.budgeted) {
-      totalBudget += budget.amount;
-      totalSpent += budget.spent;
-    }
-
-    // Add spending from unbudgeted categories
-    for (const item of typedBudgetProgress.unbudgeted) {
-      totalSpent += item.spent;
-    }
-
-    const totalRemaining = totalBudget - totalSpent;
-    const percentSpent = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    // Calculate total budget amount
+    const totalBudget = budgets.reduce((sum, budget) => sum + budget.amount, 0);
 
     return {
+      budgets,
       totalBudget,
-      totalSpent,
-      totalRemaining,
-      percentSpent,
-      budgetCount: typedBudgetProgress.budgeted.length,
-      status: totalRemaining >= 0 ? 'within_budget' : 'over_budget',
+      month,
+      year,
     };
   },
 });
