@@ -60,6 +60,19 @@ export function BudgetList({ year, month }: BudgetListProps) {
 
   return (
     <div className="space-y-6">
+      {/* Add Budget Dialog - moved outside conditionals so it can be triggered from anywhere */}
+      <Dialog open={isAddingBudget} onOpenChange={setIsAddingBudget}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Budget</DialogTitle>
+            <DialogDescription>
+              Set a budget for a spending category for this month
+            </DialogDescription>
+          </DialogHeader>
+          <BudgetForm year={year} month={month} onSuccess={handleBudgetCreated} />
+        </DialogContent>
+      </Dialog>
+
       {!hasBudgets ? (
         <EmptyBudgetState
           year={year}
@@ -76,23 +89,10 @@ export function BudgetList({ year, month }: BudgetListProps) {
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Your Budgets</h3>
 
-                <Dialog open={isAddingBudget} onOpenChange={setIsAddingBudget}>
-                  <DialogTrigger asChild>
-                    {/* Icon button for adding a new budget */}
-                    <Button size="sm" variant="outline">
-                      <PlusIcon className="w-4 h-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Budget</DialogTitle>
-                      <DialogDescription>
-                        Set a budget for a spending category for this month
-                      </DialogDescription>
-                    </DialogHeader>
-                    <BudgetForm year={year} month={month} onSuccess={handleBudgetCreated} />
-                  </DialogContent>
-                </Dialog>
+                {/* Icon button for adding a new budget */}
+                <Button size="sm" variant="outline" onClick={handleOpenAddBudget}>
+                  <PlusIcon className="w-4 h-4" />
+                </Button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {budgeted.map((budget) => (
