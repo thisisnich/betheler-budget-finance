@@ -2,7 +2,14 @@
 
 import { formatCurrency } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
+import {
+  ArcElement,
+  ChartData,
+  Chart as ChartJS,
+  Legend,
+  Tooltip,
+  type TooltipItem,
+} from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 
@@ -88,11 +95,11 @@ export function CategoryPieChart({ data, totalSpent, className }: CategoryPieCha
           font: {
             size: isMobile ? 10 : 12, // Smaller font on mobile
           },
-          generateLabels: (chart: any) => {
+          generateLabels: (chart: ChartJS<'pie', number[], string>) => {
             const datasets = chart.data.datasets;
-            return chart.data.labels.map((label: string, i: number) => {
+            return (chart.data.labels ?? []).map((label: string, i: number) => {
               const meta = chart.getDatasetMeta(0);
-              const style = meta.controller.getStyle(i);
+              const style = meta.controller.getStyle(i, false);
               const percentage = sortedData[i].percentage.toFixed(1);
 
               // On mobile, only show category and percentage to save space
@@ -114,7 +121,7 @@ export function CategoryPieChart({ data, totalSpent, className }: CategoryPieCha
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
+          label: (context: TooltipItem<'pie'>) => {
             const index = context.dataIndex;
             const value = Math.abs(sortedData[index].amount);
             const percentage = sortedData[index].percentage.toFixed(1);

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, Cross2Icon, ArrowLeftIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function TransactionsPage() {
   const [showForm, setShowForm] = useState(false);
@@ -53,9 +53,7 @@ export default function TransactionsPage() {
 
       {showForm && (
         <div className="mb-6 sm:mb-8 p-4 sm:p-6 border rounded-lg bg-card">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-            New Transaction
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4">New Transaction</h2>
           <TransactionForm onSuccess={handleTransactionAdded} />
         </div>
       )}

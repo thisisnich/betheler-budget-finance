@@ -4,9 +4,9 @@
  * @param currency - The currency code (default: USD)
  * @returns Formatted currency string
  */
-export function formatCurrency(amount: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
+export function formatCurrency(amount: number, currency = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -20,8 +20,8 @@ export function formatCurrency(amount: number, currency = "USD"): string {
  */
 export function parseCurrencyInput(value: string): number | null {
   // Remove currency symbols, commas, and other non-numeric characters except decimal point
-  const cleaned = value.replace(/[^0-9.-]/g, "");
-  
-  const number = parseFloat(cleaned);
-  return isNaN(number) ? null : number;
-} 
+  const cleaned = value.replace(/[^0-9.-]/g, '');
+
+  const number = Number.parseFloat(cleaned);
+  return Number.isNaN(number) ? null : number;
+}

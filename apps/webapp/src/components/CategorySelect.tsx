@@ -1,11 +1,5 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 // Common transaction categories
 const TRANSACTION_CATEGORIES = [
@@ -32,11 +26,7 @@ interface CategorySelectProps {
   className?: string;
 }
 
-export function CategorySelect({
-  value,
-  onChange,
-  className,
-}: CategorySelectProps) {
+export function CategorySelect({ value, onChange, className }: CategorySelectProps) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={cn('w-full', className)}>
@@ -44,11 +34,7 @@ export function CategorySelect({
       </SelectTrigger>
       <SelectContent position="popper" className="max-h-[300px]" sideOffset={4}>
         {TRANSACTION_CATEGORIES.map((category) => (
-          <SelectItem
-            key={category}
-            value={category}
-            className="py-2.5 cursor-pointer"
-          >
+          <SelectItem key={category} value={category} className="py-2.5 cursor-pointer">
             {category}
           </SelectItem>
         ))}

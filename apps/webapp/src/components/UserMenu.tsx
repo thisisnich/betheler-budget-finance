@@ -9,15 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { LogOut, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { User, LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface UserMenuProps {
   className?: string;
@@ -25,11 +25,7 @@ interface UserMenuProps {
   showNameOnMobile?: boolean;
 }
 
-export function UserMenu({
-  className,
-  alignMenu = 'end',
-  showNameOnMobile = true,
-}: UserMenuProps) {
+export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true }: UserMenuProps) {
   const authState = useAuthState();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -70,9 +66,7 @@ export function UserMenu({
           )}
         >
           <User className="h-4 w-4" />
-          <span className={cn(!showNameOnMobile && 'hidden md:inline')}>
-            {authState.user.name}
-          </span>
+          <span className={cn(!showNameOnMobile && 'hidden md:inline')}>{authState.user.name}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -88,19 +82,13 @@ export function UserMenu({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <Link href="/profile">
-          <DropdownMenuItem className="cursor-pointer py-2">
-            Profile
-          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer py-2">Profile</DropdownMenuItem>
         </Link>
         <Link href="/app">
-          <DropdownMenuItem className="cursor-pointer py-2">
-            Dashboard
-          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer py-2">Dashboard</DropdownMenuItem>
         </Link>
         <Link href="/transactions">
-          <DropdownMenuItem className="cursor-pointer py-2">
-            Transactions
-          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer py-2">Transactions</DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem

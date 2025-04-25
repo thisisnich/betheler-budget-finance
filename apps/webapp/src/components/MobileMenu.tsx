@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { Menu } from 'lucide-react';
 import { useAuthState } from '@/modules/auth/AuthProvider';
+import { Menu } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React, { useCallback } from 'react';
 
 interface NavigationItem {
   href: string;
@@ -22,12 +22,7 @@ interface MobileMenuProps {
   userMenu: React.ReactNode;
 }
 
-export function MobileMenu({
-  items,
-  isAuthenticated,
-  loginButton,
-  userMenu,
-}: MobileMenuProps) {
+export function MobileMenu({ items, isAuthenticated, loginButton, userMenu }: MobileMenuProps) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const authState = useAuthState();
@@ -69,9 +64,7 @@ export function MobileMenu({
                 onClick={handleLinkClick}
                 className={cn(
                   'flex items-center py-3 px-3 rounded-md transition-colors hover:bg-accent',
-                  item.isActive
-                    ? 'text-foreground font-medium bg-accent/50'
-                    : 'text-foreground/60'
+                  item.isActive ? 'text-foreground font-medium bg-accent/50' : 'text-foreground/60'
                 )}
               >
                 {item.label}

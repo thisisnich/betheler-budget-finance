@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Calendar } from './ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import * as React from 'react';
+import { Button } from './ui/button';
+import { Calendar } from './ui/calendar';
 import { Input } from './ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface DateTimePickerProps {
   value: Date;
@@ -13,11 +13,7 @@ interface DateTimePickerProps {
   className?: string;
 }
 
-export function DateTimePicker({
-  value,
-  onChange,
-  className,
-}: DateTimePickerProps) {
+export function DateTimePicker({ value, onChange, className }: DateTimePickerProps) {
   const [date, setDate] = React.useState<Date>(value);
 
   // Update the parent when the internal date changes, but avoid calling too frequently
@@ -44,7 +40,7 @@ export function DateTimePicker({
       const timeString = e.target.value;
       const [hours, minutes] = timeString.split(':').map(Number);
 
-      if (!isNaN(hours) && !isNaN(minutes)) {
+      if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
         const newDate = new Date(date);
         newDate.setHours(hours);
         newDate.setMinutes(minutes);

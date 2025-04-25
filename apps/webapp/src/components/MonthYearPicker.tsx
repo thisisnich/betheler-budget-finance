@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { format, addMonths, subMonths } from 'date-fns';
-import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { addMonths, format, subMonths } from 'date-fns';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import * as React from 'react';
+import { Button } from './ui/button';
 
 interface MonthYearPickerProps {
   value: Date;
@@ -10,11 +10,7 @@ interface MonthYearPickerProps {
   className?: string;
 }
 
-export function MonthYearPicker({
-  value,
-  onChange,
-  className,
-}: MonthYearPickerProps) {
+export function MonthYearPicker({ value, onChange, className }: MonthYearPickerProps) {
   const handlePrevMonth = () => {
     onChange(subMonths(value, 1));
   };
@@ -24,8 +20,7 @@ export function MonthYearPicker({
   };
 
   // Get current date to disable next month button if current month is selected
-  const isCurrentMonth =
-    format(new Date(), 'yyyy-MM') === format(value, 'yyyy-MM');
+  const isCurrentMonth = format(new Date(), 'yyyy-MM') === format(value, 'yyyy-MM');
 
   return (
     <div className={cn('flex items-center justify-between', className)}>
@@ -38,9 +33,7 @@ export function MonthYearPicker({
       >
         <ChevronLeftIcon className="h-4 w-4" />
       </Button>
-      <div className="font-medium text-sm sm:text-base">
-        {format(value, 'MMMM yyyy')}
-      </div>
+      <div className="font-medium text-sm sm:text-base">{format(value, 'MMMM yyyy')}</div>
       <Button
         variant="outline"
         size="icon"

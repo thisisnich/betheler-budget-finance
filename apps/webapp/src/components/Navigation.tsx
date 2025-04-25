@@ -70,9 +70,7 @@ export function Navigation() {
                 href={item.href}
                 className={cn(
                   'transition-colors hover:text-foreground/80',
-                  item.isActive
-                    ? 'text-foreground font-medium'
-                    : 'text-foreground/60'
+                  item.isActive ? 'text-foreground font-medium' : 'text-foreground/60'
                 )}
               >
                 {item.label}
