@@ -73,4 +73,11 @@ export default defineSchema({
   })
     .index('by_shareId', ['shareId'])
     .index('by_userId', ['userId']),
+  //login codes for cross-device authentication
+  loginCodes: defineTable({
+    code: v.string(), // The 8-letter login code
+    userId: v.id('users'), // The user who generated this code
+    createdAt: v.number(), // When the code was created
+    expiresAt: v.number(), // When the code expires (1 minute after creation)
+  }).index('by_code', ['code']),
 });
