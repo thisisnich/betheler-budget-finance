@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 // Common transaction categories
-const TRANSACTION_CATEGORIES = [
+const TRANSACTION_EXPENSE_CATEGORIES = [
   'Food',
   'Transportation',
   'Tithe & Offering',
@@ -11,7 +11,6 @@ const TRANSACTION_CATEGORIES = [
   'Shopping',
   'Personal',
   'Gifts',
-  'Income',
   'Other',
 ];
 
@@ -29,7 +28,7 @@ export function CategorySelect({ value, onChange, className, disabled }: Categor
         <SelectValue placeholder="Select category" />
       </SelectTrigger>
       <SelectContent position="popper" className="max-h-[300px]" sideOffset={4}>
-        {TRANSACTION_CATEGORIES.map((category) => (
+        {TRANSACTION_EXPENSE_CATEGORIES.map((category) => (
           <SelectItem key={category} value={category} className="py-2.5 cursor-pointer">
             {category}
           </SelectItem>
