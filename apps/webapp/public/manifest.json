@@ -1,7 +1,7 @@
 {
-  "name": "Next Convex App",
-  "short_name": "Next Convex",
-  "description": "A Next.js app with Convex backend",
+  "name": "Bethel ER Budget & Finance",
+  "short_name": "Bethel ER",
+  "description": "Budgeting and financial management application for Bethel ER",
   "icons": [
     {
       "src": "/appicon-16x16.png",
