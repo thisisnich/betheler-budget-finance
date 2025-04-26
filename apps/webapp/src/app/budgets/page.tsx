@@ -1,5 +1,6 @@
 'use client';
 
+import { BudgetBalanceSummary } from '@/components/BudgetBalanceSummary';
 import { BudgetList } from '@/components/BudgetList';
 import { MonthYearPicker } from '@/components/MonthYearPicker';
 import { PageHeader } from '@/components/PageHeader';
@@ -32,6 +33,9 @@ export default function BudgetsPage() {
               className="w-full max-w-sm"
             />
           </div>
+
+          {/* Budget Balance Summary */}
+          <BudgetBalanceSummary year={year} month={month} />
 
           <BudgetList year={year} month={month} />
         </div>

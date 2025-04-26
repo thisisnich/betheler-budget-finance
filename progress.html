@@ -547,6 +547,70 @@ betheler-budget-finance/
             nested inside a p tag, which was causing hydration errors.
           </p>
         </section>
+
+        <section feature="budget-balance-feedback">
+          <h3>Budget Balance Feedback in Budget Management</h3>
+          <ul>
+            <li>
+              <strong>Component Creation</strong>
+              <ul>
+                <li>
+                  [x] Create BudgetBalanceSummary component in
+                  apps/webapp/src/components/BudgetBalanceSummary.tsx
+                </li>
+                <li>
+                  [x] Implement conditional feedback based on budget balance
+                  status
+                </li>
+                <li>
+                  [x] Show detailed budget summary when budget is not balanced
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Integration</strong>
+              <ul>
+                <li>
+                  [x] Update BudgetsPage in apps/webapp/src/app/budgets/page.tsx
+                  to include the BudgetBalanceSummary component
+                </li>
+                <li>
+                  [x] Ensure proper data flow from budgets and transactions APIs
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>UI Enhancements</strong>
+              <ul>
+                <li>
+                  [x] Center the budget summary content for better visual
+                  balance
+                </li>
+                <li>[x] Make the remaining budget amount more prominent</li>
+                <li>
+                  [x] Add "Add Budget" button directly in the warning message
+                </li>
+                <li>[x] Highlight overbudgeted amounts in red</li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature enhances the
+            Budget Management page by adding a feedback component that shows
+            users whether their budget is balanced (matches their spendable
+            income). When a budget is balanced, users see positive feedback with
+            a green checkmark. When unbalanced, users see an alert with the
+            exact amount they need to budget (or reduce) to match their
+            spendable income, along with a detailed summary breakdown. The
+            implementation uses the existing getMonthlyFinancialSummary and
+            getTotalBudgetSummary API endpoints to get the necessary data for
+            comparison. This helps users track every dollar of their income and
+            ensures they have a complete budget for the month. The UI has been
+            enhanced with a centered layout, prominent display of the budget
+            amount, integrated "Add Budget" button, and red highlighting for
+            overbudgeted amounts.
+          </p>
+        </section>
       </section>
     </section>
   </body>
