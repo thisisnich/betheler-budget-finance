@@ -52,6 +52,37 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
     return sharedTransactions.transactions.reduce((sum, tx) => sum + tx.amount, 0);
   }, [sharedTransactions]);
 
+  // Add calculations for specific transaction types
+  const totalByType = useMemo(() => {
+    if (!sharedTransactions || sharedTransactions === null)
+      return { income: 0, expense: 0, savings: 0 };
+
+    return sharedTransactions.transactions.reduce(
+      (result, tx) => {
+        const amount = Math.abs(tx.amount);
+        switch (tx.transactionType) {
+          case 'income':
+            result.income += amount;
+            break;
+          case 'expense':
+            result.expense += amount;
+            break;
+          case 'savings':
+            // For savings, use the actual value (could be positive or negative)
+            result.savings += tx.amount;
+            break;
+        }
+        return result;
+      },
+      { income: 0, expense: 0, savings: 0 }
+    );
+  }, [sharedTransactions]);
+
+  const netCashFlow = useMemo(() => {
+    const { income, expense, savings } = totalByType;
+    return income - expense - savings;
+  }, [totalByType]);
+
   const transactionCountMessage = useMemo(() => {
     if (!sharedTransactions || sharedTransactions === null) return '';
     return `(${sharedTransactions.transactions.length} transactions)`;
@@ -114,11 +145,13 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
           {isLoading ? (
             <Skeleton className="h-6 w-24 mb-2" />
           ) : (
-            <span className={`text-xl font-bold ${total >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatCurrency(Math.abs(total))}
+            <span
+              className={`text-xl font-bold ${netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            >
+              {formatCurrency(Math.abs(netCashFlow))}
             </span>
           )}
-          <p className="text-sm text-muted-foreground mt-1">
+          <div className="text-sm text-muted-foreground mt-1">
             {isLoading ? (
               <Skeleton className="h-4 w-40" />
             ) : (
@@ -126,7 +159,7 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
                 {formattedMonthYear} {transactionCountMessage}
               </>
             )}
-          </p>
+          </div>
         </div>
       </div>
 
