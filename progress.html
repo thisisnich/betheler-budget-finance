@@ -611,6 +611,44 @@ betheler-budget-finance/
             overbudgeted amounts.
           </p>
         </section>
+
+        <section feature="budget-duplicate-validation">
+          <h3>Budget Duplicate Category Validation</h3>
+          <ul>
+            <li>
+              <strong>Implementation</strong>
+              <ul>
+                <li>
+                  [x] Update BudgetForm to handle duplicate category errors in
+                  apps/webapp/src/components/BudgetForm.tsx
+                </li>
+                <li>[x] Add toast notifications for error feedback</li>
+                <li>
+                  [x] Enhance error message to inform users they need to update
+                  existing budget instead
+                </li>
+                <li>
+                  [x] Add additional validation to check for existing budgets
+                  before form submission
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature enhances the
+            budget creation process by adding validation that ensures each
+            category can only have one budget per month. If a user tries to
+            create a budget for a category that already has a budget for the
+            selected month, they'll see a helpful error message instructing them
+            to update the existing budget instead. This prevents duplicate
+            budgets and helps users maintain clean financial data. The
+            implementation leverages toast notifications for immediate feedback
+            and provides clear instructions on the appropriate action. The
+            validation occurs both client-side (by checking existing budgets
+            before submission) and server-side (catching any errors from the
+            backend) for robustness.
+          </p>
+        </section>
       </section>
     </section>
   </body>

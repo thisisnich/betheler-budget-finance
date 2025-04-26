@@ -1,9 +1,10 @@
 import { formatCurrency, parseCurrencyInput } from '@/lib/formatCurrency';
 import { api } from '@workspace/backend/convex/_generated/api';
 import type { Id } from '@workspace/backend/convex/_generated/dataModel';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { CategorySelect } from './CategorySelect';
 import { Button } from './ui/button';
 import {
@@ -39,6 +40,12 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
   const updateBudget = useSessionMutation(api.budgets.update);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Get existing budgets to check for duplicates
+  const existingBudgets = useSessionQuery(api.budgets.listByMonth, {
+    year,
+    month,
+  });
+
   const form = useForm<BudgetFormValues>({
     defaultValues: {
       amount: initialData ? formatCurrency(initialData.amount, { showCurrency: false }) : '',
@@ -66,6 +73,22 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
             amount,
           });
         } else {
+          // Check if budget already exists for this category in this month
+          const existingBudget = existingBudgets?.find(
+            (budget) => budget.category === data.category
+          );
+
+          if (existingBudget) {
+            // Show error message with toast
+            form.setError('category', {
+              message: 'A budget for this category already exists in this month',
+            });
+            toast.error(
+              `Budget for ${data.category} already exists. Please update the existing budget instead.`
+            );
+            return;
+          }
+
           // Create new budget
           await createBudget({
             category: data.category,
@@ -75,15 +98,29 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
           });
         }
 
+        toast.success(initialData ? 'Budget updated successfully' : 'Budget added successfully');
         form.reset();
         onSuccess?.();
       } catch (error) {
         console.error('Failed to save budget:', error);
+
+        // Handle specific backend error for duplicate categories
+        if (error instanceof Error && error.message.includes('Budget already exists')) {
+          form.setError('category', {
+            message: 'A budget for this category already exists in this month',
+          });
+          toast.error(
+            `Budget for ${form.getValues().category} already exists. Please update the existing budget instead.`
+          );
+        } else {
+          // General error handling
+          toast.error('Failed to save budget. Please try again.');
+        }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [createBudget, updateBudget, form, onSuccess, initialData, year, month]
+    [createBudget, updateBudget, form, onSuccess, initialData, year, month, existingBudgets]
   );
 
   return (
