@@ -34,13 +34,14 @@ export function Navigation() {
               label: 'Budgets',
               isActive: pathname.startsWith('/budgets'),
             },
-            {
-              href: '/leaderboard',
-              label: 'Leaderboard',
-              isActive: pathname.startsWith('/leaderboard'),
-            },
           ]
         : []),
+      // Leaderboard is available to all users
+      {
+        href: '/leaderboard',
+        label: 'Leaderboard',
+        isActive: pathname.startsWith('/leaderboard'),
+      },
     ],
     [pathname, isAuthenticated]
   );

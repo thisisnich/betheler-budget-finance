@@ -500,3 +500,45 @@ export const getUserTransactionLeaderboard = query({
     return leaderboardData.sort((a, b) => b.transactionCount - a.transactionCount);
   },
 });
+
+// Public leaderboard endpoint that doesn't require authentication
+export const getPublicLeaderboard = query({
+  args: {
+    year: v.number(),
+    month: v.number(), // 0-based (January is 0)
+  },
+  handler: async (ctx, args) => {
+    // Create start and end date for the specified month
+    const startDate = new Date(args.year, args.month, 1);
+    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+
+    // Format as ISO strings for comparison
+    const startDateStr = startDate.toISOString();
+    const endDateStr = endDate.toISOString();
+
+    // Get all users
+    const users = await ctx.db.query('users').collect();
+
+    // For each user, get their transaction count for the month
+    const leaderboardData = await Promise.all(
+      users.map(async (userData) => {
+        // Count transactions for this user within the specified month
+        const transactions = await ctx.db
+          .query('transactions')
+          .withIndex('by_userId_datetime', (q) =>
+            q.eq('userId', userData._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+          )
+          .collect();
+
+        return {
+          userId: userData._id,
+          name: userData.name,
+          transactionCount: transactions.length,
+        };
+      })
+    );
+
+    // Sort by transaction count (highest first)
+    return leaderboardData.sort((a, b) => b.transactionCount - a.transactionCount);
+  },
+});

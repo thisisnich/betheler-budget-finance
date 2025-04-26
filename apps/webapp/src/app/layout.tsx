@@ -24,15 +24,15 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Bethel ER Budget & Finance',
+  title: 'Budget',
   description: 'Budgeting and financial management application for Bethel ER',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Bethel ER Budget & Finance',
+    title: 'Budget',
   },
-  applicationName: 'Bethel ER Budget & Finance',
+  applicationName: 'Budget',
   formatDetection: {
     telephone: false,
   },
