@@ -34,6 +34,11 @@ export function Navigation() {
               label: 'Budgets',
               isActive: pathname.startsWith('/budgets'),
             },
+            {
+              href: '/leaderboard',
+              label: 'Leaderboard',
+              isActive: pathname.startsWith('/leaderboard'),
+            },
           ]
         : []),
     ],

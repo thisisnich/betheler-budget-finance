@@ -60,6 +60,7 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
       { href: '/app', label: 'Dashboard' },
       { href: '/transactions', label: 'Transactions' },
       { href: '/budgets', label: 'Budgets' },
+      { href: '/leaderboard', label: 'Leaderboard' },
     ],
     []
   );

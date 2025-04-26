@@ -392,6 +392,67 @@ betheler-budget-finance/
             actions.
           </p>
         </section>
+
+        <section feature="user-leaderboard">
+          <h3>User Transaction Leaderboard</h3>
+          <ul>
+            <li>
+              <strong>Backend</strong>
+              <ul>
+                <li>
+                  [x] Create getUserTransactionLeaderboard API in
+                  services/backend/convex/transactions.ts
+                </li>
+                <li>[x] Implement ranking logic based on transaction counts</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Leaderboard Page</strong>
+              <ul>
+                <li>
+                  [x] Create LeaderboardPage in
+                  apps/webapp/src/app/leaderboard/page.tsx
+                </li>
+                <li>[x] Implement MonthYearPicker for date navigation</li>
+                <li>
+                  [x] Display ranked users with medal icons for top performers
+                </li>
+                <li>[x] Highlight the current user in the leaderboard</li>
+                <li>
+                  [x] Enhance UI with special styling for top 3 performers
+                </li>
+                <li>
+                  [x] Add crown emoji and trophy icon to make the page more
+                  engaging
+                </li>
+                <li>[x] Center month selector for better user experience</li>
+                <li>[x] Show up to 50 top users in the leaderboard</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Navigation</strong>
+              <ul>
+                <li>[x] Add leaderboard link to UserMenu component</li>
+                <li>[x] Add leaderboard link to main Navigation component</li>
+                <li>[x] Add leaderboard link to landing page</li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This feature adds a
+            competitive element to the application by ranking users based on the
+            number of transactions they create each month. The leaderboard uses
+            the existing MonthYearPicker component to allow users to view
+            rankings for different months. Top performers are highlighted with
+            gold, silver, and bronze medal icons, with special background colors
+            and a crown emoji for the #1 position. The current user is
+            highlighted in the list for easy identification. The design has been
+            enhanced with visual elements like trophy icons, rounded transaction
+            counters, and hover effects to make the experience more engaging.
+            The leaderboard shows up to 50 users, and the month selector is now
+            centered above the leaderboard for better usability.
+          </p>
+        </section>
       </section>
 
       <!-- Upcoming tasks for next version -->
@@ -457,7 +518,7 @@ betheler-budget-finance/
               <strong>Investigation</strong>
               <ul>
                 <li>
-                  [.] Investigate why expenses appear in transaction list but
+                  [x] Investigate why expenses appear in transaction list but
                   show as 0 in spending overview
                 </li>
               </ul>
@@ -465,19 +526,25 @@ betheler-budget-finance/
             <li>
               <strong>Implementation</strong>
               <ul>
-                <li>[ ] Fix expense calculation in relevant components</li>
+                <li>[x] Fix expense calculation in relevant components</li>
                 <li>
-                  [ ] Ensure transactionType filtering is properly applied
+                  [x] Ensure transactionType filtering is properly applied
                 </li>
               </ul>
             </li>
           </ul>
           <p>
-            <strong>Implementation Notes:</strong> This patch focuses on fixing
-            a critical issue where expense transactions are visible in the
-            transaction list but show up as 0 in the spending overview section.
-            This suggests a fundamental problem with how expenses are being
-            calculated, filtered, or displayed.
+            <strong>Implementation Notes:</strong> This patch fixes a critical
+            issue where expense transactions are visible in the transaction list
+            but show up as 0 in the spending overview section. We found that the
+            transaction summary calculation in the SharedTransactionView
+            component was incorrectly summing transaction amounts without
+            considering their types, causing expenses (negative values) to be
+            incorrectly balanced with income (positive values). The fix includes
+            adding a proper type-specific total calculation to correctly show
+            the net cash flow. We've also fixed an HTML nesting issue in the
+            SharedTransactionView component where a div element was incorrectly
+            nested inside a p tag, which was causing hydration errors.
           </p>
         </section>
       </section>
