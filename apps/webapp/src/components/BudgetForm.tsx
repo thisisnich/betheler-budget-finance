@@ -66,8 +66,11 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
           return;
         }
 
-        if (initialData?._id && typeof initialData._id === 'object') {
-          // Update existing budget (only if we have a valid ID)
+        // Check if we're updating an existing budget by looking for a valid ID
+        const isUpdatingExistingBudget = initialData?._id !== undefined;
+
+        if (isUpdatingExistingBudget && initialData?._id) {
+          // Update existing budget
           await updateBudget({
             budgetId: initialData._id,
             amount,
@@ -98,7 +101,9 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
           });
         }
 
-        toast.success(initialData ? 'Budget updated successfully' : 'Budget added successfully');
+        toast.success(
+          isUpdatingExistingBudget ? 'Budget updated successfully' : 'Budget added successfully'
+        );
         form.reset();
         onSuccess?.();
       } catch (error) {

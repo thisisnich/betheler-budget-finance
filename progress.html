@@ -458,6 +458,212 @@ betheler-budget-finance/
       <!-- Upcoming tasks for next version -->
       <section id="upcoming-tasks">
         <h1>📍 Upcoming Tasks</h1>
+
+        <!-- New bugfix section -->
+        <section feature="bugfixes">
+          <h3>Bug Fixes</h3>
+          <ul>
+            <li>
+              <strong>Budget Category Edit Fix</strong>
+              <ul>
+                <li>
+                  [x] Fix issue where budget categories cannot be edited
+                  (triggers "budget for this category already exists" error)
+                </li>
+                <li>
+                  [x] Update BudgetForm.tsx to check for existing budget with
+                  same ID before applying duplicate checks
+                </li>
+                <li>
+                  [x] Ensure CategorySelect is properly controlled when editing
+                  existing budgets
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Budget Update Logic Fix</strong>
+              <ul>
+                <li>
+                  [x] Fix issue where editing a budget creates a new one instead
+                  of updating the existing one
+                </li>
+                <li>
+                  [x] Simplify check for update vs create logic with clearer
+                  conditional
+                </li>
+                <li>
+                  [x] Fix TypeScript errors related to budgetId type checking
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Savings Withdrawal Display</strong>
+              <ul>
+                <li>
+                  [x] Fix the display of negative savings amounts (withdrawals)
+                  in TransactionItem.tsx
+                </li>
+                <li>
+                  [x] Update the savings icon and display logic to properly show
+                  negative values for withdrawals
+                </li>
+                <li>
+                  [x] Add a visual indicator (e.g., arrow direction) to
+                  differentiate between savings deposits and withdrawals
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Leaderboard Transaction Count Alignment</strong>
+              <ul>
+                <li>
+                  [x] Implement grid layout in Leaderboard page to improve
+                  alignment of transaction counts
+                </li>
+                <li>
+                  [x] Replace flex layout with more consistent grid styling for
+                  user entries
+                </li>
+                <li>
+                  [x] Ensure consistent spacing between user name and
+                  transaction count
+                </li>
+                <li>
+                  [x] Add fixed minimum width to transaction count column using
+                  minmax(90px,auto)
+                </li>
+                <li>
+                  [x] Implement break-all for transaction numbers to allow
+                  breaking in the middle of text if needed
+                </li>
+                <li>
+                  [x] Add truncation for long user names to prevent layout
+                  issues
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> These bug fixes address three
+            key usability issues in the application. The budget editing issue
+            prevents users from modifying existing budgets due to an erroneous
+            duplicate check. The savings withdrawal display issue causes
+            negative savings transactions (withdrawals) to not be visually
+            differentiated from deposits. The leaderboard alignment issue makes
+            the transaction counts inconsistently positioned, which will be
+            fixed by using a more structured grid layout instead of the current
+            flex-based approach.
+          </p>
+        </section>
+
+        <!-- Version marker for leaderboard improvements -->
+        <section id="v1.6.0">
+          <meta name="version" content="1.6.0" />
+          <h1>📍 Planned Version: 1.6.0 - Responsive UI Enhancements</h1>
+        
+        <!-- Add new section for leaderboard improvements -->
+        <section feature="leaderboard-responsive-improvements">
+          <h3>Leaderboard Responsive Improvements</h3>
+          <ul>
+            <li>
+              <strong>Header Improvements</strong>
+              <ul>
+                <li>
+                  [x] Make "Top Finance Trackers" title and label display on separate lines on smaller screens
+                </li>
+                <li>
+                  [x] Add responsive breakpoints to adjust header styling based on screen size
+                </li>
+                <li>
+                  [x] Improve vertical spacing in header on mobile views
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>User Identity Indicator</strong>
+              <ul>
+                <li>
+                  [x] Move "(You)" indicator to appear directly after username for better clarity
+                </li>
+                <li>
+                  [x] Adjust styling to ensure indicator is visually connected to the username
+                </li>
+                <li>
+                  [x] Ensure indicator remains visible in both mobile and desktop layouts
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Responsive Layout System</strong>
+              <ul>
+                <li>
+                  [x] Implement responsive grid layout that changes based on screen size
+                </li>
+                <li>
+                  [x] Create mobile layout (2 rows): medal/username in first row, transaction count in second row
+                </li>
+                <li>
+                  [x] Maintain desktop layout (3 columns): medal, username, transaction count in single row
+                </li>
+                <li>
+                  [x] Add appropriate breakpoints to switch between layouts based on screen width
+                </li>
+                <li>
+                  [x] Ensure consistent spacing and alignment in both layouts
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> These improvements will enhance the leaderboard's usability across different devices by implementing a truly responsive design. On smaller screens, elements will stack in a user-friendly 2-row layout to prevent crowding, while desktop users will retain the efficient 3-column layout. The "(You)" indicator will be repositioned to appear directly after the username for better visual association, and the header will be optimized for readability on all screen sizes. These changes will require CSS grid adjustments with media queries to create different layouts based on breakpoints.
+          </p>
+          
+          <div>
+            <strong>Technical Implementation Specification:</strong>
+            <pre><code>
+// Header Improvements
+&lt;CardHeader className="bg-muted/30"&gt;
+  &lt;CardTitle className="flex flex-col sm:flex-row items-center justify-center text-xl"&gt;
+    &lt;div className="flex items-center"&gt;
+      &lt;Users className="h-5 w-5 mr-2" /&gt; Top Finance Trackers
+    &lt;/div&gt;
+    &lt;span className="text-sm font-normal sm:ml-2"&gt;(Top 50 shown)&lt;/span&gt;
+  &lt;/CardTitle&gt;
+&lt;/CardHeader&gt;
+
+// User Item Layout (Mobile & Desktop responsive)
+&lt;div
+  key={user.userId}
+  className={`
+    grid 
+    grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_minmax(90px,auto)] 
+    grid-rows-[auto_auto] sm:grid-rows-[auto] 
+    gap-x-4 gap-y-2 sm:gap-4 
+    p-5
+    ${rowStyling}
+  `}
+&gt;
+  &lt;div className="flex items-center justify-center w-8 h-8 rounded-full..."&gt;
+    &lt;Medal className={`w-5 h-5 ${getMedalColor(index)}`} /&gt;
+  &lt;/div&gt;
+  
+  &lt;div className="min-w-0 overflow-hidden"&gt;
+    &lt;div className="flex items-center gap-1 flex-wrap"&gt;
+      &lt;p className="font-semibold text-lg truncate"&gt;{user.name}&lt;/p&gt;
+      {isCurrentUser && &lt;span className="text-xs text-primary font-medium"&gt;(You)&lt;/span&gt;}
+      {index === 0 && &lt;span className="ml-1"&gt;👑&lt;/span&gt;}
+    &lt;/div&gt;
+  &lt;/div&gt;
+  
+  &lt;div className="col-span-2 sm:col-span-1 font-mono... sm:justify-self-end text-center..."&gt;
+    {user.transactionCount}
+    &lt;span className="break-normal"&gt; {transactionLabel}&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+            </code></pre>
+          </div>
+        </section>
+
         <section feature="month-selector-sharing">
           <h3>Month Selector for Shared View</h3>
           <ul>

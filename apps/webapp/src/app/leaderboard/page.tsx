@@ -56,9 +56,11 @@ export default function LeaderboardPage() {
 
         <Card className="shadow-md border-t-4 border-t-yellow-500">
           <CardHeader className="bg-muted/30">
-            <CardTitle className="flex items-center justify-center text-xl">
-              <Users className="h-5 w-5 mr-2" /> Top Finance Trackers
-              <span className="text-sm font-normal ml-2">(Top 50 shown)</span>
+            <CardTitle className="flex flex-col sm:flex-row items-center justify-center text-xl">
+              <div className="flex items-center">
+                <Users className="h-5 w-5 mr-2" /> Top Finance Trackers
+              </div>
+              <span className="text-sm font-normal sm:ml-2 mt-1 sm:mt-0">(Top 50 shown)</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -71,73 +73,83 @@ export default function LeaderboardPage() {
                 ) : (
                   <div className="divide-y">
                     {/* Top 3 users with special styling */}
-                    {leaderboardData.slice(0, 3).map((user, index) => (
-                      <div
-                        key={user.userId}
-                        className={`flex items-center justify-between p-5 ${
-                          index === 0
-                            ? 'bg-yellow-50'
-                            : index === 1
-                              ? 'bg-gray-50'
-                              : index === 2
-                                ? 'bg-amber-50'
-                                : ''
-                        } ${
-                          authState?.state === 'authenticated' && authState.user._id === user.userId
-                            ? 'border-l-4 border-primary'
-                            : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-4">
+                    {leaderboardData.slice(0, 3).map((user, index) => {
+                      const isCurrentUser =
+                        authState?.state === 'authenticated' && authState.user._id === user.userId;
+                      return (
+                        <div
+                          key={user.userId}
+                          className={`grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_minmax(90px,auto)] 
+                                     grid-rows-[auto_auto] sm:grid-rows-[auto] 
+                                     gap-x-4 gap-y-2 sm:gap-4 
+                                     p-5 ${
+                                       index === 0
+                                         ? 'bg-yellow-50'
+                                         : index === 1
+                                           ? 'bg-gray-50'
+                                           : index === 2
+                                             ? 'bg-amber-50'
+                                             : ''
+                                     } ${isCurrentUser ? 'border-l-4 border-primary' : ''}`}
+                        >
                           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-background to-muted shadow-sm">
                             <Medal className={`w-5 h-5 ${getMedalColor(index)}`} />
                           </div>
-                          <div>
-                            <p className="font-semibold text-lg">
-                              {user.name}
-                              {index === 0 && <span className="ml-2">👑</span>}
-                            </p>
-                            {authState?.state === 'authenticated' &&
-                              authState.user._id === user.userId && (
+                          <div className="min-w-0 overflow-hidden">
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <p className="font-semibold text-lg truncate">{user.name}</p>
+                              {isCurrentUser && (
                                 <span className="text-xs text-primary font-medium">(You)</span>
                               )}
+                              {index === 0 && <span className="ml-1">👑</span>}
+                            </div>
+                          </div>
+                          <div className="col-span-2 sm:col-span-1 font-mono font-bold text-base sm:text-lg bg-muted/30 px-3 py-1 rounded-full text-center break-all mt-1 sm:mt-0 sm:justify-self-end">
+                            {user.transactionCount}
+                            <span className="break-normal">
+                              {' '}
+                              {user.transactionCount === 1 ? 'transaction' : 'transactions'}
+                            </span>
                           </div>
                         </div>
-                        <div className="font-mono font-bold text-lg bg-muted/30 px-4 py-1 rounded-full">
-                          {user.transactionCount}{' '}
-                          {user.transactionCount === 1 ? 'transaction' : 'transactions'}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     {/* Rest of users up to top 50 */}
-                    {leaderboardData.slice(3, 50).map((user, index) => (
-                      <div
-                        key={user.userId}
-                        className={`flex items-center justify-between py-4 px-5 ${
-                          authState?.state === 'authenticated' && authState.user._id === user.userId
-                            ? 'bg-muted/30 border-l-4 border-primary'
-                            : ''
-                        } hover:bg-muted/10 transition-colors`}
-                      >
-                        <div className="flex items-center gap-3">
+                    {leaderboardData.slice(3, 50).map((user, index) => {
+                      const isCurrentUser =
+                        authState?.state === 'authenticated' && authState.user._id === user.userId;
+                      return (
+                        <div
+                          key={user.userId}
+                          className={`grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_minmax(90px,auto)]
+                                     grid-rows-[auto_auto] sm:grid-rows-[auto]
+                                     gap-x-3 gap-y-2 sm:gap-3
+                                     py-4 px-5 
+                                     ${isCurrentUser ? 'bg-muted/30 border-l-4 border-primary' : ''}
+                                     hover:bg-muted/10 transition-colors`}
+                        >
                           <div className="flex items-center justify-center w-8 text-center">
                             <span className="text-muted-foreground font-medium">{index + 4}</span>
                           </div>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            {authState?.state === 'authenticated' &&
-                              authState.user._id === user.userId && (
+                          <div className="min-w-0 overflow-hidden">
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <p className="font-medium truncate">{user.name}</p>
+                              {isCurrentUser && (
                                 <span className="text-xs text-primary font-medium">(You)</span>
                               )}
+                            </div>
+                          </div>
+                          <div className="col-span-2 sm:col-span-1 font-mono font-medium text-sm sm:text-base bg-muted/20 px-3 py-1 rounded-full text-center break-all mt-1 sm:mt-0 sm:justify-self-end">
+                            {user.transactionCount}
+                            <span className="break-normal">
+                              {' '}
+                              {user.transactionCount === 1 ? 'transaction' : 'transactions'}
+                            </span>
                           </div>
                         </div>
-                        <div className="font-mono font-medium bg-muted/20 px-3 py-1 rounded-full text-sm">
-                          {user.transactionCount}{' '}
-                          {user.transactionCount === 1 ? 'transaction' : 'transactions'}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -41,13 +41,18 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
   const transactionType = transaction.transactionType || 'expense';
   const isIncome = transactionType === 'income';
   const isSavings = transactionType === 'savings';
+  const isSavingsWithdrawal = isSavings && transaction.amount < 0;
 
   const getTransactionIcon = () => {
     switch (transactionType) {
       case 'income':
         return <ArrowDownLeft className="h-4 w-4 text-emerald-500" />;
       case 'savings':
-        return <PiggyBank className="h-4 w-4 text-blue-500" />;
+        return transaction.amount >= 0 ? (
+          <PiggyBank className="h-4 w-4 text-blue-500" />
+        ) : (
+          <ArrowUpRight className="h-4 w-4 text-blue-500" />
+        );
       default:
         return <ArrowUpRight className="h-4 w-4 text-red-500" />;
     }
@@ -58,7 +63,7 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
       case 'income':
         return 'text-emerald-600';
       case 'savings':
-        return 'text-blue-600';
+        return transaction.amount >= 0 ? 'text-blue-600' : 'text-red-600';
       default:
         return 'text-red-600';
     }
@@ -74,7 +79,10 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
                 {getTransactionIcon()}
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                  <p className="text-sm font-medium truncate">{transaction.description}</p>
+                  <p className="text-sm font-medium truncate">
+                    {transaction.description}
+                    {isSavingsWithdrawal && <span className="ml-1 text-xs">(Withdrawal)</span>}
+                  </p>
                   {transaction.category && (
                     <div className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
                       {transaction.category}
@@ -90,7 +98,7 @@ export function TransactionItem({ transaction, onDelete }: TransactionItemProps)
 
             <div className="flex items-center gap-2">
               <p className={cn('font-medium', getAmountColor())}>
-                {isIncome ? '+' : ''}
+                {isIncome || (isSavings && transaction.amount > 0) ? '+' : '-'}
                 {formatCurrency(Math.abs(transaction.amount))}
               </p>
               {onDelete && (
