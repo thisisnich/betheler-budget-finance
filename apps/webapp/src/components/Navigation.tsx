@@ -15,7 +15,6 @@ export function Navigation() {
   const isLoading = authState === undefined;
 
   // Memoize navigation items to prevent unnecessary recalculations
-  // Only include Dashboard, Transactions, and Budgets links for authenticated users
   const navItems = useMemo(
     () => [
       ...(isAuthenticated
@@ -35,14 +34,14 @@ export function Navigation() {
               label: 'Budgets',
               isActive: pathname.startsWith('/budgets'),
             },
+            // Leaderboard moved inside authenticated section for consistency
+            {
+              href: '/leaderboard',
+              label: 'Leaderboard',
+              isActive: pathname.startsWith('/leaderboard'),
+            },
           ]
         : []),
-      // Leaderboard is available to all users
-      {
-        href: '/leaderboard',
-        label: 'Leaderboard',
-        isActive: pathname.startsWith('/leaderboard'),
-      },
     ],
     [pathname, isAuthenticated]
   );
