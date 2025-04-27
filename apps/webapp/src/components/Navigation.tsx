@@ -12,6 +12,7 @@ export function Navigation() {
   const pathname = usePathname();
   const authState = useAuthState();
   const isAuthenticated = authState?.state === 'authenticated';
+  const isLoading = authState === undefined;
 
   // Memoize navigation items to prevent unnecessary recalculations
   // Only include Dashboard, Transactions, and Budgets links for authenticated users
@@ -91,15 +92,16 @@ export function Navigation() {
 
           {/* User menu - visible on all screens */}
           <div>
-            {isAuthenticated ? (
-              <UserMenu showNameOnMobile={false} alignMenu="end" />
-            ) : (
-              <Link href="/login">
-                <Button size="sm" variant="outline">
-                  Login
-                </Button>
-              </Link>
-            )}
+            {!isLoading &&
+              (isAuthenticated ? (
+                <UserMenu showNameOnMobile={false} alignMenu="end" />
+              ) : (
+                <Link href="/login">
+                  <Button size="sm" variant="outline">
+                    Login
+                  </Button>
+                </Link>
+              ))}
           </div>
         </div>
       </div>
