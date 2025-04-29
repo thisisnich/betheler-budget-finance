@@ -82,6 +82,7 @@ export default defineSchema({
   }).index('by_code', ['code']),
 
   allocations: defineTable({
+    userId: v.string(), // User ID to associate allocations with a user
     category: v.string(), // Category name
     type: v.string(), // 'amount', 'percentage', or 'overflow'
     value: v.number(), // Fixed amount or percentage value

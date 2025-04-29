@@ -7,11 +7,21 @@ import { useMutation, useQuery } from 'convex/react';
 
 import { AddAllocationForm } from '@/components/AllocationForm';
 import { AllocationList } from '@/components/AllocationList';
-import type { Allocation, AllocationType } from '@/types/schema'; // Import the shared Allocation type
+import type { Allocation, AllocationType } from '@/types/schema';
+import type { SessionId } from 'convex-helpers/server/sessions'; // Import SessionId type
 
 export default function BudgetsPage() {
+  // Retrieve sessionId from localStorage and cast it to SessionId
+  const sessionId =
+    typeof window !== 'undefined' ? (localStorage.getItem('sessionId') as SessionId | null) : null;
+
+  if (!sessionId) {
+    console.error('Session ID is missing. Please log in.');
+    return <div>Please log in to view your allocations.</div>;
+  }
+
   // Fetch allocations from the backend and transform the data
-  const rawAllocations = useQuery(api.allocation.getAllocations) || [];
+  const rawAllocations = useQuery(api.allocation.getAllocations, { sessionId }) || [];
   const allocations: Allocation[] = rawAllocations.map((allocation) => ({
     _id: allocation._id?.toString(), // Convert _id to string
     category: allocation.category,
@@ -28,6 +38,7 @@ export default function BudgetsPage() {
   const handleAddAllocation = async (allocation: Allocation) => {
     try {
       await createOrUpdateAllocation({
+        sessionId, // Include sessionId
         category: allocation.category,
         type: allocation.type,
         value: allocation.value,
@@ -58,6 +69,7 @@ export default function BudgetsPage() {
 
     try {
       await createOrUpdateAllocation({
+        sessionId, // Include sessionId
         category: updatedAllocation.category,
         type: updatedAllocation.type as AllocationType,
         value: updatedAllocation.value,
@@ -79,7 +91,7 @@ export default function BudgetsPage() {
 
     if (confirm(`Are you sure you want to delete the allocation for "${allocation.category}"?`)) {
       try {
-        await deleteAllocation({ category: allocation.category });
+        await deleteAllocation({ sessionId, category: allocation.category }); // Include sessionId
       } catch (error) {
         console.error('Error deleting allocation:', error);
       }
