@@ -29,6 +29,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "nx": "^20.6.1",
+    "pnpm": "^10.10.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {

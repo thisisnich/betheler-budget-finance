@@ -80,4 +80,11 @@ export default defineSchema({
     createdAt: v.number(), // When the code was created
     expiresAt: v.number(), // When the code expires (1 minute after creation)
   }).index('by_code', ['code']),
+
+  allocations: defineTable({
+    category: v.string(), // Category name
+    type: v.string(), // 'amount', 'percentage', or 'overflow'
+    value: v.number(), // Fixed amount or percentage value
+    priority: v.number(), // Priority for fixed amount or percentage
+  }),
 });
