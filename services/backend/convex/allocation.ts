@@ -94,7 +94,7 @@ export const deleteAllocation = mutation({
   },
 });
 
-export const splitIncomeByAllocations = query({
+export const splitIncomeByAllocations = mutation({
   args: {
     ...SessionIdArg, // Include sessionId in the arguments
     income: v.number(),
@@ -105,36 +105,52 @@ export const splitIncomeByAllocations = query({
       throw new Error('Unauthorized');
     }
 
+    // Fetch all allocations for the user
     const allocations = await ctx.db
       .query('allocations')
       .filter((q) => q.eq(q.field('userId'), user._id)) // Filter by userId
       .collect();
 
+    // Sort allocations by priority (higher priority first, undefined last)
     const sortedAllocations = allocations.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+
+    // Initialize the result object and remaining income
     const result: Record<string, number> = {};
     let remainingIncome = income;
 
+    // Process each allocation
     for (const allocation of sortedAllocations) {
       const { category, type, value } = allocation;
 
       if (type === 'amount') {
+        // Deduct a fixed amount
         result[category] = value;
         remainingIncome -= value;
       } else if (type === 'percentage') {
+        // Deduct a percentage of the total income
         const percentageValue = (value / 100) * income;
         result[category] = percentageValue;
         remainingIncome -= percentageValue;
       } else if (type === 'overflow') {
+        // Deduct any remaining income
         if (remainingIncome > 0) {
           const overflowValue = Math.min(remainingIncome, value);
           result[category] = overflowValue;
           remainingIncome -= overflowValue;
         }
       }
+
+      // Stop processing if there's no income left
       if (remainingIncome <= 0) {
-        break; // Stop if no remaining income
+        break;
       }
-      return result;
     }
+
+    // Optionally, log or update the database with the result
+    // Example: Save the split result to a "logs" collection
+    // If you don't want to log, simply skip this step.
+    // You can remove or comment out the logging code.
+
+    return result; // Return the split amounts by category
   },
 });

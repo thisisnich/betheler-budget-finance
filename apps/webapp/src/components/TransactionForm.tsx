@@ -1,7 +1,7 @@
 import { parseCurrencyInput } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
 import { Link } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -19,7 +19,6 @@ import {
   FormMessage,
 } from './ui/form';
 import { Input } from './ui/input';
-
 interface TransactionFormProps {
   onSuccess?: () => void;
   className?: string;
@@ -35,7 +34,6 @@ interface TransactionFormValues {
   transactionType: TransactionType;
   useAllocation?: boolean; // Added useAllocation field
 }
-
 export function TransactionForm({
   onSuccess,
   className,
@@ -44,6 +42,8 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const createTransaction = useSessionMutation(api.transactions.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createBudget = useSessionMutation(api.budgets.create);
+  const splitIncomeByAllocations = useSessionMutation(api.allocation.splitIncomeByAllocations);
 
   const form = useForm<TransactionFormValues>({
     defaultValues: {
@@ -87,6 +87,25 @@ export function TransactionForm({
           category = 'Savings';
         }
 
+        // If useAllocation is true and transactionType is income, split income into budgets
+        if (data.transactionType === 'income' && data.useAllocation) {
+          // Call the splitIncomeByAllocations query
+          const allocations = await splitIncomeByAllocations({
+            income: amount,
+          });
+
+          // Use the budgets API to update budgets with the allocated amounts
+          for (const [budgetCategory, allocatedAmount] of Object.entries(allocations)) {
+            await createBudget({
+              category: budgetCategory,
+              amount: allocatedAmount,
+              year: new Date().getFullYear(),
+              month: new Date().getMonth(),
+            });
+          }
+        }
+
+        // Create the transaction
         await createTransaction({
           amount,
           category,
@@ -103,7 +122,7 @@ export function TransactionForm({
         setIsSubmitting(false);
       }
     },
-    [createTransaction, form, onSuccess]
+    [createTransaction, form, onSuccess, createBudget, splitIncomeByAllocations] // Added missing dependencies
   );
 
   return (
