@@ -1,6 +1,15 @@
 import { CategorySelect } from '@/components/CategorySelect';
-import type { Allocation } from '@/types/schema';
+// import type { Allocation } from '@/types/schema';
 import { useState } from 'react';
+
+export type AllocationType = 'amount' | 'percentage' | 'overflow';
+
+export interface Allocation {
+  category: string;
+  type: AllocationType;
+  value: number;
+  priority: number;
+}
 
 interface AllocationListProps {
   allocations: Allocation[];
