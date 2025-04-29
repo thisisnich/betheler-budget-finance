@@ -33,6 +33,7 @@ interface TransactionFormValues {
   description: string;
   datetime: Date;
   transactionType: TransactionType;
+  useAllocation?: boolean; // Added useAllocation field
 }
 
 export function TransactionForm({
