@@ -1,33 +1,27 @@
 import { CategorySelect } from '@/components/CategorySelect';
-// import type { Allocation } from '@/types/schema';
-import { useState } from 'react';
-
-export type AllocationType = 'amount' | 'percentage' | 'overflow';
-
-export interface Allocation {
-  category: string;
-  type: AllocationType;
-  value: number;
-  priority: number;
-}
-
-interface AllocationListProps {
-  allocations: Allocation[];
-  onChange: (allocationId: string, key: keyof Allocation, value: string | number) => Promise<void>;
-  onDelete: (allocationId: string) => Promise<void>;
-}
+import type { Allocation } from '@/types/schema';
+import { useEffect, useState } from 'react';
 
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
+  initialAllocation?: Allocation; // Optional prop for editing an existing allocation
 }
 
-export function AddAllocationForm({ onAdd }: AddAllocationFormProps) {
+export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFormProps) {
   const [newAllocation, setNewAllocation] = useState<Allocation>({
+    _id: '', // Include _id in the state
     category: '',
     type: 'amount',
     value: 0,
     priority: 1,
   });
+
+  // Populate the form with the initial allocation if provided
+  useEffect(() => {
+    if (initialAllocation) {
+      setNewAllocation(initialAllocation);
+    }
+  }, [initialAllocation]);
 
   const handleInputChange = (key: keyof Allocation, value: string | number) => {
     setNewAllocation((prev) => ({
@@ -44,12 +38,14 @@ export function AddAllocationForm({ onAdd }: AddAllocationFormProps) {
     }
 
     await onAdd(newAllocation);
-    setNewAllocation({ category: '', type: 'amount', value: 0, priority: 1 });
+    setNewAllocation({ _id: '', category: '', type: 'amount', value: 0, priority: 1 });
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-md bg-card">
-      <h3 className="font-medium mb-4">Add New Allocation</h3>
+      <h3 className="font-medium mb-4">
+        {newAllocation._id ? 'Edit Allocation' : 'Add New Allocation'}
+      </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="new-allocation-category" className="block mb-1">
@@ -110,7 +106,7 @@ export function AddAllocationForm({ onAdd }: AddAllocationFormProps) {
         type="submit"
         className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
       >
-        Add Allocation
+        {newAllocation._id ? 'Update Allocation' : 'Add Allocation'}
       </button>
     </form>
   );

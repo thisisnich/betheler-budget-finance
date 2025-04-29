@@ -7,17 +7,7 @@ import { useMutation, useQuery } from 'convex/react';
 
 import { AddAllocationForm } from '@/components/AllocationForm';
 import { AllocationList } from '@/components/AllocationList';
-// import type { Allocation, AllocationType } from '@/types/schema'; // Import the shared Allocation type
-
-export type AllocationType = 'amount' | 'percentage' | 'overflow';
-
-export interface Allocation {
-  _id: string; // Optional because it may not exist when creating a new allocation
-  category: string;
-  type: AllocationType;
-  value: number;
-  priority: number;
-}
+import type { Allocation, AllocationType } from '@/types/schema'; // Import the shared Allocation type
 
 export default function BudgetsPage() {
   // Fetch allocations from the backend and transform the data
