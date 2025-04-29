@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as allocation from "../allocation.js";
 import type * as appinfo from "../appinfo.js";
 import type * as auth from "../auth.js";
 import type * as budgets from "../budgets.js";
@@ -31,6 +32,7 @@ import type * as transactions from "../transactions.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  allocation: typeof allocation;
   appinfo: typeof appinfo;
   auth: typeof auth;
   budgets: typeof budgets;

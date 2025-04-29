@@ -62,7 +62,7 @@ export default function AppPage() {
               />
 
               {/* Quick Actions Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-amber-500 border">
                 <div className="p-4 border rounded-md bg-card">
                   <h3 className="font-medium mb-2">Quick Actions</h3>
                   <div className="space-y-2">
@@ -75,6 +75,11 @@ export default function AppPage() {
                     <Link href="/budgets" className="block">
                       <Button variant="outline" size="sm" className="w-full justify-start">
                         Manage Budgets
+                      </Button>
+                    </Link>
+                    <Link href="/budgets/allocation" className="block">
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        Manage Allocation
                       </Button>
                     </Link>
                   </div>

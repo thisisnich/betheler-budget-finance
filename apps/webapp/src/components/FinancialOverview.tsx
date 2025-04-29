@@ -74,7 +74,7 @@ export function FinancialOverview({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
         {/* Monthly Summary Section */}
         <div>
           <MonthlySummaryCard
@@ -86,7 +86,7 @@ export function FinancialOverview({
         </div>
 
         {/* Spending Section */}
-        <div>
+        <div className="border-amber-500 border">
           <div className="mb-3">
             <h3 className="text-sm font-medium">Spending</h3>
           </div>

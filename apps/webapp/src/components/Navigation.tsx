@@ -40,6 +40,11 @@ export function Navigation() {
               label: 'Leaderboard',
               isActive: pathname.startsWith('/leaderboard'),
             },
+            {
+              href: '/allocation',
+              label: 'Allocations',
+              isActive: pathname.startsWith('/profile'),
+            },
           ]
         : []),
     ],

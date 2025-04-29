@@ -2,6 +2,7 @@ import { parseCurrencyInput } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
+import { Link } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CategorySelect } from './CategorySelect';
@@ -55,6 +56,7 @@ export function TransactionForm({
 
   const transactionType = form.watch('transactionType');
   const showCategoryField = transactionType === 'expense';
+  const showAllocationField = transactionType === 'income';
 
   useEffect(() => {
     if (transactionType === 'income') {
