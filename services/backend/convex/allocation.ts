@@ -93,3 +93,48 @@ export const deleteAllocation = mutation({
     }
   },
 });
+
+export const splitIncomeByAllocations = query({
+  args: {
+    ...SessionIdArg, // Include sessionId in the arguments
+    income: v.number(),
+  },
+  handler: async (ctx, { sessionId, income }) => {
+    const user = await getAuthUser(ctx, { sessionId }); // Ensure user is authenticated
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
+    const allocations = await ctx.db
+      .query('allocations')
+      .filter((q) => q.eq(q.field('userId'), user._id)) // Filter by userId
+      .collect();
+
+    const sortedAllocations = allocations.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    const result: Record<string, number> = {};
+    let remainingIncome = income;
+
+    for (const allocation of sortedAllocations) {
+      const { category, type, value } = allocation;
+
+      if (type === 'amount') {
+        result[category] = value;
+        remainingIncome -= value;
+      } else if (type === 'percentage') {
+        const percentageValue = (value / 100) * income;
+        result[category] = percentageValue;
+        remainingIncome -= percentageValue;
+      } else if (type === 'overflow') {
+        if (remainingIncome > 0) {
+          const overflowValue = Math.min(remainingIncome, value);
+          result[category] = overflowValue;
+          remainingIncome -= overflowValue;
+        }
+      }
+      if (remainingIncome <= 0) {
+        break; // Stop if no remaining income
+      }
+      return result;
+    }
+  },
+});

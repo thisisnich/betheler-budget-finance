@@ -171,7 +171,28 @@ export function TransactionForm({
             )}
           />
         )}
-
+        {showAllocationField && (
+          <FormField
+            control={form.control}
+            name="useAllocation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Use Allocation</FormLabel>
+                <FormControl>
+                  <Button
+                    type="button"
+                    variant={field.value ? 'default' : 'outline'}
+                    onClick={() => field.onChange(!field.value)}
+                    className="h-10 w-full sm:w-auto"
+                  >
+                    {field.value ? 'Enabled' : 'Disabled'}
+                  </Button>
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="description"
