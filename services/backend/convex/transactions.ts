@@ -3,6 +3,7 @@ import { v } from 'convex/values';
 import { getAuthUser } from '../modules/auth/getAuthUser';
 import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
+import { getMonthDateRange } from './utils';
 
 export const create = mutation({
   args: {
@@ -120,7 +121,7 @@ export const listByMonth = query({
   args: {
     ...SessionIdArg,
     year: v.number(),
-    month: v.number(), // 0-based (January is 0)
+    month: v.number(),
     transactionType: v.union(
       v.literal('expense'),
       v.literal('income'),
@@ -129,28 +130,19 @@ export const listByMonth = query({
     ),
   },
   handler: async (ctx, args) => {
-    // Ensure user is authenticated
     const user = await getAuthUser(ctx, args);
     if (!user) {
       throw new Error('Unauthorized');
     }
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month, 0);
 
-    // Get transactions for this user within the specified month
-    // Using the by_userId_datetime index
     let transactionsQuery = ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
-        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+        q.eq('userId', user._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
       );
 
-    // Apply transaction type filter only if not 'all'
     if (args.transactionType !== 'all') {
       transactionsQuery = transactionsQuery.filter((q) =>
         q.eq(q.field('transactionType'), args.transactionType)
@@ -158,50 +150,34 @@ export const listByMonth = query({
     }
 
     const transactions = await transactionsQuery.order('desc').collect();
-
     return transactions;
   },
 });
-
 // Add a function to get category summaries for the month
 export const getCategorySummary = query({
   args: {
     ...SessionIdArg,
     year: v.number(),
-    month: v.number(), // 0-based (January is 0)
+    month: v.number(),
     transactionType: v.union(v.literal('expense'), v.literal('income'), v.literal('savings')),
   },
   handler: async (ctx, args) => {
-    // Ensure user is authenticated
     const user = await getAuthUser(ctx, args);
     if (!user) {
       throw new Error('Unauthorized');
     }
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month, 0);
 
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
-
-    // Get transactions for this user within the specified month
-    // Using the by_userId_datetime index
-    let transactionsQuery = ctx.db
+    const transactionsQuery = ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
-        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
-      );
-
-    // Apply transaction type filter
-    transactionsQuery = transactionsQuery.filter((q) =>
-      q.eq(q.field('transactionType'), args.transactionType)
-    );
+        q.eq('userId', user._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
+      )
+      .filter((q) => q.eq(q.field('transactionType'), args.transactionType));
 
     const transactions = await transactionsQuery.collect();
 
-    // Calculate totals by category
     const categorySummary: Record<string, { amount: number; count: number }> = {};
     let totalSpent = 0;
 
@@ -217,7 +193,6 @@ export const getCategorySummary = query({
       totalSpent += Math.abs(transaction.amount);
     }
 
-    // Calculate percentages and prepare final result
     const result = Object.entries(categorySummary).map(([category, data]) => ({
       category,
       amount: data.amount,
@@ -231,7 +206,6 @@ export const getCategorySummary = query({
     };
   },
 });
-
 // Add getSavingsSummary query
 export const getSavingsSummary = query({
   args: {
@@ -300,52 +274,23 @@ export const getMonthlyFinancialSummary = query({
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
   },
-  handler: async (
-    ctx,
-    args
-  ): Promise<{
-    totalIncome: number;
-    totalExpenses: number;
-    totalSavings: number;
-    totalSpendableIncome: number;
-    remainder: number;
-    status: 'balanced' | 'unbudgeted' | 'overbudgeted';
-    formattedMonth: string;
-  }> => {
+  handler: async (ctx, args) => {
     // Ensure user is authenticated
     const user = await getAuthUser(ctx, args);
     if (!user) {
       throw new Error('Unauthorized');
     }
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month, 0); // Adjust timezone offset as needed
 
     // Get all transactions for this user within the specified month
     const transactions = await ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
-        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+        q.eq('userId', user._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
       )
       .collect();
-
-    // Get budget data from budget service
-    const budgetData: {
-      totalBudget: number;
-      totalSpent: number;
-      totalRemaining: number;
-      percentSpent: number;
-      budgetCount: number;
-      status: string;
-    } = await ctx.runQuery(api.budgets.getTotalBudgetSummary, {
-      sessionId: args.sessionId,
-      year: args.year,
-      month: args.month,
-    });
 
     // Calculate totals by transaction type
     let totalIncome = 0;
@@ -364,7 +309,6 @@ export const getMonthlyFinancialSummary = query({
           totalExpenses += amount;
           break;
         case 'savings':
-          // Handle savings deposits (positive amounts) and withdrawals (negative amounts) separately
           if (transaction.amount > 0) {
             totalSavingsDeposits += transaction.amount;
           } else {
@@ -374,21 +318,15 @@ export const getMonthlyFinancialSummary = query({
       }
     }
 
-    // Calculate net savings (deposits minus withdrawals)
     const totalSavings = totalSavingsDeposits - totalSavingsWithdrawals;
-
-    // Calculate total spendable income (income minus savings)
     const totalSpendableIncome = totalIncome - totalSavings;
-
-    // Calculate the remainder (spendable income minus expenses)
     const remainder = totalSpendableIncome - totalExpenses;
 
-    // Determine the status of the remainder
     let status: 'balanced' | 'unbudgeted' | 'overbudgeted' = 'balanced';
     if (remainder > 0) {
-      status = 'unbudgeted'; // Positive remainder means unbudgeted money
+      status = 'unbudgeted';
     } else if (remainder < 0) {
-      status = 'overbudgeted'; // Negative remainder means overbudgeting
+      status = 'overbudgeted';
     }
 
     return {
@@ -398,11 +336,13 @@ export const getMonthlyFinancialSummary = query({
       totalSpendableIncome,
       remainder,
       status,
-      formattedMonth: startDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+      formattedMonth: new Date(startDateISO).toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      }),
     };
   },
 });
-
 // Migration function to update any transactions without transactionType
 export const migrateTransactionTypes = mutation({
   args: {
@@ -464,12 +404,8 @@ export const getUserTransactionLeaderboard = query({
       throw new Error('Unauthorized');
     }
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month, 0); // Adjust timezone offset as needed
 
     // Get all users
     const users = await ctx.db.query('users').collect();
@@ -481,7 +417,7 @@ export const getUserTransactionLeaderboard = query({
         const transactions = await ctx.db
           .query('transactions')
           .withIndex('by_userId_datetime', (q) =>
-            q.eq('userId', userData._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+            q.eq('userId', userData._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
           )
           .collect();
 
@@ -499,19 +435,15 @@ export const getUserTransactionLeaderboard = query({
 });
 
 // Public leaderboard endpoint that doesn't require authentication
+
 export const getPublicLeaderboard = query({
   args: {
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
   },
   handler: async (ctx, args) => {
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
-
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month, 0); // Assuming no timezone offset for public leaderboard
 
     // Get all users
     const users = await ctx.db.query('users').collect();
@@ -523,7 +455,7 @@ export const getPublicLeaderboard = query({
         const transactions = await ctx.db
           .query('transactions')
           .withIndex('by_userId_datetime', (q) =>
-            q.eq('userId', userData._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+            q.eq('userId', userData._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
           )
           .collect();
 

@@ -86,7 +86,7 @@ export function FinancialOverview({
         </div>
 
         {/* Spending Section */}
-        <div className="border-amber-500 border">
+        <div>
           <div className="mb-3">
             <h3 className="text-sm font-medium">Spending</h3>
           </div>

@@ -117,8 +117,10 @@ export function MonthlySummaryCard({
             {/* Income */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <ArrowUpIcon className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Total Income</span>
+                <ArrowUpIcon className="h-4 w-4" style={{ color: 'var(--income-icon)' }} />
+                <span className="font-medium" style={{ color: 'var(--income-text)' }}>
+                  {formatCurrency(summary.totalIncome)}
+                </span>{' '}
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-green-600">
@@ -152,8 +154,10 @@ export function MonthlySummaryCard({
             {/* Savings */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <PiggyBankIcon className="h-4 w-4 text-blue-500" />
-                <span className="text-sm">Total Savings</span>
+                <ArrowUpIcon className="h-4 w-4" style={{ color: 'var(--income-icon)' }} />
+                <span className="font-medium" style={{ color: 'var(--income-text)' }}>
+                  {formatCurrency(summary.totalIncome)}
+                </span>{' '}
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-blue-600">
@@ -185,63 +189,56 @@ export function MonthlySummaryCard({
             </div>
 
             {/* Spendable Income - Highlighted */}
-            <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">Spendable Income</span>
-              </div>
-              <span className="text-xl font-bold text-black">
+            <div
+              className="flex justify-between items-center p-2 rounded"
+              style={{ backgroundColor: 'var(--spendable-bg)' }}
+            >
+              <span className="text-sm font-semibold">Spendable Income</span>
+              <span className="text-xl font-bold" style={{ color: 'var(--spendable-text)' }}>
                 {formatCurrency(summary.totalSpendableIncome)}
               </span>
             </div>
-
             {/* Budget Comparison Warning */}
             {!budgetMatchesSpendableIncome && !hasNoBudget && (
-              <div className="mt-1 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-                <div className="flex items-start gap-2 mb-2">
-                  <AlertTriangleIcon className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                  <p>
-                    Your total budget ({formatCurrency(budgetData.totalBudget)}) doesn't match your
-                    spendable income.{' '}
-                    {budgetIsHigher
-                      ? 'Consider adding the difference to savings.'
-                      : 'Consider adjusting your budget to match.'}
-                  </p>
-                </div>
-                <div className="flex justify-end gap-2 mt-2">
-                  {budgetIsHigher ? (
-                    <Link
-                      href={`/transactions?action=add-savings&amount=${budgetDifference}`}
-                      className="inline-flex items-center text-amber-700 hover:text-amber-900 text-xs font-medium gap-1"
-                    >
-                      <PiggyBankIcon className="h-3 w-3" />
-                      Add to Savings
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/budgets"
-                      className="inline-flex items-center text-amber-700 hover:text-amber-900 text-xs font-medium gap-1"
-                    >
-                      <WrenchIcon className="h-3 w-3" />
-                      Adjust Budget
-                    </Link>
-                  )}
-                </div>
+              <div className="flex justify-end gap-2 mt-2">
+                {budgetIsHigher ? (
+                  <Link
+                    href={`/transactions?action=add-savings&amount=${budgetDifference}`}
+                    className="inline-flex items-center text-amber-700 hover:text-amber-900 text-xs font-medium gap-1"
+                  >
+                    <PiggyBankIcon className="h-3 w-3" />
+                    Add to Savings
+                  </Link>
+                ) : (
+                  <Link
+                    href="/budgets"
+                    className="inline-flex items-center text-amber-700 hover:text-amber-900 text-xs font-medium gap-1"
+                  >
+                    <WrenchIcon className="h-3 w-3" />
+                    Adjust Budget
+                  </Link>
+                )}
               </div>
             )}
 
             {/* Budget Zero State */}
             {hasNoBudget && (
-              <div className="mt-1 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-                <div className="flex items-start gap-2 mb-2">
-                  <AlertTriangleIcon className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <p>
-                    You haven't set up your budget for this month. Planning your budget helps you
-                    track and manage your spending effectively.
-                  </p>
-                </div>
-                <div className="flex justify-end mt-2">
-                  <BudgetNavigationButton className="h-7 text-xs" />
-                </div>
+              <div
+                className="mt-1 p-3 rounded text-xs"
+                style={{
+                  backgroundColor: 'var(--info-bg)',
+                  border: '1px solid var(--info-border)',
+                  color: 'var(--info-text)',
+                }}
+              >
+                <AlertTriangleIcon
+                  className="h-4 w-4 flex-shrink-0 mt-0.5"
+                  style={{ color: 'var(--info-text)' }}
+                />
+                <p>
+                  You haven't set up your budget for this month. Planning your budget helps you
+                  track and manage your spending effectively.
+                </p>
               </div>
             )}
           </div>
@@ -276,14 +273,15 @@ export function MonthlySummaryCard({
             {/* Expenses */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <ArrowDownIcon className="h-4 w-4 text-red-500" />
-                <span className="text-sm">Total Expenses</span>
+                <ArrowDownIcon className="h-4 w-4" style={{ color: 'var(--expense-icon)' }} />
+                <span className="text-sm" style={{ color: 'var(--expense-text)' }}>
+                  Total Expenses
+                </span>
               </div>
-              <span className="font-medium text-red-600">
+              <span className="font-medium" style={{ color: 'var(--expense-text)' }}>
                 {formatCurrency(summary.totalExpenses)}
               </span>
             </div>
-
             {/* Divider with equals indicator */}
             <div className="flex items-center">
               <div className="h-px flex-grow bg-border" />
@@ -292,22 +290,33 @@ export function MonthlySummaryCard({
             </div>
 
             {/* Remaining Allowance - Highlighted */}
-            <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold">Remaining Budget</span>
-              </div>
+            <div
+              className="flex justify-between items-center p-2 rounded"
+              style={{ backgroundColor: 'var(--spendable-bg)' }}
+            >
+              <span className="text-sm font-semibold">Remaining Budget</span>
               <span
-                className={`text-xl font-bold ${remainingAllowance >= 0 ? 'text-black' : 'text-red-600'}`}
+                className="text-xl font-bold"
+                style={{
+                  color:
+                    remainingAllowance >= 0
+                      ? 'var(--remaining-positive)'
+                      : 'var(--remaining-negative)',
+                }}
               >
                 {formatCurrency(Math.abs(remainingAllowance))}
                 {remainingAllowance < 0 && ' over'}
               </span>
             </div>
-
-            {/* Status Indicator */}
             <div className="flex items-center justify-center gap-1 mt-1">
               <div
-                className={`w-2 h-2 rounded-full ${remainingAllowance >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor:
+                    remainingAllowance >= 0
+                      ? 'var(--remaining-positive)'
+                      : 'var(--remaining-negative)',
+                }}
               />
               <span className="text-xs text-muted-foreground">
                 {remainingAllowance >= 0

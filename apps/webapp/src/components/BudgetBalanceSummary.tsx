@@ -79,12 +79,23 @@ export function BudgetBalanceSummary({ year, month }: BudgetBalanceSummaryProps)
       </Dialog>
 
       {isBalanced ? (
-        <div className="p-5 bg-green-50 border border-green-200 rounded">
+        <div
+          className="p-5 rounded-xl"
+          style={{
+            backgroundColor: 'var(--success-bg)',
+            border: '1px solid var(--success-border)',
+          }}
+        >
           <div className="flex items-start gap-3">
-            <CheckCircleIcon className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+            <CheckCircleIcon
+              className="h-6 w-6 flex-shrink-0 mt-0.5"
+              style={{ color: 'var(--success-text)' }}
+            />
             <div>
-              <p className="text-base text-green-800 font-medium">Your budget is balanced!</p>
-              <p className="text-sm text-green-700 mt-1">
+              <p className="text-base font-medium" style={{ color: 'var(--success-text)' }}>
+                Your budget is balanced!
+              </p>
+              <p className="text-sm mt-1" style={{ color: 'var(--success-text)' }}>
                 You've budgeted {formatCurrency(totalBudget)} for this month, which matches your
                 spendable income of {formatCurrency(totalSpendableIncome)}.
               </p>

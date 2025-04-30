@@ -16,7 +16,7 @@ interface AllocationListProps {
   onDelete: (allocationId: string) => Promise<void>;
 }
 
-export function AllocationList({ allocations, onChange, onDelete }: AllocationListProps) {
+export function AllocationList({ allocations = [], onChange, onDelete }: AllocationListProps) {
   return (
     <div className="space-y-6">
       {allocations.length === 0 ? (
@@ -28,8 +28,25 @@ export function AllocationList({ allocations, onChange, onDelete }: AllocationLi
           <AllocationCard
             key={allocation._id}
             allocation={allocation}
-            onChange={(key, value) => onChange(allocation._id, key, value)}
-            onDelete={() => onDelete(allocation._id)}
+            onChange={(updatedAllocation) => {
+              if (allocation._id) {
+                // Call the parent onChange with the updated allocation
+                onChange(
+                  updatedAllocation._id,
+                  updatedAllocation.type as keyof Allocation,
+                  updatedAllocation.value
+                );
+              } else {
+                console.error('Invalid allocation ID');
+              }
+            }}
+            onDelete={() => {
+              if (allocation._id) {
+                onDelete(allocation._id);
+              } else {
+                console.error('Invalid allocation ID');
+              }
+            }}
           />
         ))
       )}

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { formatLoginCode } from '@workspace/backend/modules/auth/codeUtils';
 import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
-import { Loader2 } from 'lucide-react';
+import { Ghost, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useAuthState } from './AuthProvider';
@@ -139,16 +139,15 @@ export function LoginCodeGenerator() {
       <div className="p-6">
         {loginCode ? (
           <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg text-center">
-              <p className="text-sm text-gray-500 mb-1">Your login code:</p>
+            <div className="p-4 bg-muted dark:bg-muted/20 rounded-lg text-center">
+              <p className="text-sm text-muted-foreground mb-1">Your login code:</p>
               <p className="text-3xl font-mono font-bold tracking-wider" aria-live="polite">
                 {formatLoginCode(loginCode)}
               </p>
-              <p className="text-sm text-gray-500 mt-2" aria-live="polite">
+              <p className="text-sm text-muted-foreground mt-2" aria-live="polite">
                 Valid for {timeRemaining}
               </p>
             </div>
-
             <div className="text-sm text-gray-600">
               <p>Enter this code on the login page of your other device to access your account.</p>
             </div>
@@ -166,12 +165,14 @@ export function LoginCodeGenerator() {
         )}
       </div>
 
-      <div className="p-4 bg-gray-50 border-t flex justify-end">
+      <div className="p-4 bg-muted dark:bg-muted/20 border-t flex justify-end">
         <Button
           onClick={handleGenerateCode}
           disabled={isGenerating}
           aria-busy={isGenerating}
           aria-label={loginCode ? 'Generate a new login code' : 'Generate a login code'}
+          // type="button"
+          variant={document.documentElement.classList.contains('dark') ? 'outline' : 'default'}
         >
           {buttonText}
         </Button>

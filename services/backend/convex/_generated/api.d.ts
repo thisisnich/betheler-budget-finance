@@ -22,6 +22,7 @@ import type * as migration from "../migration.js";
 import type * as presentations from "../presentations.js";
 import type * as sharing from "../sharing.js";
 import type * as transactions from "../transactions.js";
+import type * as utils from "../utils.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   presentations: typeof presentations;
   sharing: typeof sharing;
   transactions: typeof transactions;
+  utils: typeof utils;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

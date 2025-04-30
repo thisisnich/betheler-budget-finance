@@ -3,7 +3,7 @@ import { v } from 'convex/values';
 import { getAuthUser } from '../modules/auth/getAuthUser';
 import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
-
+import { getMonthDateRange } from './utils';
 // Create a new budget for a category in a specific month
 export const create = mutation({
   args: {
@@ -141,15 +141,14 @@ export const getBudgetProgress = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(), // Make required
   },
   handler: async (ctx, args) => {
-    // Ensure user is authenticated
     const user = await getAuthUser(ctx, args);
     if (!user) {
       throw new Error('Unauthorized');
     }
 
-    // Get budgets for this month
     const budgets = await ctx.db
       .query('budgets')
       .withIndex('by_userId_yearMonth', (q) =>
@@ -157,53 +156,43 @@ export const getBudgetProgress = query({
       )
       .collect();
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
-
-    // Get transactions for this user within the specified month
     const transactions = await ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
-        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+        q.eq('userId', user._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
       )
-      // Filter to only include expense transactions for budget calculations
       .filter((q) => q.eq(q.field('transactionType'), 'expense'))
       .collect();
 
-    // Calculate totals by category
     const spendingByCategory: Record<string, number> = {};
-
     for (const transaction of transactions) {
       const category = transaction.category;
       if (!spendingByCategory[category]) {
         spendingByCategory[category] = 0;
       }
-
-      // Add amounts (negative for expenses, positive for income)
       spendingByCategory[category] += transaction.amount;
     }
 
-    // Combine budget and actual spending data
     const budgetProgress = budgets.map((budget) => {
       const spent = spendingByCategory[budget.category] || 0;
-      const remaining = budget.amount - Math.abs(spent); // Use absolute value for expenses
+      const remaining = budget.amount - Math.abs(spent);
       const percentage = budget.amount > 0 ? (Math.abs(spent) / budget.amount) * 100 : 0;
 
       return {
         ...budget,
-        spent: Math.abs(spent), // Always return as positive for UI
-        remaining: remaining,
-        percentage: percentage,
+        spent: Math.abs(spent),
+        remaining,
+        percentage,
         status: remaining >= 0 ? 'within_budget' : 'over_budget',
       };
     });
 
-    // Also include categories that have transactions but no budget
     const categoriesWithoutBudgets = Object.keys(spendingByCategory).filter(
       (category) => !budgets.some((budget) => budget.category === category)
     );
@@ -220,7 +209,6 @@ export const getBudgetProgress = query({
     };
   },
 });
-
 // Get a high-level summary of budget totals and spending for a month
 export const getTotalBudgetSummary = query({
   args: {
@@ -251,6 +239,7 @@ export const getTotalBudgetSummary = query({
       sessionId: args.sessionId,
       year: args.year,
       month: args.month,
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
     })) as BudgetProgressResult;
 
     // Calculate total budget, total spent, and total remaining

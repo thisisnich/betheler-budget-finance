@@ -24,13 +24,12 @@ interface BudgetListProps {
 
 export function BudgetList({ year, month }: BudgetListProps) {
   const [isAddingBudget, setIsAddingBudget] = useState(false);
-
-  // Get budget progress data
+  const timezoneOffsetMinutes = new Date().getTimezoneOffset();
   const budgetProgress = useSessionQuery(api.budgets.getBudgetProgress, {
     year,
     month,
+    timezoneOffsetMinutes,
   });
-
   // Handle dialog close after successful budget creation
   const handleBudgetCreated = () => {
     setIsAddingBudget(false);

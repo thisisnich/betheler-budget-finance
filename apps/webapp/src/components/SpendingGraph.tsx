@@ -56,6 +56,7 @@ export function SpendingGraph({
   const budgetDetails = useSessionQuery(api.budgets.getBudgetProgress, {
     year,
     month,
+    timezoneOffsetMinutes: new Date().getTimezoneOffset(),
   });
 
   // Fetch monthly summary data for income

@@ -4,12 +4,17 @@ import { useEffect, useState } from 'react';
 
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
+  allocations: Allocation[]; // Existing allocations for validation
   initialAllocation?: Allocation; // Optional prop for editing an existing allocation
 }
 
-export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFormProps) {
+export function AddAllocationForm({
+  onAdd,
+  allocations,
+  initialAllocation,
+}: AddAllocationFormProps) {
   const [newAllocation, setNewAllocation] = useState<Allocation>({
-    _id: '', // Include _id in the state
+    _id: '',
     category: '',
     type: 'amount',
     value: 0,
@@ -32,30 +37,60 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate category and value
     if (!newAllocation.category || newAllocation.value <= 0) {
       alert('Please provide a valid category and value.');
       return;
     }
 
+    // Validate total percentage for `percentage` and `overflow` types
+    if (newAllocation.type === 'percentage' || newAllocation.type === 'overflow') {
+      const totalPercentage = allocations
+        .filter((a) => a.type === 'percentage' || a.type === 'overflow')
+        .reduce((sum, a) => sum + a.value, 0);
+
+      if (totalPercentage + newAllocation.value > 100) {
+        alert('Total percentage cannot exceed 100%.');
+        return;
+      }
+    }
+
+    // Prevent negative priority
+    if (newAllocation.priority < 1) {
+      alert('Priority must be at least 1.');
+      return;
+    }
+
+    // Prevent priority greater than 99
+    if (newAllocation.priority > 99) {
+      alert('Priority must not exceed 99.');
+      return;
+    }
     await onAdd(newAllocation);
     setNewAllocation({ _id: '', category: '', type: 'amount', value: 0, priority: 1 });
   };
-
   return (
     <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-md bg-card">
-      <h3 className="font-medium mb-4">
-        {newAllocation._id ? 'Edit Allocation' : 'Add New Allocation'}
-      </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="new-allocation-category" className="block mb-1">
-            Category
-          </label>
-          <CategorySelect
-            value={newAllocation.category}
-            onChange={(value) => handleInputChange('category', value)}
-            className="w-full"
-          />
+          {/* Only show the label if not editing */}
+          {!initialAllocation && (
+            <label htmlFor="new-allocation-category" className="block mb-1">
+              Category
+            </label>
+          )}
+          {initialAllocation ? (
+            // Show plain text with additional spacing if editing
+            <p className="font-medium mt-8">{newAllocation.category}</p>
+          ) : (
+            // Show dropdown if adding a new allocation
+            <CategorySelect
+              value={newAllocation.category}
+              onChange={(value) => handleInputChange('category', value)}
+              className="w-full"
+            />
+          )}
         </div>
         <div>
           <label htmlFor="new-allocation-type" className="block mb-1">
@@ -90,12 +125,16 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
           <div>
             <label htmlFor="new-allocation-priority" className="block mb-1">
               Priority
+              <span className="text-sm text-muted-foreground ml-2">(Higher is first)</span>
             </label>
             <input
               id="new-allocation-priority"
               type="number"
               value={newAllocation.priority}
-              onChange={(e) => handleInputChange('priority', Number(e.target.value))}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(99, Number(e.target.value))); // Clamp value between 1 and 99
+                handleInputChange('priority', value);
+              }}
               className="w-full border rounded px-3 py-2"
               placeholder="e.g., 1"
             />

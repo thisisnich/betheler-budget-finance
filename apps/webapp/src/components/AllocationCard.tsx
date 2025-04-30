@@ -1,4 +1,7 @@
-import { TrashIcon } from 'lucide-react';
+import { Edit2Icon, TrashIcon } from 'lucide-react';
+import { useState } from 'react';
+import { AddAllocationForm } from './AllocationForm';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
 type AllocationType = 'amount' | 'percentage' | 'overflow';
 
@@ -12,72 +15,73 @@ interface Allocation {
 
 interface AllocationCardProps {
   allocation: Allocation;
-  onChange: (key: keyof Allocation, value: string | number) => void;
+  onChange: (updatedAllocation: Allocation) => void;
   onDelete: () => void;
 }
 
 export function AllocationCard({ allocation, onChange, onDelete }: AllocationCardProps) {
-  const idPrefix = `allocation-${allocation._id}`;
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditSuccess = async (updatedAllocation: Allocation): Promise<void> => {
+    onChange(updatedAllocation); // Pass the updated allocation back to the parent
+    setIsEditing(false); // Close the dialog
+    return Promise.resolve(); // Ensure the function returns a Promise<void>
+  };
 
   return (
     <div className="p-4 border rounded-md bg-card">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium">{allocation.category}</h3>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-red-500 hover:text-red-600"
-          aria-label={`Delete allocation for ${allocation.category}`}
-        >
-          <TrashIcon className="h-5 w-5" />
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="text-gray-500 hover:text-gray-600"
+            aria-label={`Edit allocation for ${allocation.category}`}
+          >
+            <Edit2Icon className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className="text-red-500 hover:text-red-600"
+            aria-label={`Delete allocation for ${allocation.category}`}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2">
         <div>
-          <label htmlFor={`${idPrefix}-type`} className="block mb-1">
-            Allocation Type
-          </label>
-          <select
-            id={`${idPrefix}-type`}
-            value={allocation.type}
-            onChange={(e) => onChange('type', e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="amount">Fixed Amount</option>
-            <option value="percentage">Percentage</option>
-            <option value="overflow">Overflow Percentage</option>
-          </select>
+          <p className="text-sm text-muted-foreground">Type</p>
+          <p className="font-medium">{allocation.type}</p>
         </div>
-
         <div>
-          <label htmlFor={`${idPrefix}-value`} className="block mb-1">
+          <p className="text-sm text-muted-foreground">
             {allocation.type === 'amount' ? 'Fixed Amount ($)' : 'Percentage (%)'}
-          </label>
-          <input
-            id={`${idPrefix}-value`}
-            type="number"
-            value={allocation.value}
-            onChange={(e) => onChange('value', Number(e.target.value))}
-            className="w-full border rounded px-3 py-2"
-          />
+          </p>
+          <p className="font-medium">{allocation.value}</p>
         </div>
-
         {allocation.type !== 'overflow' && (
           <div>
-            <label htmlFor={`${idPrefix}-priority`} className="block mb-1">
-              Priority
-            </label>
-            <input
-              id={`${idPrefix}-priority`}
-              type="number"
-              value={allocation.priority}
-              onChange={(e) => onChange('priority', Number(e.target.value))}
-              className="w-full border rounded px-3 py-2"
-            />
+            <p className="text-sm text-muted-foreground">Priority</p>
+            <p className="font-medium">{allocation.priority}</p>
           </div>
         )}
       </div>
+
+      {/* Edit Allocation Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent>
+          <DialogTitle>Edit Allocation</DialogTitle>
+          <AddAllocationForm
+            onAdd={handleEditSuccess} // Handle successful edit
+            allocations={[]} // Pass other allocations for validation
+            initialAllocation={allocation} // Pass the current allocation for editing
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

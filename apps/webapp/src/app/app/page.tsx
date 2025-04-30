@@ -40,11 +40,18 @@ export default function AppPage() {
           {authState?.state === 'authenticated' && (
             <div className="space-y-6 sm:space-y-8">
               {authState.user.type === 'anonymous' && (
-                <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                  <p className="text-sm text-blue-800">
+                <div
+                  className="p-3 rounded border"
+                  style={{
+                    backgroundColor: 'var(--tip-bg)',
+                    color: 'var(--tip-text)',
+                    borderColor: 'var(--border)',
+                  }}
+                >
+                  <p className="text-sm">
                     <span className="font-semibold">Tip:</span> You're using an anonymous account.
                     Visit your{' '}
-                    <Link href="/profile" className="text-blue-600 underline hover:text-blue-800">
+                    <Link href="/profile" className="underline hover:opacity-80">
                       profile page
                     </Link>{' '}
                     to personalize your display name.
@@ -62,7 +69,7 @@ export default function AppPage() {
               />
 
               {/* Quick Actions Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-amber-500 border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 border rounded-md bg-card">
                   <h3 className="font-medium mb-2">Quick Actions</h3>
                   <div className="space-y-2">

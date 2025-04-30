@@ -14,27 +14,27 @@ interface DateTimePickerProps {
 }
 
 export function DateTimePicker({ value, onChange, className }: DateTimePickerProps) {
-  const [date, setDate] = React.useState<Date>(value);
+  const [date, setDate] = React.useState(value);
 
-  // Update the parent when the internal date changes, but avoid calling too frequently
+  // Update internal state when prop changes
   React.useEffect(() => {
-    // Skip the initial render effect
-    const isSameDate = date.getTime() === value.getTime();
-    if (!isSameDate) {
-      onChange(date);
-    }
-  }, [date, onChange, value]);
+    setDate(value);
+  }, [value]);
 
-  // When the value prop changes from parent, update the internal state
-  React.useEffect(() => {
-    // Only update if the dates are actually different to avoid loops
-    const isSameDate = date.getTime() === value.getTime();
-    if (!isSameDate) {
-      setDate(value);
-    }
-  }, [value, date]);
+  // Handle date selection
+  const handleDateSelect = React.useCallback(
+    (newDate: Date | undefined) => {
+      if (newDate) {
+        const updatedDate = new Date(newDate);
+        updatedDate.setHours(date.getHours(), date.getMinutes());
+        setDate(updatedDate);
+        onChange(updatedDate);
+      }
+    },
+    [date, onChange]
+  );
 
-  // Handle time input changes with useCallback to prevent unnecessary re-renders
+  // Handle time input changes
   const handleTimeChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const timeString = e.target.value;
@@ -42,73 +42,56 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
 
       if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
         const newDate = new Date(date);
-        newDate.setHours(hours);
-        newDate.setMinutes(minutes);
+        newDate.setHours(hours, minutes);
         setDate(newDate);
+        onChange(newDate);
       }
     },
-    [date]
+    [date, onChange]
   );
 
-  // Handle date selection with useCallback
-  const handleDateSelect = React.useCallback(
-    (newDate: Date | undefined) => {
-      if (newDate) {
-        const updatedDate = new Date(newDate);
-        // Preserve the time from the current date
-        updatedDate.setHours(date.getHours());
-        updatedDate.setMinutes(date.getMinutes());
-        setDate(updatedDate);
-      }
-    },
-    [date]
-  );
-
-  // Format the time string for the input - memoize this computation
+  // Format the time string for the input
   const timeString = React.useMemo(() => {
     return format(date, 'HH:mm');
   }, [date]);
 
   return (
-    <div className={cn('grid gap-2', className)}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Popover modal={true}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                'w-full justify-start text-left font-normal',
-                !date && 'text-muted-foreground'
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, 'PPP') : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={handleDateSelect}
-              initialFocus
-              disabled={(date) => {
-                // Example: Disable future dates
-                // return date > new Date();
-                return false;
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-
-        <div className="flex items-center">
-          <Input
-            type="time"
-            value={timeString}
-            onChange={handleTimeChange}
-            className="w-full"
-            aria-label="Select time"
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 gap-2', className)}>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              'w-full justify-start text-left font-normal',
+              !date && 'text-muted-foreground'
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={handleDateSelect}
+            initialFocus
+            disabled={(date) => {
+              // Example: Disable future dates
+              // return date > new Date();
+              return false;
+            }}
           />
-        </div>
+        </PopoverContent>
+      </Popover>
+      <div className="flex items-center">
+        <Input
+          type="time"
+          value={timeString}
+          onChange={handleTimeChange}
+          className="w-full"
+          aria-label="Select time"
+        />
       </div>
     </div>
   );

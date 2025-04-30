@@ -4,6 +4,7 @@ import { getAuthUser } from '../modules/auth/getAuthUser';
 import { api } from './_generated/api';
 import type { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
+import { getMonthDateRange } from './utils';
 
 // Generate a random share ID
 function generateShareId(): string {
@@ -223,13 +224,8 @@ export const getSharedTransactions = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Create start and end date for the specified month
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of month
-
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
 
     // Get transactions for the user within the specified month
     const transactions = await ctx.db
@@ -237,8 +233,8 @@ export const getSharedTransactions = query({
       .withIndex('by_userId_datetime', (q) =>
         q
           .eq('userId', shareLink.userId as Id<'users'>)
-          .gte('datetime', startDateStr)
-          .lte('datetime', endDateStr)
+          .gte('datetime', startDateISO)
+          .lte('datetime', endDateISO)
       )
       .order('desc')
       .collect();
@@ -253,7 +249,6 @@ export const getSharedTransactions = query({
     };
   },
 });
-
 // Get shared category summary for a specific share link
 export const getSharedCategorySummary = query({
   args: {
@@ -284,20 +279,14 @@ export const getSharedCategorySummary = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Create start and end date for the specified month
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of month
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
 
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
-
-    // Get transactions for the user within the specified month
     let transactionsQuery = ctx.db.query('transactions').withIndex('by_userId_datetime', (q) =>
       q
         .eq('userId', shareLink.userId as Id<'users'>)
-        .gte('datetime', startDateStr)
-        .lte('datetime', endDateStr)
+        .gte('datetime', startDateISO)
+        .lte('datetime', endDateISO)
     );
 
     // Apply transaction type filter if specified
@@ -343,7 +332,6 @@ export const getSharedCategorySummary = query({
     };
   },
 });
-
 // Get a comprehensive financial summary for a shared transaction link
 export const getSharedFinancialSummary = query({
   args: {
@@ -351,16 +339,7 @@ export const getSharedFinancialSummary = query({
     month: v.optional(v.number()),
     year: v.optional(v.number()),
   },
-  handler: async (
-    ctx,
-    args
-  ): Promise<{
-    totalIncome: number;
-    totalExpenses: number;
-    totalSavings: number;
-    totalSpendableIncome: number;
-    formattedMonth: string;
-  } | null> => {
+  handler: async (ctx, args) => {
     // Get the share link
     const shareLink = await ctx.db
       .query('shareLinks')
@@ -380,13 +359,8 @@ export const getSharedFinancialSummary = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Create start and end date for the specified month
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of month
-
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
 
     // Get all transactions for the user within the specified month
     const transactions = await ctx.db
@@ -394,8 +368,8 @@ export const getSharedFinancialSummary = query({
       .withIndex('by_userId_datetime', (q) =>
         q
           .eq('userId', shareLink.userId as Id<'users'>)
-          .gte('datetime', startDateStr)
-          .lte('datetime', endDateStr)
+          .gte('datetime', startDateISO)
+          .lte('datetime', endDateISO)
       )
       .collect();
 
@@ -416,7 +390,6 @@ export const getSharedFinancialSummary = query({
           totalExpenses += amount;
           break;
         case 'savings':
-          // Handle savings deposits (positive amounts) and withdrawals (negative amounts) separately
           if (transaction.amount > 0) {
             totalSavingsDeposits += transaction.amount;
           } else {
@@ -426,10 +399,7 @@ export const getSharedFinancialSummary = query({
       }
     }
 
-    // Calculate net savings (deposits minus withdrawals)
     const totalSavings = totalSavingsDeposits - totalSavingsWithdrawals;
-
-    // Calculate total spendable income (income minus savings)
     const totalSpendableIncome = totalIncome - totalSavings;
 
     return {
@@ -437,11 +407,13 @@ export const getSharedFinancialSummary = query({
       totalExpenses,
       totalSavings,
       totalSpendableIncome,
-      formattedMonth: startDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+      formattedMonth: new Date(startDateISO).toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      }),
     };
   },
 });
-
 // Get budget progress for a shared link
 export const getSharedBudgetProgress = query({
   args: {
@@ -469,6 +441,9 @@ export const getSharedBudgetProgress = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
+
     // Get budgets for this month
     const budgets = await ctx.db
       .query('budgets')
@@ -480,22 +455,14 @@ export const getSharedBudgetProgress = query({
       )
       .collect();
 
-    // Create start and end date for the specified month
-    const startDate = new Date(year, month, 1);
-    const endDate = new Date(year, month + 1, 0); // Last day of month
-
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
-
     // Get transactions for this user within the specified month
     const transactions = await ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
         q
           .eq('userId', shareLink.userId as Id<'users'>)
-          .gte('datetime', startDateStr)
-          .lte('datetime', endDateStr)
+          .gte('datetime', startDateISO)
+          .lte('datetime', endDateISO)
       )
       // Filter to only include expense transactions for budget calculations
       .filter((q) => q.eq(q.field('transactionType'), 'expense'))
@@ -546,7 +513,6 @@ export const getSharedBudgetProgress = query({
     };
   },
 });
-
 // Get a high-level summary of budget totals and spending for a shared link
 export const getSharedBudgetSummary = query({
   args: {
@@ -573,6 +539,9 @@ export const getSharedBudgetSummary = query({
     // Use provided month/year if available, otherwise use the ones from shareLink
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
+
+    // Use getMonthDateRange to calculate the start and end dates
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
 
     // Get budgets for this month
     const budgets = await ctx.db

@@ -70,23 +70,8 @@ export default function AllocationsPage() {
   };
 
   // Handle updating an allocation
-  const handleAllocationChange = async (
-    allocationId: string,
-    key: keyof Allocation,
-    value: any
-  ) => {
-    const allocation = allocations.find((a) => a._id === allocationId);
-
-    if (!allocation) {
-      console.error(`Allocation with ID ${allocationId} not found.`);
-      return;
-    }
-
-    const updatedAllocation = {
-      ...allocation,
-      [key]: value,
-    };
-
+  // Handle updating an allocation
+  const handleAllocationChange = async (updatedAllocation: Allocation) => {
     try {
       await createOrUpdateAllocation({
         sessionId,
@@ -99,7 +84,6 @@ export default function AllocationsPage() {
       console.error('Error updating allocation:', error);
     }
   };
-
   // Handle deleting an allocation
   const handleDeleteAllocation = async (allocationId: string) => {
     const allocation = allocations.find((a) => a._id === allocationId);
@@ -139,7 +123,7 @@ export default function AllocationsPage() {
               <DialogHeader>
                 <DialogTitle>Add New Allocation</DialogTitle>
               </DialogHeader>
-              <AddAllocationForm onAdd={handleAddAllocation} />
+              <AddAllocationForm onAdd={handleAddAllocation} allocations={allocations} />
             </DialogContent>
           </Dialog>
 
@@ -154,7 +138,7 @@ export default function AllocationsPage() {
                 <AllocationCard
                   key={allocation._id}
                   allocation={allocation}
-                  onChange={(key, value) => handleAllocationChange(allocation._id, key, value)}
+                  onChange={(updatedAllocation) => handleAllocationChange(updatedAllocation)}
                   onDelete={() => handleDeleteAllocation(allocation._id)}
                 />
               ))}

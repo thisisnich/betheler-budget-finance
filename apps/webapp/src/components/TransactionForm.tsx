@@ -105,7 +105,8 @@ export function TransactionForm({
             });
           }
         }
-
+        console.log('Selected datetime:', data.datetime);
+        console.log('ISO datetime:', data.datetime.toISOString());
         // Create the transaction
         await createTransaction({
           amount,

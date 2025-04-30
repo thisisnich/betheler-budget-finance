@@ -26,16 +26,15 @@ export default function LeaderboardPage() {
   const getMedalColor = (position: number) => {
     switch (position) {
       case 0:
-        return 'text-yellow-500'; // Gold
+        return 'var(--medal-gold)';
       case 1:
-        return 'text-gray-400'; // Silver
+        return 'var(--medal-silver)';
       case 2:
-        return 'text-amber-700'; // Bronze
+        return 'var(--medal-bronze)';
       default:
-        return 'text-gray-300'; // Other positions
+        return 'var(--medal-other)';
     }
   };
-
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
       <div className="max-w-5xl mx-auto">
@@ -80,20 +79,22 @@ export default function LeaderboardPage() {
                         <div
                           key={user.userId}
                           className={`grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_minmax(90px,auto)] 
-                                     grid-rows-[auto_auto] sm:grid-rows-[auto] 
-                                     gap-x-4 gap-y-2 sm:gap-4 
-                                     p-5 ${
-                                       index === 0
-                                         ? 'bg-yellow-50'
-                                         : index === 1
-                                           ? 'bg-gray-50'
-                                           : index === 2
-                                             ? 'bg-amber-50'
-                                             : ''
-                                     } ${isCurrentUser ? 'border-l-4 border-primary' : ''}`}
+             grid-rows-[auto_auto] sm:grid-rows-[auto] 
+             gap-x-4 gap-y-2 sm:gap-4 
+             p-5 ${isCurrentUser ? 'border-l-4 border-primary' : ''}`}
+                          style={{
+                            backgroundColor:
+                              index === 0
+                                ? 'var(--leaderboard-bg-gold)'
+                                : index === 1
+                                  ? 'var(--leaderboard-bg-silver)'
+                                  : index === 2
+                                    ? 'var(--leaderboard-bg-bronze)'
+                                    : 'var(--leaderboard-bg-other)',
+                          }}
                         >
                           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-background to-muted shadow-sm">
-                            <Medal className={`w-5 h-5 ${getMedalColor(index)}`} />
+                            <Medal style={{ color: getMedalColor(index) }} className="w-5 h-5" />
                           </div>
                           <div className="min-w-0 overflow-hidden">
                             <div className="flex items-center gap-1 flex-wrap">
