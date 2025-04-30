@@ -62,17 +62,22 @@ export function SharedFinancialOverview({
     [selectedDate]
   );
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Fetch data using the sharing API endpoints
   const financialSummary = useQuery(api.sharing.getSharedFinancialSummary, {
     shareId,
     month,
     year,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   const budgetSummary = useQuery(api.sharing.getSharedBudgetSummary, {
     shareId,
     month,
     year,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   const expenseCategorySummary = useQuery(api.sharing.getSharedCategorySummary, {
@@ -80,18 +85,21 @@ export function SharedFinancialOverview({
     transactionType: 'expense',
     month,
     year,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   const budgetProgress = useQuery(api.sharing.getSharedBudgetProgress, {
     shareId,
     month,
     year,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   const sharedTransactions = useQuery(api.sharing.getSharedTransactions, {
     shareId,
     month,
     year,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Calculate unallocated funds
@@ -204,7 +212,8 @@ export function SharedFinancialOverview({
               <div>
                 <h2 className="text-lg font-semibold">Monthly Summary</h2>
                 <div className="text-sm text-muted-foreground">
-                  {new Date(year, month).toLocaleDateString('default', {
+                  {/* Format date using UTC to avoid timezone shifts */}
+                  {new Date(Date.UTC(year, month, 1)).toLocaleDateString('default', {
                     month: 'long',
                     year: 'numeric',
                   })}

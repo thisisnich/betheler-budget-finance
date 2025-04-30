@@ -2,7 +2,7 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { AlertTriangleIcon, CheckCircleIcon, Loader2Icon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BudgetForm } from './BudgetForm';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
@@ -15,16 +15,21 @@ interface BudgetBalanceSummaryProps {
 export function BudgetBalanceSummary({ year, month }: BudgetBalanceSummaryProps) {
   const [isAddingBudget, setIsAddingBudget] = useState(false);
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Fetch financial summary data
   const summary = useSessionQuery(api.transactions.getMonthlyFinancialSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch budget summary data
   const budgetSummary = useSessionQuery(api.budgets.getTotalBudgetSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Handle dialog close after successful budget creation

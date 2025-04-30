@@ -142,6 +142,7 @@ export const getBudgetProgress = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(), // Make required
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -158,8 +159,12 @@ export const getBudgetProgress = query({
       )
       .collect();
 
-    // Get the date range for the specified month
-    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
+    // Get the date range for the specified month, using the timezone offset
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get transactions for this user within the specified month
     const transactions = await ctx.db
@@ -223,6 +228,7 @@ export const getTotalBudgetSummary = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(), // Make required
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -247,6 +253,7 @@ export const getTotalBudgetSummary = query({
       sessionId: args.sessionId,
       year: args.year,
       month: args.month,
+      timezoneOffsetMinutes: args.timezoneOffsetMinutes, // Pass timezone offset
     })) as BudgetProgressResult;
 
     // Calculate total budget, total spent, and total remaining

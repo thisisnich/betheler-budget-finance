@@ -68,6 +68,7 @@ export function SpendingBreakdownChart({
       ? {
           year,
           month,
+          timezoneOffsetMinutes: new Date().getTimezoneOffset(),
         }
       : 'skip'
   );
@@ -75,7 +76,15 @@ export function SpendingBreakdownChart({
   // Fetch savings data from the specific month if we have year/month
   const savingsSummary = useSessionQuery(
     api.transactions.getSavingsSummary,
-    includeSavings ? (year !== undefined && month !== undefined ? { year, month } : {}) : 'skip'
+    includeSavings
+      ? year !== undefined && month !== undefined
+        ? {
+            year,
+            month,
+            timezoneOffsetMinutes: new Date().getTimezoneOffset(),
+          }
+        : 'skip'
+      : 'skip'
   );
 
   // Memoize chart data to prevent unnecessary recalculations

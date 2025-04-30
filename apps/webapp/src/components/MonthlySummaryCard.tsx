@@ -40,16 +40,21 @@ export function MonthlySummaryCard({
     [selectedDate]
   );
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Fetch the monthly financial summary data
   const summary = useSessionQuery(api.transactions.getMonthlyFinancialSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch budget data to compare with spendable income
   const budgetData = useSessionQuery(api.budgets.getTotalBudgetSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Handler for successful transaction creation

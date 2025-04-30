@@ -2,7 +2,7 @@ import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { format } from 'date-fns';
 import { Loader2, PlusIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BudgetForm } from './BudgetForm';
 import { BudgetItem } from './BudgetItem';
 import { EmptyBudgetState } from './EmptyBudgetState';
@@ -25,10 +25,14 @@ interface BudgetListProps {
 export function BudgetList({ year, month }: BudgetListProps) {
   const [isAddingBudget, setIsAddingBudget] = useState(false);
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Get budget progress data
   const budgetProgress = useSessionQuery(api.budgets.getBudgetProgress, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Handle dialog close after successful budget creation

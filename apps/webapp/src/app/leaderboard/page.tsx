@@ -6,7 +6,7 @@ import { useAuthState } from '@/modules/auth/AuthProvider';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { Medal, Trophy, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function LeaderboardPage() {
   const authState = useAuthState();
@@ -16,10 +16,14 @@ export default function LeaderboardPage() {
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Get leaderboard data using the public endpoint
   const leaderboardData = useQuery(api.transactions.getPublicLeaderboard, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Function to get medal color

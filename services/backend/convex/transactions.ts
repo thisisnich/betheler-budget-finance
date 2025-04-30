@@ -128,6 +128,7 @@ export const listByMonth = query({
       v.literal('savings'),
       v.literal('all')
     ),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -136,9 +137,12 @@ export const listByMonth = query({
       throw new Error('Unauthorized');
     }
 
-    // Get the date range for the specified month
-    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
-
+    // Get the date range for the specified month, using the timezone offset
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
     // Get transactions for this user within the specified month
     // Using the by_userId_datetime index
     let transactionsQuery = ctx.db
@@ -167,6 +171,7 @@ export const getCategorySummary = query({
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
     transactionType: v.union(v.literal('expense'), v.literal('income'), v.literal('savings')),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -175,8 +180,12 @@ export const getCategorySummary = query({
       throw new Error('Unauthorized');
     }
 
-    // Get the date range for the specified month
-    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
+    // Get the date range for the specified month, using the timezone offset
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get transactions for this user within the specified month
     // Using the by_userId_datetime index
@@ -230,6 +239,7 @@ export const getSavingsSummary = query({
     ...SessionIdArg,
     year: v.optional(v.number()),
     month: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -246,14 +256,19 @@ export const getSavingsSummary = query({
 
     // Apply month/year filter if specified
     if (args.year !== undefined && args.month !== undefined) {
-      // Get the date range for the specified month
-      const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
-
-      // Filter by date range
+      // Timezone offset is required if year/month are provided
+      const { startDateISO, endDateISO } = getMonthDateRange(
+        args.year,
+        args.month,
+        args.timezoneOffsetMinutes
+      );
       transactionsQuery = transactionsQuery.filter((q) =>
         q.and(q.gte(q.field('datetime'), startDateISO), q.lte(q.field('datetime'), endDateISO))
       );
     }
+    // If year/month are not provided, timezone offset isn't used,
+    // but it's still required by the args definition.
+    // Consider if the logic should change or if the frontend MUST always provide it.
 
     const transactions = await transactionsQuery.collect();
 
@@ -286,6 +301,7 @@ export const getMonthlyFinancialSummary = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (
     ctx,
@@ -305,8 +321,12 @@ export const getMonthlyFinancialSummary = query({
       throw new Error('Unauthorized');
     }
 
-    // Get the date range for the specified month
-    const { startDate, startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
+    // Get the date range for the specified month, using the timezone offset
+    const { startDate, startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get all transactions for this user within the specified month
     const transactions = await ctx.db
@@ -328,6 +348,7 @@ export const getMonthlyFinancialSummary = query({
       sessionId: args.sessionId,
       year: args.year,
       month: args.month,
+      timezoneOffsetMinutes: args.timezoneOffsetMinutes,
     });
 
     // Calculate totals by transaction type
@@ -439,6 +460,7 @@ export const getUserTransactionLeaderboard = query({
     ...SessionIdArg,
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Ensure user is authenticated
@@ -447,8 +469,12 @@ export const getUserTransactionLeaderboard = query({
       throw new Error('Unauthorized');
     }
 
-    // Get the date range for the specified month
-    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
+    // Get the date range for the specified month, using the timezone offset
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get all users
     const users = await ctx.db.query('users').collect();
@@ -482,10 +508,15 @@ export const getPublicLeaderboard = query({
   args: {
     year: v.number(),
     month: v.number(), // 0-based (January is 0)
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
-    // Get the date range for the specified month
-    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
+    // Get the date range for the specified month, using the timezone offset
+    const { startDateISO, endDateISO } = getMonthDateRange(
+      args.year,
+      args.month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get all users
     const users = await ctx.db.query('users').collect();
