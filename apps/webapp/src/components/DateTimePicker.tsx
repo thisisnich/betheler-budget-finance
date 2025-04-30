@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
 import { Button } from './ui/button';
@@ -25,8 +25,12 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
   const handleDateSelect = React.useCallback(
     (newDate: Date | undefined) => {
       if (newDate) {
-        const updatedDate = new Date(newDate);
-        updatedDate.setHours(date.getHours(), date.getMinutes());
+        const updatedDate = set(newDate, {
+          hours: date.getHours(),
+          minutes: date.getMinutes(),
+          seconds: 0,
+          milliseconds: 0,
+        });
         setDate(updatedDate);
         onChange(updatedDate);
       }
@@ -38,14 +42,22 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
   const handleTimeChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const timeString = e.target.value;
-      const [hours, minutes] = timeString.split(':').map(Number);
+      const [hoursStr, minutesStr] = timeString.split(':');
 
-      if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
-        const newDate = new Date(date);
-        newDate.setHours(hours, minutes);
-        setDate(newDate);
-        onChange(newDate);
-      }
+      let hours = Number.parseInt(hoursStr, 10);
+      let minutes = Number.parseInt(minutesStr, 10);
+
+      // Ensure hours and minutes are valid numbers
+      hours = Number.isNaN(hours) ? 0 : hours;
+      minutes = Number.isNaN(minutes) ? 0 : minutes;
+
+      // Clamp hours and minutes to valid ranges
+      hours = Math.max(0, Math.min(23, hours));
+      minutes = Math.max(0, Math.min(59, minutes));
+
+      const newDate = set(date, { hours, minutes, seconds: 0, milliseconds: 0 });
+      setDate(newDate);
+      onChange(newDate);
     },
     [date, onChange]
   );
