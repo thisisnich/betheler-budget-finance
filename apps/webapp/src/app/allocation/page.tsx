@@ -1,17 +1,33 @@
 'use client';
 
+import { AllocationCard } from '@/components/AllocationCard';
+import { AddAllocationForm } from '@/components/AllocationForm';
 import { PageHeader } from '@/components/PageHeader';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { RequireLogin } from '@/modules/auth/RequireLogin';
 import { api } from '@workspace/backend/convex/_generated/api';
-import { useMutation, useQuery } from 'convex/react';
-
-import { AddAllocationForm } from '@/components/AllocationForm';
-import { AllocationList } from '@/components/AllocationList';
-import type { Allocation, AllocationType } from '@/types/schema';
 import type { SessionId } from 'convex-helpers/server/sessions'; // Import SessionId type
+import { useMutation, useQuery } from 'convex/react';
+import { useState } from 'react';
 
-export default function BudgetsPage() {
-  // Retrieve sessionId from localStorage and cast it to SessionId
+// Define the Allocation type
+interface Allocation {
+  _id: string;
+  category: string;
+  type: 'amount' | 'percentage' | 'overflow';
+  value: number;
+  priority: number;
+}
+
+export default function AllocationsPage() {
+  // Retrieve sessionId from localStorage
   const sessionId =
     typeof window !== 'undefined' ? (localStorage.getItem('sessionId') as SessionId | null) : null;
 
@@ -20,12 +36,12 @@ export default function BudgetsPage() {
     return <div>Please log in to view your allocations.</div>;
   }
 
-  // Fetch allocations from the backend and transform the data
+  // Fetch allocations from the backend
   const rawAllocations = useQuery(api.allocation.getAllocations, { sessionId }) || [];
   const allocations: Allocation[] = rawAllocations.map((allocation) => ({
-    _id: allocation._id?.toString(), // Convert _id to string
+    _id: allocation._id?.toString(),
     category: allocation.category,
-    type: allocation.type as AllocationType, // Cast type to AllocationType
+    type: allocation.type as 'amount' | 'percentage' | 'overflow',
     value: allocation.value,
     priority: allocation.priority,
   }));
@@ -34,26 +50,30 @@ export default function BudgetsPage() {
   const createOrUpdateAllocation = useMutation(api.allocation.upsertAllocation);
   const deleteAllocation = useMutation(api.allocation.deleteAllocation);
 
+  // State for managing the add allocation dialog
+  const [isAddingAllocation, setIsAddingAllocation] = useState(false);
+
   // Handle adding a new allocation
-  const handleAddAllocation = async (allocation: Allocation) => {
+  const handleAddAllocation = async (allocation: Omit<Allocation, '_id'>) => {
     try {
       await createOrUpdateAllocation({
-        sessionId, // Include sessionId
+        sessionId,
         category: allocation.category,
         type: allocation.type,
         value: allocation.value,
         priority: allocation.priority,
       });
+      setIsAddingAllocation(false); // Close the dialog after adding
     } catch (error) {
       console.error('Error adding allocation:', error);
     }
   };
 
-  // Handle updating an existing allocation
+  // Handle updating an allocation
   const handleAllocationChange = async (
     allocationId: string,
     key: keyof Allocation,
-    value: string | number
+    value: any
   ) => {
     const allocation = allocations.find((a) => a._id === allocationId);
 
@@ -69,9 +89,9 @@ export default function BudgetsPage() {
 
     try {
       await createOrUpdateAllocation({
-        sessionId, // Include sessionId
+        sessionId,
         category: updatedAllocation.category,
-        type: updatedAllocation.type as AllocationType,
+        type: updatedAllocation.type,
         value: updatedAllocation.value,
         priority: updatedAllocation.priority,
       });
@@ -91,7 +111,7 @@ export default function BudgetsPage() {
 
     if (confirm(`Are you sure you want to delete the allocation for "${allocation.category}"?`)) {
       try {
-        await deleteAllocation({ sessionId, category: allocation.category }); // Include sessionId
+        await deleteAllocation({ sessionId, category: allocation.category });
       } catch (error) {
         console.error('Error deleting allocation:', error);
       }
@@ -102,18 +122,44 @@ export default function BudgetsPage() {
     <RequireLogin>
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
+          {/* Page Header */}
           <PageHeader
-            title="Configure Your Budget Allocations"
+            title="Manage Allocations"
             description="Set fixed amounts, percentages, or overflow percentages for each category."
           />
-          {/* Add Allocation Form */}
-          <AddAllocationForm onAdd={handleAddAllocation} />
-          {/* Allocation List */}
-          <AllocationList
-            allocations={allocations}
-            onChange={handleAllocationChange}
-            onDelete={handleDeleteAllocation}
-          />
+
+          {/* Add Allocation Dialog */}
+          <Dialog open={isAddingAllocation} onOpenChange={setIsAddingAllocation}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="mb-6">
+                Add Allocation
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Allocation</DialogTitle>
+              </DialogHeader>
+              <AddAllocationForm onAdd={handleAddAllocation} />
+            </DialogContent>
+          </Dialog>
+
+          {/* Allocations List */}
+          {allocations.length === 0 ? (
+            <p className="text-center text-gray-500">
+              No allocations found. Add some categories to get started.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {allocations.map((allocation) => (
+                <AllocationCard
+                  key={allocation._id}
+                  allocation={allocation}
+                  onChange={(key, value) => handleAllocationChange(allocation._id, key, value)}
+                  onDelete={() => handleDeleteAllocation(allocation._id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </RequireLogin>

@@ -137,8 +137,7 @@ export const listByMonth = query({
 
     // Create start and end date for the specified month
     const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
-
+    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
     const endDateStr = endDate.toISOString();
@@ -181,7 +180,7 @@ export const getCategorySummary = query({
 
     // Create start and end date for the specified month
     const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
@@ -257,7 +256,7 @@ export const getSavingsSummary = query({
     if (args.year !== undefined && args.month !== undefined) {
       // Create start and end date for the specified month
       const startDate = new Date(args.year, args.month, 1);
-      const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+      const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
 
       // Format as ISO strings for comparison
       const startDateStr = startDate.toISOString();
@@ -321,8 +320,7 @@ export const getMonthlyFinancialSummary = query({
 
     // Create start and end date for the specified month
     const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
-
+    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
     const endDateStr = endDate.toISOString();
@@ -468,8 +466,7 @@ export const getUserTransactionLeaderboard = query({
 
     // Create start and end date for the specified month
     const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
-
+    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();
     const endDateStr = endDate.toISOString();
@@ -510,7 +507,7 @@ export const getPublicLeaderboard = query({
   handler: async (ctx, args) => {
     // Create start and end date for the specified month
     const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
+    const endDate = new Date(args.year, args.month + 1, 0, 23, 59, 59, 999); // Last millisecond of the day
 
     // Format as ISO strings for comparison
     const startDateStr = startDate.toISOString();

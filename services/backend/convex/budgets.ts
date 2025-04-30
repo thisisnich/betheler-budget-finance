@@ -350,3 +350,53 @@ export const copyBudgetsFromMonth = mutation({
     };
   },
 });
+
+export const addToBudget = mutation({
+  args: {
+    ...SessionIdArg,
+    category: v.string(),
+    amount: v.number(),
+    year: v.number(),
+    month: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Ensure user is authenticated
+    const user = await getAuthUser(ctx, args);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Check if a budget already exists for this category, month, and year
+    const existingBudget = await ctx.db
+      .query('budgets')
+      .withIndex('by_userId_yearMonth', (q) =>
+        q.eq('userId', user._id).eq('year', args.year).eq('month', args.month)
+      )
+      .filter((q) => q.eq(q.field('category'), args.category))
+      .first();
+
+    const now = Date.now();
+
+    if (existingBudget) {
+      // Add to the existing budget
+      const newAmount = existingBudget.amount + args.amount;
+      await ctx.db.patch(existingBudget._id, {
+        amount: newAmount,
+        updatedAt: now,
+      });
+      return { budgetId: existingBudget._id, newAmount };
+    }
+
+    // Create a new budget if it doesn't exist
+    const budgetId = await ctx.db.insert('budgets', {
+      userId: user._id,
+      category: args.category,
+      amount: args.amount,
+      year: args.year,
+      month: args.month,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return { budgetId, newAmount: args.amount };
+  },
+});

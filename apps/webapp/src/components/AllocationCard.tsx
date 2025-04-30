@@ -1,3 +1,5 @@
+import { TrashIcon } from 'lucide-react';
+
 type AllocationType = 'amount' | 'percentage' | 'overflow';
 
 interface Allocation {
@@ -19,7 +21,18 @@ export function AllocationCard({ allocation, onChange, onDelete }: AllocationCar
 
   return (
     <div className="p-4 border rounded-md bg-card">
-      <h3 className="font-medium mb-2">{allocation.category}</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-medium">{allocation.category}</h3>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="text-red-500 hover:text-red-600"
+          aria-label={`Delete allocation for ${allocation.category}`}
+        >
+          <TrashIcon className="h-5 w-5" />
+        </button>
+      </div>
+
       <div className="space-y-2">
         <div>
           <label htmlFor={`${idPrefix}-type`} className="block mb-1">
@@ -64,14 +77,6 @@ export function AllocationCard({ allocation, onChange, onDelete }: AllocationCar
             />
           </div>
         )}
-
-        <button
-          type="button"
-          onClick={onDelete}
-          className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Delete
-        </button>
       </div>
     </div>
   );

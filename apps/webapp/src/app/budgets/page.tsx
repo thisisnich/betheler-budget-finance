@@ -6,9 +6,20 @@ import { MonthYearPicker } from '@/components/MonthYearPicker';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { RequireLogin } from '@/modules/auth/RequireLogin';
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { useState } from 'react';
 
 export default function BudgetsPage() {
+  const initialYear = 2025; // Replace with the desired year
+  const initialMonth = 4; // Replace with the desired month (0 for January, 1 for February, etc.)
+  const summary = useSessionQuery(api.transactions.getMonthlyFinancialSummary, {
+    year: initialYear,
+    month: initialMonth,
+  });
+
+  console.log('Financial Summary:', summary);
+
   // Get current date for initial state
   const now = new Date();
   const [selectedDate, setSelectedDate] = useState(now);

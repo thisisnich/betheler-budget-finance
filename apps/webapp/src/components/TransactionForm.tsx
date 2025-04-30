@@ -44,6 +44,7 @@ export function TransactionForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createBudget = useSessionMutation(api.budgets.create);
   const splitIncomeByAllocations = useSessionMutation(api.allocation.splitIncomeByAllocations);
+  const addToBudget = useSessionMutation(api.budgets.addToBudget);
 
   const form = useForm<TransactionFormValues>({
     defaultValues: {
@@ -94,9 +95,9 @@ export function TransactionForm({
             income: amount,
           });
 
-          // Use the budgets API to update budgets with the allocated amounts
+          // Use the addToBudget API to update budgets with the allocated amounts
           for (const [budgetCategory, allocatedAmount] of Object.entries(allocations)) {
-            await createBudget({
+            await addToBudget({
               category: budgetCategory,
               amount: allocatedAmount,
               year: new Date().getFullYear(),
@@ -122,7 +123,7 @@ export function TransactionForm({
         setIsSubmitting(false);
       }
     },
-    [createTransaction, form, onSuccess, createBudget, splitIncomeByAllocations] // Added missing dependencies
+    [createTransaction, form, onSuccess, splitIncomeByAllocations, addToBudget] // Added addToBudget to dependencies
   );
 
   return (

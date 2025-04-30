@@ -77,7 +77,7 @@ export default function AppPage() {
                         Manage Budgets
                       </Button>
                     </Link>
-                    <Link href="/budgets/allocation" className="block">
+                    <Link href="/allocation" className="block">
                       <Button variant="outline" size="sm" className="w-full justify-start">
                         Manage Allocation
                       </Button>

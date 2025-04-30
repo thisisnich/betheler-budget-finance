@@ -111,33 +111,61 @@ export const splitIncomeByAllocations = mutation({
       .filter((q) => q.eq(q.field('userId'), user._id)) // Filter by userId
       .collect();
 
+    // Fetch current budgets for the user for the current month and year
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    const budgets = await ctx.db
+      .query('budgets')
+      .withIndex('by_userId_yearMonth', (q) =>
+        q.eq('userId', user._id).eq('year', currentYear).eq('month', currentMonth)
+      )
+      .collect();
+
+    // Create a map of current budgets for quick lookup
+    const budgetMap = budgets.reduce(
+      (map, budget) => {
+        map[budget.category] = budget.amount;
+        return map;
+      },
+      {} as Record<string, number>
+    );
+
     // Sort allocations by priority (higher priority first, undefined last)
     const sortedAllocations = allocations.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+
+    // Calculate total percentage for overflow allocations
+    const overflowAllocations = sortedAllocations.filter(
+      (allocation) => allocation.type === 'overflow'
+    );
+    const totalOverflowPercentage = overflowAllocations.reduce(
+      (sum, allocation) => sum + allocation.value,
+      0
+    );
 
     // Initialize the result object and remaining income
     const result: Record<string, number> = {};
     let remainingIncome = income;
 
-    // Process each allocation
+    // Process fixed amounts and percentages first
     for (const allocation of sortedAllocations) {
       const { category, type, value } = allocation;
 
       if (type === 'amount') {
-        // Deduct a fixed amount
-        result[category] = value;
-        remainingIncome -= value;
+        // Check the current budget for this category
+        const currentBudget = budgetMap[category] || 0;
+
+        // Only allocate if the current budget is less than the fixed amount
+        if (currentBudget < value) {
+          const amountToAllocate = Math.min(value - currentBudget, remainingIncome); // Allocate only the difference
+          result[category] = amountToAllocate;
+          remainingIncome -= amountToAllocate;
+        }
       } else if (type === 'percentage') {
         // Deduct a percentage of the total income
         const percentageValue = (value / 100) * income;
-        result[category] = percentageValue;
-        remainingIncome -= percentageValue;
-      } else if (type === 'overflow') {
-        // Deduct any remaining income
-        if (remainingIncome > 0) {
-          const overflowValue = Math.min(remainingIncome, value);
-          result[category] = overflowValue;
-          remainingIncome -= overflowValue;
-        }
+        const allocatedAmount = Math.min(percentageValue, remainingIncome); // Ensure we don't allocate more than remaining income
+        result[category] = allocatedAmount;
+        remainingIncome -= allocatedAmount;
       }
 
       // Stop processing if there's no income left
@@ -146,10 +174,14 @@ export const splitIncomeByAllocations = mutation({
       }
     }
 
-    // Optionally, log or update the database with the result
-    // Example: Save the split result to a "logs" collection
-    // If you don't want to log, simply skip this step.
-    // You can remove or comment out the logging code.
+    // Process overflow allocations proportionally
+    if (remainingIncome > 0 && totalOverflowPercentage > 0) {
+      for (const allocation of overflowAllocations) {
+        const { category, value } = allocation;
+        const proportionalValue = (value / totalOverflowPercentage) * remainingIncome;
+        result[category] = proportionalValue;
+      }
+    }
 
     return result; // Return the split amounts by category
   },
