@@ -16,6 +16,7 @@ export default function BudgetsPage() {
   const summary = useSessionQuery(api.transactions.getMonthlyFinancialSummary, {
     year: initialYear,
     month: initialMonth,
+    timezoneOffsetMinutes: new Date().getTimezoneOffset(),
   });
 
   console.log('Financial Summary:', summary);
