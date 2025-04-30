@@ -664,6 +664,50 @@ betheler-budget-finance/
           </div>
         </section>
 
+        <!-- New section for date range bugfix -->
+        <section feature="date-range-bugfix">
+          <h3>Date Range Handling Bugfix</h3>
+          <ul>
+            <li>
+              <strong>Utility Function Creation</strong>
+              <ul>
+                <li>
+                  [x] Create utility file services/backend/convex/utils.ts with date range functions
+                </li>
+                <li>
+                  [x] Implement getMonthStartDate and getMonthEndDate functions
+                </li>
+                <li>
+                  [x] Add getMonthDateRange helper for consistent date range creation
+                </li>
+                <li>
+                  [x] Ensure end date includes the full last day (23:59:59.999) of the month
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Code Refactoring</strong>
+              <ul>
+                <li>
+                  [x] Update transactions.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Update budgets.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Update sharing.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Ensure consistent imports and usage patterns across all files
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This bugfix addresses an issue where date ranges were being calculated incorrectly across the application. The end date of a month was being set to 00:00:00 of the last day, rather than 23:59:59.999, causing transactions on the last day of the month to be potentially missed in queries. The solution involves creating a centralized set of utility functions that handle date range calculations consistently, ensuring that the full last day of each month is included in all queries. The implementation uses a technique of setting the date to the first day of the next month and then subtracting 1 millisecond to get the exact end of the current month. These utility functions are now used consistently across all backend files that deal with date ranges.
+          </p>
+        </section>
+
         <section feature="month-selector-sharing">
           <h3>Month Selector for Shared View</h3>
           <ul>

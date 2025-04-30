@@ -3,6 +3,7 @@ import { v } from 'convex/values';
 import { getAuthUser } from '../modules/auth/getAuthUser';
 import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
+import { getMonthDateRange } from './utils';
 
 // Create a new budget for a category in a specific month
 export const create = mutation({
@@ -157,19 +158,14 @@ export const getBudgetProgress = query({
       )
       .collect();
 
-    // Create start and end date for the specified month
-    const startDate = new Date(args.year, args.month, 1);
-    const endDate = new Date(args.year, args.month + 1, 0); // Last day of month
-
-    // Format as ISO strings for comparison
-    const startDateStr = startDate.toISOString();
-    const endDateStr = endDate.toISOString();
+    // Get the date range for the specified month
+    const { startDateISO, endDateISO } = getMonthDateRange(args.year, args.month);
 
     // Get transactions for this user within the specified month
     const transactions = await ctx.db
       .query('transactions')
       .withIndex('by_userId_datetime', (q) =>
-        q.eq('userId', user._id).gte('datetime', startDateStr).lte('datetime', endDateStr)
+        q.eq('userId', user._id).gte('datetime', startDateISO).lte('datetime', endDateISO)
       )
       // Filter to only include expense transactions for budget calculations
       .filter((q) => q.eq(q.field('transactionType'), 'expense'))
