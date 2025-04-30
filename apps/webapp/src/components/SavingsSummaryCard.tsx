@@ -2,11 +2,16 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionQuery } from 'convex-helpers/react/sessions';
 import { ArrowUpRight, PiggyBank } from 'lucide-react';
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Skeleton } from './ui/skeleton';
 
 export function SavingsSummaryCard() {
-  const savingsSummary = useSessionQuery(api.transactions.getSavingsSummary, {});
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
+  const savingsSummary = useSessionQuery(api.transactions.getSavingsSummary, {
+    timezoneOffsetMinutes,
+  });
 
   return (
     <Card>

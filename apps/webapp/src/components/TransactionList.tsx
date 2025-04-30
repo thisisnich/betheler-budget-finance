@@ -31,11 +31,15 @@ export function TransactionList({
 }: TransactionListProps) {
   const [selectedType, setSelectedType] = useState<TransactionType | 'all'>('all');
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // We now accept year and month as props directly, no need for selectedDate
   const transactions = useSessionQuery(api.transactions.listByMonth, {
     year,
     month,
     transactionType: selectedType,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Handler for transaction deletion

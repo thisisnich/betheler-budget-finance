@@ -664,6 +664,50 @@ betheler-budget-finance/
           </div>
         </section>
 
+        <!-- New section for date range bugfix -->
+        <section feature="date-range-bugfix">
+          <h3>Date Range Handling Bugfix</h3>
+          <ul>
+            <li>
+              <strong>Utility Function Creation</strong>
+              <ul>
+                <li>
+                  [x] Create utility file services/backend/convex/utils.ts with date range functions
+                </li>
+                <li>
+                  [x] Implement getMonthStartDate and getMonthEndDate functions
+                </li>
+                <li>
+                  [x] Add getMonthDateRange helper for consistent date range creation
+                </li>
+                <li>
+                  [x] Ensure end date includes the full last day (23:59:59.999) of the month
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Code Refactoring</strong>
+              <ul>
+                <li>
+                  [x] Update transactions.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Update budgets.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Update sharing.ts to use the new utility functions
+                </li>
+                <li>
+                  [x] Ensure consistent imports and usage patterns across all files
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            <strong>Implementation Notes:</strong> This bugfix addresses an issue where date ranges were being calculated incorrectly across the application. The end date of a month was being set to 00:00:00 of the last day, rather than 23:59:59.999, causing transactions on the last day of the month to be potentially missed in queries. The solution involves creating a centralized set of utility functions that handle date range calculations consistently, ensuring that the full last day of each month is included in all queries. The implementation uses a technique of setting the date to the first day of the next month and then subtracting 1 millisecond to get the exact end of the current month. These utility functions are now used consistently across all backend files that deal with date ranges.
+          </p>
+        </section>
+
         <section feature="month-selector-sharing">
           <h3>Month Selector for Shared View</h3>
           <ul>
@@ -854,6 +898,125 @@ betheler-budget-finance/
             before submission) and server-side (catching any errors from the
             backend) for robustness.
           </p>
+        </section>
+        
+        <section id="v1.6.1">
+          <meta name="version" content="1.6.1" />
+          <h1>📍 Planned Version: 1.6.1 - Timezone Handling Enhancement</h1>
+          
+          <section feature="timezone-handling-enhancement">
+            <h3>Client Timezone Integration for Date Queries</h3>
+            <ul>
+              <li>
+                <strong>Date Utility Enhancement (services/backend/convex/utils.ts)</strong>
+                <ul>
+                  <li>
+                    [x] Update date utility functions signature to accept **required** `timezoneOffsetMinutes` parameter
+                  </li>
+                  <li>
+                    [x] Modify `getMonthStartDate` (lines 11-13) to account for client timezone offset
+                  </li>
+                  <li>
+                    [x] Modify `getMonthEndDate` (lines 21-29) to account for client timezone offset
+                  </li>
+                  <li>
+                    [x] Update `getMonthDateRange` (lines 57-75) to pass timezone information to helper functions
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Transaction API Parameter Updates (services/backend/convex/transactions.ts)</strong>
+                <ul>
+                  <li>
+                    [x] Update `listByMonth` (lines 118-163) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getCategorySummary` (lines ~170-220) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getSavingsSummary` (lines ~225-280) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getMonthlyFinancialSummary` (lines 283-380) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getUserTransactionLeaderboard` (lines ~435-470) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getPublicLeaderboard` (lines ~475-510) to require and use `timezoneOffsetMinutes`
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Budget API Parameter Updates (services/backend/convex/budgets.ts)</strong>
+                <ul>
+                  <li>
+                    [x] Update `getBudgetProgress` (lines 137-185) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getTotalBudgetSummary` (lines ~190-240) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update any other functions using `getMonthDateRange` to require and use `timezoneOffsetMinutes`
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Sharing API Parameter Updates (services/backend/convex/sharing.ts)</strong>
+                <ul>
+                  <li>
+                    [x] Update `getSharedTransactions` (lines ~195-250) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getSharedCategorySummary` (lines ~255-315) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getSharedFinancialSummary` (lines ~320-425) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getSharedBudgetProgress` (lines 429-486) to require and use `timezoneOffsetMinutes`
+                  </li>
+                  <li>
+                    [x] Update `getSharedBudgetSummary` (lines ~490-550) to require and use `timezoneOffsetMinutes`
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Frontend Integration</strong>
+                <ul>
+                  <li>
+                    [x] Update `SharedTransactionView.tsx` to pass client timezone offset to API calls (lines ~16-29)
+                  </li>
+                  <li>
+                    [x] Update `SharedFinancialOverview.tsx` to pass client timezone offset to API calls (lines ~60-90)
+                  </li>
+                  <li>
+                    [x] Review and update other frontend components (e.g., `FinancialOverview.tsx`, `SpendingGraph.tsx`, `BudgetList.tsx`, `BudgetBalanceSummary.tsx`, `LeaderboardPage`) to pass timezone offset if needed
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Date Display Fixes</strong>
+                <ul>
+                  <li>
+                    [x] Fix date formatting in `SharedTransactionView.tsx` (`formattedMonthYear` function, lines ~40-47)
+                  </li>
+                  <li>
+                    [x] Fix date formatting in `SharedFinancialOverview.tsx` (lines ~170)
+                  </li>
+                  <li>
+                    [x] Review and fix date formatting in other relevant components
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <p>
+              <strong>Implementation Notes:</strong> This enhancement addresses a critical issue with timezone handling across the application. Currently, date operations in the backend are performed using local timezone settings, which can lead to inconsistent data filtering based on the server's timezone. When converting dates to ISO strings (with toISOString()), timezone adjustments are applied that can shift dates unexpectedly, potentially causing transactions from the last day of a month to be missed or included in the wrong month.
+            </p>
+            <p>
+              The solution involves passing the client's timezone offset (in minutes) to the backend, allowing all date operations to correctly account for the user's local timezone. We'll modify the date utility functions to accept this optional timezone parameter and adjust date calculations accordingly. All API endpoints that filter by date ranges will be updated to accept and use this timezone information. On the frontend, components will be updated to capture the local timezone offset using JavaScript's built-in getTimezoneOffset() method and pass it with all API calls. This ensures that when a user selects a specific month/year to view, they'll see all transactions that occurred during that month in their local timezone, regardless of where the server is located.
+            </p>
+          </section>
         </section>
       </section>
     </section>

@@ -33,36 +33,43 @@ export function SpendingGraph({
     [selectedDate]
   );
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Fetch data for expenses
   const expenses = useSessionQuery(api.transactions.getCategorySummary, {
     year,
     month,
     transactionType: 'expense',
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch savings data
   const savingsSummary = useSessionQuery(api.transactions.getSavingsSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch budget data
   const budgetData = useSessionQuery(api.budgets.getTotalBudgetSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch budget details for categories
   const budgetDetails = useSessionQuery(api.budgets.getBudgetProgress, {
     year,
     month,
-    timezoneOffsetMinutes: new Date().getTimezoneOffset(),
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Fetch monthly summary data for income
   const monthlySummary = useSessionQuery(api.transactions.getMonthlyFinancialSummary, {
     year,
     month,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Loading state

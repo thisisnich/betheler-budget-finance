@@ -197,6 +197,7 @@ export const getSharedTransactions = query({
     shareId: v.string(),
     month: v.optional(v.number()),
     year: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -214,7 +215,7 @@ export const getSharedTransactions = query({
       return null;
     }
 
-    // Get the user info to include the display name
+    // Get user information for displaying in the shared view
     const user = await ctx.db.get(shareLink.userId as Id<'users'>);
     if (!user) {
       return null;
@@ -224,8 +225,8 @@ export const getSharedTransactions = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Use getMonthDateRange to calculate the start and end dates
-    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
+    // Get the date range for the specified month, passing the timezone offset if provided
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, args.timezoneOffsetMinutes);
 
     // Get transactions for the user within the specified month
     const transactions = await ctx.db
@@ -258,6 +259,7 @@ export const getSharedCategorySummary = query({
     ),
     month: v.optional(v.number()),
     year: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -279,9 +281,10 @@ export const getSharedCategorySummary = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Use getMonthDateRange to calculate the start and end dates
-    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
+    // Get the date range for the specified month, passing the timezone offset if provided
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, args.timezoneOffsetMinutes);
 
+    // Get transactions for the user within the specified month
     let transactionsQuery = ctx.db.query('transactions').withIndex('by_userId_datetime', (q) =>
       q
         .eq('userId', shareLink.userId as Id<'users'>)
@@ -338,6 +341,7 @@ export const getSharedFinancialSummary = query({
     shareId: v.string(),
     month: v.optional(v.number()),
     year: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -359,8 +363,12 @@ export const getSharedFinancialSummary = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Use getMonthDateRange to calculate the start and end dates
-    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
+    // Get the date range for the specified month, passing the timezone offset if provided
+    const { startDate, startDateISO, endDateISO } = getMonthDateRange(
+      year,
+      month,
+      args.timezoneOffsetMinutes
+    );
 
     // Get all transactions for the user within the specified month
     const transactions = await ctx.db
@@ -420,6 +428,7 @@ export const getSharedBudgetProgress = query({
     shareId: v.string(),
     month: v.optional(v.number()),
     year: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Get the share link
@@ -441,8 +450,8 @@ export const getSharedBudgetProgress = query({
     const year = args.year !== undefined ? args.year : shareLink.year;
     const month = args.month !== undefined ? args.month : shareLink.month;
 
-    // Use getMonthDateRange to calculate the start and end dates
-    const { startDateISO, endDateISO } = getMonthDateRange(year, month, 0);
+    // Get the date range for the specified month, passing the timezone offset if provided
+    const { startDateISO, endDateISO } = getMonthDateRange(year, month, args.timezoneOffsetMinutes);
 
     // Get budgets for this month
     const budgets = await ctx.db
@@ -519,6 +528,7 @@ export const getSharedBudgetSummary = query({
     shareId: v.string(),
     month: v.optional(v.number()),
     year: v.optional(v.number()),
+    timezoneOffsetMinutes: v.number(),
   },
   handler: async (ctx, args) => {
     // Get the share link

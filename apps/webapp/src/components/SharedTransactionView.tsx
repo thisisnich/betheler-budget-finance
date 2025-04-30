@@ -20,11 +20,15 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
   const selectedMonth = selectedDate.getMonth();
   const selectedYear = selectedDate.getFullYear();
 
+  // Get the client's timezone offset in minutes
+  const timezoneOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
+
   // Fetch shared transactions
   const sharedTransactions = useQuery(api.sharing.getSharedTransactions, {
     shareId,
     month: selectedMonth,
     year: selectedYear,
+    timezoneOffsetMinutes, // Pass timezone offset
   });
 
   // Check if loading or error
@@ -40,7 +44,8 @@ export function SharedTransactionView({ shareId }: SharedTransactionViewProps) {
 
   const formattedMonthYear = useMemo(() => {
     if (!sharedTransactions || sharedTransactions === null) return '';
-    const date = new Date(sharedTransactions.year, sharedTransactions.month);
+    // Create a date using UTC values to avoid local timezone shifts during formatting
+    const date = new Date(Date.UTC(sharedTransactions.year, sharedTransactions.month, 1));
     return date.toLocaleString('default', {
       month: 'long',
       year: 'numeric',
