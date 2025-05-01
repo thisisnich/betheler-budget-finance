@@ -123,7 +123,10 @@ export default function AllocationsPage() {
               <DialogHeader>
                 <DialogTitle>Add New Allocation</DialogTitle>
               </DialogHeader>
-              <AddAllocationForm onAdd={handleAddAllocation} allocations={allocations} />
+              <AddAllocationForm
+                onAdd={handleAddAllocation}
+                allocations={allocations} // Pass the allocations array
+              />
             </DialogContent>
           </Dialog>
 
