@@ -201,7 +201,7 @@ packages:
     os: [darwin]
 
   '@biomejs/cli-linux-arm64-musl@1.9.4':
-    resolution: {integrity: sha512-v665Ct9WCRjGa8+kTr0CzApU0+XXtRgwmzIf1SeKSGAv+2scAlW6JR5PMFo6FzqqZ64Po79cKODKf3/AAmECqA==}
+    resolution: {integrity: sha512-v665Ct9WCRjGa8+kTr0CzApU0+XXtRjy310ZLmDlrEEy5KvBsbgs7pVph+4BBe2p7Xs32dBgs7l4M87Au7F3OA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
