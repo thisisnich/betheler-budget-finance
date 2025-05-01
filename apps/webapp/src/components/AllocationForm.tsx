@@ -1,11 +1,13 @@
 import { CategorySelect } from '@/components/CategorySelect';
+import { Button } from '@/components/ui/button';
 import type { Allocation } from '@/types/schema';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
-  allocations: Allocation[]; // Existing allocations for validation
-  initialAllocation?: Allocation; // Optional prop for editing an existing allocation
+  allocations: Allocation[];
+  initialAllocation?: Allocation;
 }
 
 export function AddAllocationForm({
@@ -21,7 +23,8 @@ export function AddAllocationForm({
     priority: 1,
   });
 
-  // Populate the form with the initial allocation if provided
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (initialAllocation) {
       setNewAllocation(initialAllocation);
@@ -37,54 +40,61 @@ export function AddAllocationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Validate category and value
-    if (!newAllocation.category || newAllocation.value <= 0) {
-      alert('Please provide a valid category and value.');
-      return;
-    }
-
-    // Validate total percentage for `percentage` and `overflow` types
-    if (newAllocation.type === 'percentage' || newAllocation.type === 'overflow') {
-      const totalPercentage = allocations
-        .filter((a) => a.type === 'percentage' || a.type === 'overflow')
-        .reduce((sum, a) => sum + a.value, 0);
-
-      if (totalPercentage + newAllocation.value > 100) {
-        alert('Total percentage cannot exceed 100%.');
+    try {
+      // Validate category and value
+      if (!newAllocation.category || newAllocation.value <= 0) {
+        alert('Please provide a valid category and value.');
         return;
       }
-    }
 
-    // Prevent negative priority
-    if (newAllocation.priority < 1) {
-      alert('Priority must be at least 1.');
-      return;
-    }
+      // Validate total percentage for `percentage` and `overflow` types
+      if (newAllocation.type === 'percentage' || newAllocation.type === 'overflow') {
+        const totalPercentage = allocations
+          .filter((a) => a.type === 'percentage' || a.type === 'overflow')
+          .reduce((sum, a) => sum + a.value, 0);
 
-    // Prevent priority greater than 99
-    if (newAllocation.priority > 99) {
-      alert('Priority must not exceed 99.');
-      return;
+        if (totalPercentage + newAllocation.value > 100) {
+          alert('Total percentage cannot exceed 100%.');
+          return;
+        }
+      }
+
+      // Prevent negative priority
+      if (newAllocation.priority < 1) {
+        alert('Priority must be at least 1.');
+        return;
+      }
+
+      // Prevent priority greater than 99
+      if (newAllocation.priority > 99) {
+        alert('Priority must not exceed 99.');
+        return;
+      }
+
+      await onAdd(newAllocation);
+      setNewAllocation({ _id: '', category: '', type: 'amount', value: 0, priority: 1 });
+    } catch (error) {
+      console.error('Error submitting allocation:', error);
+      alert('An error occurred while submitting the allocation.');
+    } finally {
+      setIsSubmitting(false);
     }
-    await onAdd(newAllocation);
-    setNewAllocation({ _id: '', category: '', type: 'amount', value: 0, priority: 1 });
   };
+
   return (
     <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-md bg-card">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          {/* Only show the label if not editing */}
           {!initialAllocation && (
             <label htmlFor="new-allocation-category" className="block mb-1">
               Category
             </label>
           )}
           {initialAllocation ? (
-            // Show plain text with additional spacing if editing
             <p className="font-medium mt-8">{newAllocation.category}</p>
           ) : (
-            // Show dropdown if adding a new allocation
             <CategorySelect
               value={newAllocation.category}
               onChange={(value) => handleInputChange('category', value)}
@@ -132,7 +142,7 @@ export function AddAllocationForm({
               type="number"
               value={newAllocation.priority}
               onChange={(e) => {
-                const value = Math.max(1, Math.min(99, Number(e.target.value))); // Clamp value between 1 and 99
+                const value = Math.max(1, Math.min(99, Number(e.target.value)));
                 handleInputChange('priority', value);
               }}
               className="w-full border rounded px-3 py-2"
@@ -141,12 +151,23 @@ export function AddAllocationForm({
           </div>
         )}
       </div>
-      <button
+      <Button
+        className="mt-4"
         type="submit"
-        className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+        disabled={isSubmitting}
+        aria-busy={isSubmitting}
+        aria-label={newAllocation._id ? 'Update Allocation' : 'Add Allocation'}
+        variant={document.documentElement.classList.contains('dark') ? 'outline' : 'default'}
       >
-        {newAllocation._id ? 'Update Allocation' : 'Add Allocation'}
-      </button>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+            <span>Submitting...</span>
+          </>
+        ) : (
+          <span>{newAllocation._id ? 'Update Allocation' : 'Add Allocation'}</span>
+        )}
+      </Button>
     </form>
   );
 }
