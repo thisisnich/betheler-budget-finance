@@ -51,6 +51,7 @@ export function AllocationCard({ allocation, onChange, onDelete }: AllocationCar
           </button>
         </div>
       </div>
+
       <div className="space-y-2">
         <div>
           <p className="text-sm text-muted-foreground">Type</p>
@@ -69,17 +70,17 @@ export function AllocationCard({ allocation, onChange, onDelete }: AllocationCar
           </div>
         )}
       </div>
+
       {/* Edit Allocation Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent>
           <DialogTitle>Edit Allocation</DialogTitle>
           <AddAllocationForm
             onAdd={handleEditSuccess} // Handle successful edit
-            allocations={[]} // Pass other allocations for validation
             initialAllocation={allocation} // Pass the current allocation for editing
           />
         </DialogContent>
-      </Dialog>{' '}
+      </Dialog>
     </div>
   );
 }

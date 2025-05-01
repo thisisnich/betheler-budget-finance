@@ -137,10 +137,6 @@ export const splitIncomeByAllocations = mutation({
     const overflowAllocations = sortedAllocations.filter(
       (allocation) => allocation.type === 'overflow'
     );
-    const totalOverflowPercentage = overflowAllocations.reduce(
-      (sum, allocation) => sum + allocation.value,
-      0
-    );
 
     // Initialize the result object and remaining income
     const result: Record<string, number> = {};
@@ -174,12 +170,22 @@ export const splitIncomeByAllocations = mutation({
       }
     }
 
-    // Process overflow allocations proportionally
-    if (remainingIncome > 0 && totalOverflowPercentage > 0) {
+    // Process overflow allocations based on their individual percentages
+    if (remainingIncome > 0) {
       for (const allocation of overflowAllocations) {
         const { category, value } = allocation;
-        const proportionalValue = (value / totalOverflowPercentage) * remainingIncome;
-        result[category] = proportionalValue;
+
+        // Allocate only the specified percentage of the remaining income
+        const allocatedAmount = (value / 100) * remainingIncome;
+        result[category] = (result[category] || 0) + allocatedAmount;
+
+        // Deduct the allocated amount from the remaining income
+        remainingIncome -= allocatedAmount;
+
+        // Stop processing if there's no income left
+        if (remainingIncome <= 0) {
+          break;
+        }
       }
     }
 
