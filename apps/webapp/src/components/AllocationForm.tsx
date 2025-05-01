@@ -12,8 +12,8 @@ const useSessionId = () => {
 
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
-  initialAllocation?: Allocation; // Optional prop for editing an existing allocation
-  allocations?: Allocation[]; // Add this line to accept allocations as a prop
+  initialAllocation?: Allocation;
+  allocations?: Allocation[]; // Allow undefined
 }
 export function AddAllocationForm({
   onSuccess,

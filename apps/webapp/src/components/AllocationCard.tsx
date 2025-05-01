@@ -17,9 +17,8 @@ interface AllocationCardProps {
   allocation: Allocation;
   onChange: (updatedAllocation: Allocation) => void;
   onDelete: () => void;
-  allocations: Allocation[]; // Pass all allocations for validation in the form
+  allocations?: Allocation[]; // Make this optional
 }
-
 export function AllocationCard({
   allocation,
   onChange,
@@ -83,7 +82,7 @@ export function AllocationCard({
               onChange(allocation); // Notify the parent of the updated allocation
             }}
             initialAllocation={allocation} // Pass the current allocation for editing
-            allocations={allocations} // Pass all allocations for validation
+            allocations={allocations ?? []} // Pass all allocations for validation
           />
         </DialogContent>
       </Dialog>
