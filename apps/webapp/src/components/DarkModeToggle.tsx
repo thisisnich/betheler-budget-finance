@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 
 export function DarkModeToggle() {
-  // Initialize dark mode state from localStorage or fallback to system preference
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  // Initialize dark mode state as null to avoid SSR issues
+  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Determine the initial theme after the component mounts
     const storedPreference = localStorage.getItem('theme');
     if (storedPreference) {
-      return storedPreference === 'dark';
+      setIsDarkMode(storedPreference === 'dark');
+    } else {
+      // Fallback to system preference
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(systemPrefersDark);
     }
-    // Fallback to system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  }, []);
 
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => {
@@ -21,21 +26,27 @@ export function DarkModeToggle() {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
       }
-      // Force a page reload
-      window.location.reload();
       return newMode;
     });
   };
+
   useEffect(() => {
-    // Apply the initial theme based on the state
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+    // Apply the theme only when isDarkMode is not null
+    if (isDarkMode !== null) {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
     }
   }, [isDarkMode]);
+
+  if (isDarkMode === null) {
+    // Optionally, render nothing or a loading state until the theme is determined
+    return null;
+  }
 
   return (
     <button
