@@ -27,7 +27,6 @@ interface Allocation {
 }
 
 export default function AllocationsPage() {
-  // Retrieve sessionId from localStorage
   const sessionId =
     typeof window !== 'undefined' ? (localStorage.getItem('sessionId') as SessionId | null) : null;
 
@@ -36,7 +35,6 @@ export default function AllocationsPage() {
     return <div>Please log in to view your allocations.</div>;
   }
 
-  // Fetch allocations from the backend
   const rawAllocations = useQuery(api.allocation.getAllocations, { sessionId }) || [];
   const allocations: Allocation[] = rawAllocations.map((allocation) => ({
     _id: allocation._id?.toString(),
@@ -45,7 +43,6 @@ export default function AllocationsPage() {
     value: allocation.value,
     priority: allocation.priority,
   }));
-
   // Define mutations for create, update, and delete operations
   const createOrUpdateAllocation = useMutation(api.allocation.upsertAllocation);
   const deleteAllocation = useMutation(api.allocation.deleteAllocation);
@@ -106,13 +103,11 @@ export default function AllocationsPage() {
     <RequireLogin>
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Page Header */}
           <PageHeader
             title="Manage Allocations"
             description="Set fixed amounts, percentages, or overflow percentages for each category."
           />
 
-          {/* Add Allocation Dialog */}
           <Dialog open={isAddingAllocation} onOpenChange={setIsAddingAllocation}>
             <DialogTrigger asChild>
               <Button variant="outline" className="mb-6">
@@ -124,8 +119,8 @@ export default function AllocationsPage() {
                 <DialogTitle>Add New Allocation</DialogTitle>
               </DialogHeader>
               <AddAllocationForm
-                onAdd={handleAddAllocation}
-                allocations={allocations} // Pass the allocations array
+                onSuccess={() => setIsAddingAllocation(false)} // Close dialog on success
+                allocations={allocations} // Pass allocations for validation
               />
             </DialogContent>
           </Dialog>
@@ -141,8 +136,9 @@ export default function AllocationsPage() {
                 <AllocationCard
                   key={allocation._id}
                   allocation={allocation}
-                  onChange={(updatedAllocation) => handleAllocationChange(updatedAllocation)}
-                  onDelete={() => handleDeleteAllocation(allocation._id)}
+                  onChange={(updatedAllocation) => console.log(updatedAllocation)}
+                  onDelete={() => console.log('Delete allocation')}
+                  allocations={allocations} // Pass all allocations for validation
                 />
               ))}
             </div>

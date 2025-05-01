@@ -17,16 +17,16 @@ interface AllocationCardProps {
   allocation: Allocation;
   onChange: (updatedAllocation: Allocation) => void;
   onDelete: () => void;
+  allocations: Allocation[]; // Pass all allocations for validation in the form
 }
 
-export function AllocationCard({ allocation, onChange, onDelete }: AllocationCardProps) {
+export function AllocationCard({
+  allocation,
+  onChange,
+  onDelete,
+  allocations,
+}: AllocationCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleEditSuccess = async (updatedAllocation: Allocation): Promise<void> => {
-    onChange(updatedAllocation); // Pass the updated allocation back to the parent
-    setIsEditing(false); // Close the dialog
-    return Promise.resolve(); // Ensure the function returns a Promise<void>
-  };
 
   return (
     <div className="p-4 border rounded-md bg-card">
@@ -74,10 +74,16 @@ export function AllocationCard({ allocation, onChange, onDelete }: AllocationCar
       {/* Edit Allocation Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent>
-          <DialogTitle>Edit Allocation</DialogTitle>
+          <DialogHeader>
+            <DialogTitle>Edit Allocation</DialogTitle>
+          </DialogHeader>
           <AddAllocationForm
-            onAdd={handleEditSuccess} // Handle successful edit
+            onSuccess={() => {
+              setIsEditing(false); // Close the dialog on success
+              onChange(allocation); // Notify the parent of the updated allocation
+            }}
             initialAllocation={allocation} // Pass the current allocation for editing
+            allocations={allocations} // Pass all allocations for validation
           />
         </DialogContent>
       </Dialog>

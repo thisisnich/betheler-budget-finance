@@ -1,7 +1,7 @@
 import { CategorySelect } from '@/components/CategorySelect';
 import type { Allocation } from '@/types/schema';
 import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionQuery } from 'convex-helpers/react/sessions'; // Import the query hook
+import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions'; // Import the query hook
 import { useEffect, useState } from 'react';
 
 // Example: Replace this with your actual session retrieval logic
@@ -15,7 +15,15 @@ interface AddAllocationFormProps {
   initialAllocation?: Allocation; // Optional prop for editing an existing allocation
   allocations?: Allocation[]; // Add this line to accept allocations as a prop
 }
-export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFormProps) {
+export function AddAllocationForm({
+  onSuccess,
+  initialAllocation,
+  allocations,
+}: {
+  onSuccess: () => void; // Callback to notify the parent when an allocation is added
+  initialAllocation?: Allocation;
+  allocations: Allocation[];
+}) {
   const [newAllocation, setNewAllocation] = useState<Allocation>({
     _id: '',
     category: '',
@@ -25,7 +33,7 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
   });
 
   const sessionId = useSessionId(); // Retrieve the session ID dynamically
-  const allocations = useSessionQuery(api.allocation.getAllocations) || []; // Pass the sessionId to the query
+  const createOrUpdateAllocation = useSessionMutation(api.allocation.upsertAllocation);
 
   useEffect(() => {
     if (initialAllocation) {
@@ -76,7 +84,7 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
     // Check for conflicting priorities
     const hasConflictingPriority = allocations.some(
       (allocation) =>
-        allocation.priority === newAllocation.priority && allocation._id !== newAllocation._id // Exclude the current allocation if editing
+        allocation.priority === newAllocation.priority && allocation._id !== newAllocation._id
     );
 
     if (hasConflictingPriority) {
@@ -87,8 +95,17 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
     }
 
     // Submit the allocation
-    await onAdd(newAllocation);
-    setNewAllocation({ _id: '', category: '', type: 'amount', value: 0, priority: 1 });
+    try {
+      await createOrUpdateAllocation({
+        category: newAllocation.category,
+        type: newAllocation.type,
+        value: newAllocation.value,
+        priority: newAllocation.priority,
+      });
+      onSuccess(); // Notify the parent component
+    } catch (error) {
+      console.error('Error adding allocation:', error);
+    }
   };
 
   return (
@@ -96,8 +113,10 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
       onSubmit={handleSubmit}
       className="mb-6 p-4 border rounded-md bg-card text-card-foreground dark:bg-card dark:text-card-foreground"
     >
+      {/* Form fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
+        {/* Category Field */}
+        <div className="col-span-1">
           {!initialAllocation && (
             <label
               htmlFor="new-allocation-category"
@@ -116,7 +135,9 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
             />
           )}
         </div>
-        <div>
+
+        {/* Type Field */}
+        <div className="col-span-1">
           <label
             htmlFor="new-allocation-type"
             className="block mb-1 text-muted-foreground dark:text-muted-foreground"
@@ -134,7 +155,9 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
             <option value="overflow">Overflow Percentage</option>
           </select>
         </div>
-        <div>
+
+        {/* Value Field */}
+        <div className="col-span-1">
           <label
             htmlFor="new-allocation-value"
             className="block mb-1 text-muted-foreground dark:text-muted-foreground"
@@ -151,8 +174,10 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
             required
           />
         </div>
+
+        {/* Priority Field */}
         {newAllocation.type !== 'overflow' && (
-          <div>
+          <div className="col-span-1">
             <label
               htmlFor="new-allocation-priority"
               className="block mb-1 text-muted-foreground dark:text-muted-foreground"
@@ -174,6 +199,8 @@ export function AddAllocationForm({ onAdd, initialAllocation }: AddAllocationFor
           </div>
         )}
       </div>
+
+      {/* Submit Button */}
       <button
         type="submit"
         className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-dark dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-dark"
