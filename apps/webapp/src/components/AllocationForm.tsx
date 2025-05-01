@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import type { Allocation } from '@/types/schema';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
+import { AllocationTypeSelect } from './AllocationTypeSelect';
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
   allocations: Allocation[];
@@ -16,11 +16,11 @@ export function AddAllocationForm({
   initialAllocation,
 }: AddAllocationFormProps) {
   const [newAllocation, setNewAllocation] = useState<Allocation>({
-    _id: '',
-    category: '',
-    type: 'amount',
-    value: 0,
-    priority: 1,
+    _id: initialAllocation?._id || '',
+    category: initialAllocation?.category || '',
+    type: initialAllocation?.type || 'amount', // Highlighted change: Use type from initialAllocation
+    value: initialAllocation?.value || 0,
+    priority: initialAllocation?.priority || 1,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,18 +104,13 @@ export function AddAllocationForm({
         </div>
         <div>
           <label htmlFor="new-allocation-type" className="block mb-1">
-            Type
+            Allocation Type
           </label>
-          <select
-            id="new-allocation-type"
-            value={newAllocation.type}
-            onChange={(e) => handleInputChange('type', e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="amount">Fixed Amount</option>
-            <option value="percentage">Percentage</option>
-            <option value="overflow">Overflow Percentage</option>
-          </select>
+          <AllocationTypeSelect
+            value={newAllocation.type} // Use the type from state
+            onChange={(value) => handleInputChange('type', value)}
+            className="w-full"
+          />
         </div>
         <div>
           <label htmlFor="new-allocation-value" className="block mb-1">
