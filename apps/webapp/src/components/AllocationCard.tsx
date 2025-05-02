@@ -1,3 +1,5 @@
+import { api } from '@workspace/backend/convex/_generated/api';
+import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { Edit2Icon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import { AddAllocationForm } from './AllocationForm';
@@ -14,18 +16,23 @@ interface Allocation {
 }
 
 interface AllocationCardProps {
-  allocation: Allocation;
-  onChange: (updatedAllocation: Allocation) => void;
-  onDelete: () => void;
-  allocations?: Allocation[]; // Make this optional
+  allocation: Allocation; // Individual allocation
+  allocations: Allocation[]; // Full list of allocations
 }
-export function AllocationCard({
-  allocation,
-  onChange,
-  onDelete,
-  allocations,
-}: AllocationCardProps) {
+
+export function AllocationCard({ allocation, allocations }: AllocationCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const deleteAllocation = useSessionMutation(api.allocation.deleteAllocation);
+
+  const handleDelete = async () => {
+    if (confirm(`Are you sure you want to delete the allocation for "${allocation.category}"?`)) {
+      try {
+        await deleteAllocation({ category: allocation.category });
+      } catch (error) {
+        console.error('Error deleting allocation:', error);
+      }
+    }
+  };
 
   return (
     <div className="p-4 border rounded-md bg-card">
@@ -42,7 +49,7 @@ export function AllocationCard({
           </button>
           <button
             type="button"
-            onClick={onDelete}
+            onClick={handleDelete}
             className="text-red-500 hover:text-red-600"
             aria-label={`Delete allocation for ${allocation.category}`}
           >
@@ -77,12 +84,9 @@ export function AllocationCard({
             <DialogTitle>Edit Allocation</DialogTitle>
           </DialogHeader>
           <AddAllocationForm
-            onSuccess={() => {
-              setIsEditing(false); // Close the dialog on success
-              onChange(allocation); // Notify the parent of the updated allocation
-            }}
-            initialAllocation={allocation} // Pass the current allocation for editing
-            allocations={allocations ?? []} // Pass all allocations for validation
+            onSuccess={() => setIsEditing(false)}
+            initialAllocation={allocation} // Pass the allocation being edited
+            allocations={allocations} // Pass the full list of allocations
           />
         </DialogContent>
       </Dialog>

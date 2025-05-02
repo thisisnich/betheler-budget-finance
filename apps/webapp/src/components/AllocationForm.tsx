@@ -13,12 +13,10 @@ const useSessionId = () => {
 interface AddAllocationFormProps {
   onAdd: (allocation: Allocation) => Promise<void>;
   initialAllocation?: Allocation;
-  allocations?: Allocation[]; // Allow undefined
 }
 export function AddAllocationForm({
   onSuccess,
   initialAllocation,
-  allocations,
 }: {
   onSuccess: () => void; // Callback to notify the parent when an allocation is added
   initialAllocation?: Allocation;
@@ -31,6 +29,8 @@ export function AddAllocationForm({
     value: 0,
     priority: 1,
   });
+  const fetchedAllocations = useSessionQuery(api.allocation.getAllocations); // Fetch allocations using the session query
+  const allocations = fetchedAllocations || []; // Default to an empty array if undefined
 
   const sessionId = useSessionId(); // Retrieve the session ID dynamically
   const createOrUpdateAllocation = useSessionMutation(api.allocation.upsertAllocation);
