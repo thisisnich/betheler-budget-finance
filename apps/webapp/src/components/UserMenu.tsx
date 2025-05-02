@@ -1,5 +1,15 @@
 'use client';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -29,6 +39,7 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
   const authState = useAuthState();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const logout = useSessionMutation(api.auth.logout);
 
   if (!authState || authState.state !== 'authenticated') {
@@ -66,50 +77,75 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
   );
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            'relative flex items-center gap-2 text-sm font-medium focus:outline-none text-muted-foreground hover:text-foreground',
-            isMobileMenu ? 'w-full justify-start py-2 px-3' : '',
-            !showNameOnMobile ? 'md:gap-2' : '',
-            className
-          )}
-        >
-          <User className="h-4 w-4" />
-          <span className={cn(!showNameOnMobile && 'hidden md:inline')}>{authState.user.name}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        side="bottom"
-        align={alignMenu}
-        className={cn('w-56', isMobileMenu ? 'w-full max-w-none' : '')}
-        sideOffset={isMobileMenu ? 0 : 4}
-        forceMount
-      >
-        <DropdownMenuLabel className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          <span>{authState.user.name}</span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+    <>
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will be redirected to the home page after logging out.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {isLoggingOut ? 'Logging out...' : 'Log out'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-        {navItems.map((item) => (
-          <Link href={item.href} key={item.href}>
-            <DropdownMenuItem className="cursor-pointer py-2">{item.label}</DropdownMenuItem>
-          </Link>
-        ))}
-
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer py-2 text-red-600 focus:text-red-600 focus:bg-red-50 flex items-center gap-2"
-          onClick={handleLogout}
-          disabled={isLoggingOut}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className={cn(
+              'relative flex items-center gap-2 text-sm font-medium focus:outline-none text-muted-foreground hover:text-foreground',
+              isMobileMenu ? 'w-full justify-start py-2 px-3' : '',
+              !showNameOnMobile ? 'md:gap-2' : '',
+              className
+            )}
+          >
+            <User className="h-4 w-4" />
+            <span className={cn(!showNameOnMobile && 'hidden md:inline')}>
+              {authState.user.name}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side="bottom"
+          align={alignMenu}
+          className={cn('w-56', isMobileMenu ? 'w-full max-w-none' : '')}
+          sideOffset={isMobileMenu ? 0 : 4}
+          forceMount
         >
-          <LogOut className="h-4 w-4" />
-          {isLoggingOut ? 'Logging out...' : 'Log out'}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            <span>{authState.user.name}</span>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
+          {navItems.map((item) => (
+            <Link href={item.href} key={item.href}>
+              <DropdownMenuItem className="cursor-pointer py-2">{item.label}</DropdownMenuItem>
+            </Link>
+          ))}
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer py-2 text-red-600 focus:text-red-600 focus:bg-red-50 flex items-center gap-2"
+            onClick={() => setShowLogoutConfirm(true)}
+            disabled={isLoggingOut}
+          >
+            <LogOut className="h-4 w-4" />
+            {isLoggingOut ? 'Logging out...' : 'Log out'}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
