@@ -84,18 +84,19 @@ export function AddAllocationForm({
     }
 
     // Check for conflicting priorities
-    const hasConflictingPriority = allocations.some(
-      (allocation) =>
-        allocation.priority === newAllocation.priority && allocation._id !== newAllocation._id
-    );
-
-    if (hasConflictingPriority) {
-      alert(
-        `Priority ${newAllocation.priority} is already assigned to another allocation. Please choose a unique priority.`
+    if (newAllocation.type !== 'overflow') {
+      const hasConflictingPriority = allocations.some(
+        (allocation) =>
+          allocation.priority === newAllocation.priority && allocation._id !== newAllocation._id
       );
-      return;
-    }
 
+      if (hasConflictingPriority) {
+        alert(
+          `Priority ${newAllocation.priority} is already assigned to another allocation. Please choose a unique priority.`
+        );
+        return;
+      }
+    }
     // Submit the allocation
     try {
       await createOrUpdateAllocation({
