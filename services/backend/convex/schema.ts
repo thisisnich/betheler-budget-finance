@@ -92,5 +92,6 @@ export default defineSchema({
     type: v.string(), // 'amount', 'percentage', or 'overflow'
     value: v.number(), // Fixed amount or percentage value
     priority: v.number(), // Priority for fixed amount or percentage
+    alwaysAdd: v.optional(v.boolean()), // Ensure this field is included
   }),
 });

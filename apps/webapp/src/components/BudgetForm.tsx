@@ -1,3 +1,4 @@
+import { evaluateExpression } from '@/lib/evaluateExpressions'; // Import the helper function
 import { formatCurrency, parseCurrencyInput } from '@/lib/formatCurrency';
 import { api } from '@workspace/backend/convex/_generated/api';
 import type { Id } from '@workspace/backend/convex/_generated/dataModel';
@@ -57,11 +58,13 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
     async (data: BudgetFormValues) => {
       try {
         setIsSubmitting(true);
-        const amount = parseCurrencyInput(data.amount);
 
-        if (!amount) {
+        // Evaluate the expression entered in the amount field
+        const amount = evaluateExpression(data.amount);
+
+        if (amount === null || amount <= 0) {
           form.setError('amount', {
-            message: 'Please enter a valid amount',
+            message: 'Please enter a valid amount or expression',
           });
           return;
         }
@@ -160,13 +163,13 @@ export function BudgetForm({ onSuccess, className, year, month, initialData }: B
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="0.00"
+                    placeholder="Enter a value or expression (e.g., 600+105)"
                     inputMode="decimal"
                     className="text-base sm:text-sm"
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  Enter the budget amount for this category
+                  Enter the budget amount for this category. You can use expressions like "600+105".
                 </FormDescription>
                 <FormMessage className="text-xs" />
               </FormItem>

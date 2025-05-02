@@ -72,7 +72,7 @@ export default function AllocationsPage() {
             </DialogContent>
           </Dialog>
 
-          <AllocationList allocations={allocations} />
+          <AllocationList />
         </div>
       </div>
     </RequireLogin>

@@ -1,3 +1,4 @@
+import type { Allocation } from '@/types/schema';
 import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation } from 'convex-helpers/react/sessions';
 import { Edit2Icon, TrashIcon } from 'lucide-react';
@@ -5,22 +6,16 @@ import { useState } from 'react';
 import { AddAllocationForm } from './AllocationForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
-type AllocationType = 'amount' | 'percentage' | 'overflow';
+import type { Id } from '@workspace/backend/convex/_generated/dataModel';
 
-interface Allocation {
-  _id: string;
-  category: string;
-  type: AllocationType;
-  value: number;
-  priority: number;
-}
+type AllocationType = 'amount' | 'percentage' | 'overflow';
 
 interface AllocationCardProps {
   allocation: Allocation; // Individual allocation
-  allocations: Allocation[]; // Full list of allocations
+  allocations?: Allocation[]; // Optional full list of allocations
 }
 
-export function AllocationCard({ allocation, allocations }: AllocationCardProps) {
+export function AllocationCard({ allocation }: AllocationCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const deleteAllocation = useSessionMutation(api.allocation.deleteAllocation);
 
@@ -75,19 +70,20 @@ export function AllocationCard({ allocation, allocations }: AllocationCardProps)
             <p className="font-medium">{allocation.priority}</p>
           </div>
         )}
+        {allocation.type === 'amount' && allocation.alwaysAdd && (
+          <div>
+            <p className="text-sm text-muted-foreground">Always Add</p>
+            <p className="font-medium text-green-600">Enabled</p>
+          </div>
+        )}
       </div>
-
       {/* Edit Allocation Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Allocation</DialogTitle>
           </DialogHeader>
-          <AddAllocationForm
-            onSuccess={() => setIsEditing(false)}
-            initialAllocation={allocation} // Pass the allocation being edited
-            allocations={allocations} // Pass the full list of allocations
-          />
+          <AddAllocationForm onSuccess={() => setIsEditing(false)} initialAllocation={allocation} />
         </DialogContent>
       </Dialog>
     </div>

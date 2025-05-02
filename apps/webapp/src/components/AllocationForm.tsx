@@ -1,7 +1,8 @@
 import { CategorySelect } from '@/components/CategorySelect';
+import { evaluateExpression } from '@/lib/evaluateExpressions'; // Import the helper function
 import type { Allocation } from '@/types/schema';
 import { api } from '@workspace/backend/convex/_generated/api';
-import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions'; // Import the query hook
+import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
 import { useEffect, useState } from 'react';
 
 // Example: Replace this with your actual session retrieval logic
@@ -11,26 +12,26 @@ const useSessionId = () => {
 };
 
 interface AddAllocationFormProps {
-  onAdd: (allocation: Allocation) => Promise<void>;
-  initialAllocation?: Allocation;
+  onSuccess: () => void; // Callback to notify the parent when an allocation is added
+  initialAllocation?: Allocation; // Optional initial allocation for editing
+  allocations?: Allocation[]; // List of existing allocations for validation (optional if using useSessionQuery)
 }
 export function AddAllocationForm({
   onSuccess,
   initialAllocation,
-}: {
-  onSuccess: () => void; // Callback to notify the parent when an allocation is added
-  initialAllocation?: Allocation;
-  allocations: Allocation[];
-}) {
+  allocations: propAllocations,
+}: AddAllocationFormProps) {
   const [newAllocation, setNewAllocation] = useState<Allocation>({
     _id: '',
     category: '',
     type: 'amount',
     value: 0,
     priority: 1,
+    alwaysAdd: false,
   });
+
   const fetchedAllocations = useSessionQuery(api.allocation.getAllocations); // Fetch allocations using the session query
-  const allocations = fetchedAllocations || []; // Default to an empty array if undefined
+  const allocations = propAllocations || fetchedAllocations || []; // Use prop allocations if provided, otherwise use fetched, default to empty array
 
   const sessionId = useSessionId(); // Retrieve the session ID dynamically
   const createOrUpdateAllocation = useSessionMutation(api.allocation.upsertAllocation);
@@ -41,7 +42,7 @@ export function AddAllocationForm({
     }
   }, [initialAllocation]);
 
-  const handleInputChange = (key: keyof Allocation, value: string | number) => {
+  const handleInputChange = (key: keyof Allocation, value: string | number | boolean) => {
     setNewAllocation((prev) => ({
       ...prev,
       [key]: value,
@@ -52,7 +53,8 @@ export function AddAllocationForm({
     e.preventDefault();
 
     // Validate category and value
-    if (!newAllocation.category || newAllocation.value <= 0) {
+    const evaluatedValue = evaluateExpression(newAllocation.value.toString());
+    if (!newAllocation.category || evaluatedValue === null || evaluatedValue <= 0) {
       alert('Please provide a valid category and value.');
       return;
     }
@@ -63,7 +65,7 @@ export function AddAllocationForm({
         .filter((a) => a.type === 'percentage' || a.type === 'overflow')
         .reduce((sum, a) => sum + a.value, 0);
 
-      if (totalPercentage + newAllocation.value > 100) {
+      if (totalPercentage + evaluatedValue > 100) {
         alert('Total percentage cannot exceed 100%.');
         return;
       }
@@ -99,8 +101,9 @@ export function AddAllocationForm({
       await createOrUpdateAllocation({
         category: newAllocation.category,
         type: newAllocation.type,
-        value: newAllocation.value,
+        value: evaluatedValue, // Use the evaluated value
         priority: newAllocation.priority,
+        alwaysAdd: newAllocation.alwaysAdd,
       });
       onSuccess(); // Notify the parent component
     } catch (error) {
@@ -166,11 +169,11 @@ export function AddAllocationForm({
           </label>
           <input
             id="new-allocation-value"
-            type="number"
+            type="text" // Allow text input for expressions
             value={newAllocation.value}
-            onChange={(e) => handleInputChange('value', Number(e.target.value))}
+            onChange={(e) => handleInputChange('value', e.target.value)}
             className="w-full border rounded px-3 py-2 bg-input text-foreground dark:bg-input dark:text-foreground"
-            placeholder="e.g., 100"
+            placeholder="Enter a value or expression (e.g., 600+105)"
             required
           />
         </div>
@@ -199,14 +202,32 @@ export function AddAllocationForm({
           </div>
         )}
       </div>
+      <div className="flex items-center justify-between mt-4 gap-4">
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="h-10 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-dark dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-dark"
+        >
+          {newAllocation._id ? 'Update Allocation' : 'Add Allocation'}
+        </button>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-dark dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-dark"
-      >
-        {newAllocation._id ? 'Update Allocation' : 'Add Allocation'}
-      </button>
+        {/* Always Add Checkbox */}
+        {newAllocation.type === 'amount' && (
+          <div className="flex-1">
+            <button
+              type="button"
+              className={`h-10 px-4 py-2 rounded ${
+                newAllocation.alwaysAdd
+                  ? 'bg-primary text-primary-foreground hover:bg-primary-dark'
+                  : 'bg-muted text-muted-foreground hover:bg-muted-dark'
+              }`}
+              onClick={() => handleInputChange('alwaysAdd', !newAllocation.alwaysAdd)}
+            >
+              {newAllocation.alwaysAdd ? 'Always Add Enabled' : 'Enable Always Add'}
+            </button>
+          </div>
+        )}
+      </div>
     </form>
   );
 }

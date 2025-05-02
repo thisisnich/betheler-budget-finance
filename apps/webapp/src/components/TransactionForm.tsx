@@ -1,3 +1,4 @@
+import { evaluateExpression } from '@/lib/evaluateExpressions'; // Import the helper function
 import { parseCurrencyInput } from '@/lib/formatCurrency';
 import { cn } from '@/lib/utils';
 import { api } from '@workspace/backend/convex/_generated/api';
@@ -72,11 +73,13 @@ export function TransactionForm({
     async (data: TransactionFormValues) => {
       try {
         setIsSubmitting(true);
-        const amount = parseCurrencyInput(data.amount);
 
-        if (!amount) {
+        // Evaluate the expression entered in the amount field
+        const amount = evaluateExpression(data.amount);
+
+        if (amount === null || amount <= 0) {
           form.setError('amount', {
-            message: 'Please enter a valid amount',
+            message: 'Please enter a valid amount or expression',
           });
           return;
         }
@@ -105,8 +108,7 @@ export function TransactionForm({
             });
           }
         }
-        console.log('Selected datetime:', data.datetime);
-        console.log('ISO datetime:', data.datetime.toISOString());
+
         // Create the transaction
         await createTransaction({
           amount,
@@ -124,7 +126,7 @@ export function TransactionForm({
         setIsSubmitting(false);
       }
     },
-    [createTransaction, form, onSuccess, splitIncomeByAllocations, addToBudget] // Added addToBudget to dependencies
+    [createTransaction, form, onSuccess, splitIncomeByAllocations, addToBudget]
   );
 
   return (
@@ -157,17 +159,17 @@ export function TransactionForm({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="0.00"
+                  placeholder="Enter a value or expression (e.g., 600+105)"
                   inputMode="decimal"
                   className="text-base sm:text-sm"
                 />
               </FormControl>
               <FormDescription className="text-xs">
                 {transactionType === 'expense'
-                  ? 'Enter the expense amount (e.g., 10.99)'
+                  ? 'Enter the expense amount (e.g., 10.99 or 10+5)'
                   : transactionType === 'income'
-                    ? 'Enter the income amount (e.g., 1000.00)'
-                    : 'Enter the savings amount (e.g., 500.00 for deposits, -500.00 for withdrawals)'}
+                    ? 'Enter the income amount (e.g., 1000.00 or 500*2)'
+                    : 'Enter the savings amount (e.g., 500.00 or 1000/2)'}
               </FormDescription>
               <FormMessage className="text-xs" />
             </FormItem>

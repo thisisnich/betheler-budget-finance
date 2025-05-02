@@ -36,10 +36,11 @@ export const upsertAllocation = mutation({
     ...SessionIdArg, // Include sessionId in the arguments
     category: v.string(),
     type: v.union(v.literal('amount'), v.literal('percentage'), v.literal('overflow')),
-    value: v.number(),
-    priority: v.number(),
+    value: v.float64(),
+    priority: v.float64(),
+    alwaysAdd: v.optional(v.boolean()), // Ensure this field is included
   },
-  handler: async (ctx, { sessionId, category, type, value, priority }) => {
+  handler: async (ctx, { sessionId, category, type, value, priority, alwaysAdd }) => {
     const user = await getAuthUser(ctx, { sessionId }); // Ensure user is authenticated
     if (!user) {
       throw new Error('Unauthorized');
@@ -56,7 +57,7 @@ export const upsertAllocation = mutation({
       .first();
 
     // Only use the required fields
-    const allocationData = { userId: user._id, category, type, value, priority };
+    const allocationData = { userId: user._id, category, type, value, priority, alwaysAdd };
 
     if (existing) {
       await ctx.db.patch(existing._id, allocationData);
@@ -64,9 +65,7 @@ export const upsertAllocation = mutation({
       await ctx.db.insert('allocations', allocationData);
     }
   },
-});
-
-// Mutation: Delete an allocation by category for the authenticated user
+}); // Mutation: Delete an allocation by category for the authenticated user
 export const deleteAllocation = mutation({
   args: {
     ...SessionIdArg, // Include sessionId in the arguments
@@ -147,14 +146,20 @@ export const splitIncomeByAllocations = mutation({
       const { category, type, value } = allocation;
 
       if (type === 'amount') {
-        // Check the current budget for this category
         const currentBudget = budgetMap[category] || 0;
 
-        // Only allocate if the current budget is less than the fixed amount
-        if (currentBudget < value) {
-          const amountToAllocate = Math.min(value - currentBudget, remainingIncome); // Allocate only the difference
-          result[category] = amountToAllocate;
+        if (allocation.alwaysAdd) {
+          // Always add the fixed amount to the budget
+          const amountToAllocate = Math.min(value, remainingIncome);
+          result[category] = (result[category] || 0) + amountToAllocate;
           remainingIncome -= amountToAllocate;
+        } else {
+          // Only allocate if the current budget is less than the fixed amount
+          if (currentBudget < value) {
+            const amountToAllocate = Math.min(value - currentBudget, remainingIncome);
+            result[category] = amountToAllocate;
+            remainingIncome -= amountToAllocate;
+          }
         }
       } else if (type === 'percentage') {
         // Deduct a percentage of the total income
