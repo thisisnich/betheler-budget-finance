@@ -33,6 +33,11 @@ export default function AppPage() {
                   buttonLabel="Add Transaction"
                   onSuccess={handleTransactionAdded}
                 />
+                <Link href="/app/profile">
+                  <Button variant="outline" size="sm">
+                    View Profile
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -44,7 +49,10 @@ export default function AppPage() {
                   <p className="text-sm text-blue-800">
                     <span className="font-semibold">Tip:</span> You're using an anonymous account.
                     Visit your{' '}
-                    <Link href="/profile" className="text-blue-600 underline hover:text-blue-800">
+                    <Link
+                      href="/app/profile"
+                      className="text-blue-600 underline hover:text-blue-800"
+                    >
                       profile page
                     </Link>{' '}
                     to personalize your display name.
