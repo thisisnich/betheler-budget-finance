@@ -198,8 +198,8 @@ export default function ProfilePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-end mb-6">
-          <DarkModeToggle /> {/* Dark mode toggle aligned to the right */}
-        </div>{' '}
+          <DarkModeToggle />
+        </div>
         <Card className="p-6 mb-6">
           <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
 
@@ -209,7 +209,7 @@ export default function ProfilePage() {
                 <h2 className="text-xl font-semibold mb-2">Account Information</h2>
                 <div className="grid grid-cols-1 gap-2">
                   <div>
-                    <span className="font-medium">Account Type:</span>{' '}
+                    <span className="font-medium">Account Type:</span>
                     {isAnonymousUser ? (
                       <span
                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
