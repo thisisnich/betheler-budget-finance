@@ -131,7 +131,7 @@ export function LoginCodeGenerator() {
     <div className="w-full border rounded-lg overflow-hidden">
       <div className="p-6 border-b">
         <h3 className="text-lg font-semibold">Use Your Account on Another Device</h3>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
           Generate a temporary login code to access your anonymous account from another device
         </p>
       </div>
@@ -148,12 +148,12 @@ export function LoginCodeGenerator() {
                 Valid for {timeRemaining}
               </p>
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm " style={{ color: 'var(--muted-foreground)' }}>
               <p>Enter this code on the login page of your other device to access your account.</p>
             </div>
           </div>
         ) : (
-          <div className="text-gray-600 text-sm space-y-2">
+          <div className=" text-sm space-y-2" style={{ color: 'var(--muted-foreground)' }}>
             <p>
               Generate a temporary login code that allows you to access your anonymous account from
               another device. The code will be valid for 1 minute.
