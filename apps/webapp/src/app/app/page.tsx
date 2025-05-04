@@ -34,11 +34,11 @@ export default function AppPage() {
                   onSuccess={handleTransactionAdded}
                 />
                 <Link href="/app/profile">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" className="px-4 py-2 text-sm">
                     View Profile
                   </Button>
                 </Link>
-              </div>
+              </div>{' '}
             </div>
           </div>
 
