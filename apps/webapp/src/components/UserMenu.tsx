@@ -67,7 +67,7 @@ export function UserMenu({ className, alignMenu = 'end', showNameOnMobile = true
   // Memoize navigation items to ensure consistency with main navigation
   const navItems = useMemo(
     () => [
-      { href: '/profile', label: 'Profile' },
+      { href: '/app/profile', label: 'Profile' },
       { href: '/app', label: 'Dashboard' },
       { href: '/transactions', label: 'Transactions' },
       { href: '/budgets', label: 'Budgets' },

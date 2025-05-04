@@ -33,6 +33,11 @@ export default function AppPage() {
                   buttonLabel="Add Transaction"
                   onSuccess={handleTransactionAdded}
                 />
+                <Link href="/app/profile">
+                  <Button variant="outline" size="sm">
+                    View Profile
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
