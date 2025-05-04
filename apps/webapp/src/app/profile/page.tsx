@@ -1,3 +1,4 @@
+'use client';
 import { redirect } from 'next/navigation';
 
 import { DarkModeToggle } from '@/components/ui/DarkModeToggle'; // Import the toggle component
