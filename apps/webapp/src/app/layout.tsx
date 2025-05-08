@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ConvexClientProvider } from '@/app/ConvexClientProvider';
 import { Navigation } from '@/components/Navigation';
-import { ThemeInitializer } from '@/components/ui/darkMode';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/modules/auth/AuthProvider';
 
@@ -49,7 +48,6 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeInitializer /> {/* Add the client-only component */}
         <ConvexClientProvider>
           <AuthProvider>
             <div className="flex flex-col min-h-screen">
