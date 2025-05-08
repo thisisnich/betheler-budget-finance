@@ -5,12 +5,6 @@ import { api } from '@workspace/backend/convex/_generated/api';
 import { useSessionMutation, useSessionQuery } from 'convex-helpers/react/sessions';
 import { useEffect, useState } from 'react';
 
-// Example: Replace this with your actual session retrieval logic
-const useSessionId = () => {
-  // Replace with your actual logic to retrieve the session ID
-  return 'your-session-id';
-};
-
 interface AddAllocationFormProps {
   onSuccess: () => void; // Callback to notify the parent when an allocation is added
   initialAllocation?: Allocation; // Optional initial allocation for editing
@@ -33,7 +27,6 @@ export function AddAllocationForm({
   const fetchedAllocations = useSessionQuery(api.allocation.getAllocations); // Fetch allocations using the session query
   const allocations = propAllocations || fetchedAllocations || []; // Use prop allocations if provided, otherwise use fetched, default to empty array
 
-  const sessionId = useSessionId(); // Retrieve the session ID dynamically
   const createOrUpdateAllocation = useSessionMutation(api.allocation.upsertAllocation);
 
   useEffect(() => {

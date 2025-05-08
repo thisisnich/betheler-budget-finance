@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthState } from '@/modules/auth/AuthProvider';
 import { RequireLogin } from '@/modules/auth/RequireLogin';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useState } from 'react';
 
 export default function AppPage() {
