@@ -3,36 +3,28 @@
 import { useEffect, useState } from 'react';
 
 export function DarkModeToggle() {
-  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false); // Default to light mode
 
   useEffect(() => {
-    // Check the current theme on mount
     const storedPreference = localStorage.getItem('theme');
-    if (storedPreference) {
-      setIsDarkMode(storedPreference === 'dark');
-    } else {
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(systemPrefersDark);
+    if (storedPreference === 'dark') {
+      setIsDarkMode(true);
     }
   }, []);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode((prev) => {
-      const newMode = !prev;
-      if (newMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-      return newMode;
-    });
-  };
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
 
-  if (isDarkMode === null) {
-    return null; // Optionally render nothing until the theme is determined
-  }
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
 
   return (
     <button
@@ -43,31 +35,4 @@ export function DarkModeToggle() {
       Toggle {isDarkMode ? 'Light' : 'Dark'} Mode
     </button>
   );
-}
-function initializeTheme() {
-  const storedPreference = localStorage.getItem('theme');
-  if (storedPreference) {
-    if (storedPreference === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  } else {
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (systemPrefersDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }
-}
-
-export function ThemeInitializer() {
-  useEffect(() => {
-    initializeTheme(); // Initialize the theme globally
-  }, []);
-
-  return null; // This component doesn't render anything
 }
